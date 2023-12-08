@@ -43,3 +43,37 @@ jobs:
         tools/ci-build.sh
       working-directory: ../p4c
 
+
+  # Build and test P4RuntimeSmith on MacOS 11
+  test-mac-os:
+    strategy:
+      fail-fast: false
+    runs-on: macos-11
+    env:
+      CTEST_PARALLEL_LEVEL: 4
+      CMAKE_UNITY_BUILD: ON
+      ENABLE_TEST_TOOLS: ON
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: test-${{ runner.os }}
+        max-size: 1000M
+
+    - name: Pull P4C and link P4RuntimeSmith.
+      run: |
+        git clone --recurse-submodules -j2 https://github.com/p4lang/p4c/ $GITHUB_WORKSPACE/../p4c
+        ln -sf $GITHUB_WORKSPACE $GITHUB_WORKSPACE/../p4c/backends/p4tools/modules/
+
+    - name: Build (MacOS)
+      run: |
+          tools/install_mac_deps.sh
+          source ~/.bash_profile
+          ./bootstrap.sh
+          make -C build -j2
+          update_dyld_shared_cache
+      working-directory: ../p4c
