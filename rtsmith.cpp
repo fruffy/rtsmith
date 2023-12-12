@@ -4,8 +4,8 @@
 
 #include <cstdlib>
 
+#include "backends/p4tools/common/lib/logging.h"
 #include "backends/p4tools/modules/p4rtsmith/core/target.h"
-#include "backends/p4tools/modules/p4rtsmith/lib/logging.h"
 #include "backends/p4tools/modules/p4rtsmith/register.h"
 #include "frontends/common/parseInput.h"
 #include "lib/error.h"

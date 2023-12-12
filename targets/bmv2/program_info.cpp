@@ -1,7 +1,6 @@
 #include "backends/p4tools/modules/p4rtsmith/targets/bmv2/program_info.h"
 
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
-#include "backends/p4tools/modules/p4rtsmith/lib/logging.h"
 #include "control-plane/p4RuntimeSerializer.h"
 #include "ir/ir.h"
 
