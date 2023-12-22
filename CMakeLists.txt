@@ -55,7 +55,7 @@ configure_file(register.h.in register.h)
 
 add_p4tools_library(librtsmith ${RTSMITH_SOURCES})
 add_dependencies(librtsmith p4tools-common controlplane)
-target_include_directories(librtsmith SYSTEM BEFORE PUBLIC ${Protobuf_INCLUDE_DIR})
+target_include_directories(librtsmith SYSTEM BEFORE PUBLIC ${Protobuf_INCLUDE_DIRS})
 
 add_p4tools_executable(p4rtsmith main.cpp)
 

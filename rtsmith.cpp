@@ -18,14 +18,14 @@ void RtSmith::registerTarget() {
     registerCompilerTargets();
 }
 
-int RtSmith::mainImpl(const IR::P4Program *program) {
+int RtSmith::mainImpl(const CompilerResult &compilerResult) {
     // Register all available P4RuntimeSmith targets.
     // These are discovered by CMAKE, which fills out the register.h.in file.
     registerRtSmithTargets();
 
     enableInformationLogging();
 
-    const auto *programInfo = RtSmithTarget::initProgram(program);
+    const auto *programInfo = RtSmithTarget::produceProgramInfo(&compilerResult.getProgram());
     if (programInfo == nullptr) {
         ::error("Program not supported by target device and architecture.");
         return EXIT_FAILURE;

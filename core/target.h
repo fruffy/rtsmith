@@ -18,19 +18,19 @@ class RtSmithTarget : public Target {
     /// Produces a @ProgramInfo for the given P4 program.
     ///
     /// @returns nullptr if the program is not supported by this target.
-    static const ProgramInfo *initProgram(const IR::P4Program *program);
+    static const ProgramInfo *produceProgramInfo(const IR::P4Program *program);
 
     /// @returns the fuzzer that will produce an initial configuration and a series of random write
     /// requests..
     [[nodiscard]] static P4RuntimeFuzzer &getFuzzer(const ProgramInfo &programInfo);
 
  protected:
-    /// @see @initProgram.
-    const ProgramInfo *initProgramImpl(const IR::P4Program *program) const;
+    /// @see @produceProgramInfo.
+    const ProgramInfo *produceProgramInfoImpl(const IR::P4Program *program) const;
 
-    /// @see @initProgram.
-    virtual const ProgramInfo *initProgramImpl(const IR::P4Program *program,
-                                               const IR::Declaration_Instance *mainDecl) const = 0;
+    /// @see @produceProgramInfo.
+    virtual const ProgramInfo *produceProgramInfoImpl(
+        const IR::P4Program *program, const IR::Declaration_Instance *mainDecl) const = 0;
 
     /// @see @getStepper.
     [[nodiscard]] virtual P4RuntimeFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const = 0;

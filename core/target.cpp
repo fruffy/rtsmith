@@ -16,13 +16,13 @@ namespace P4Tools::RTSmith {
 RtSmithTarget::RtSmithTarget(std::string deviceName, std::string archName)
     : Target("rtsmith", std::move(deviceName), std::move(archName)) {}
 
-const ProgramInfo *RtSmithTarget::initProgramImpl(const IR::P4Program *program) const {
+const ProgramInfo *RtSmithTarget::produceProgramInfoImpl(const IR::P4Program *program) const {
     // Check that the program has at least one main declaration.
     const auto mainCount = program->getDeclsByName(IR::P4Program::main)->count();
     BUG_CHECK(mainCount > 0, "Program doesn't have a main declaration.");
 
     // Resolve the program's main declaration instance and delegate to the version of
-    // initProgramImpl that takes the main declaration.
+    // produceProgramInfoImpl that takes the main declaration.
     const auto *mainIDecl = program->getDeclsByName(IR::P4Program::main)->single();
     BUG_CHECK(mainIDecl, "Program's main declaration not found: %1%", program->main);
 
@@ -31,7 +31,7 @@ const ProgramInfo *RtSmithTarget::initProgramImpl(const IR::P4Program *program) 
     BUG_CHECK(mainDecl, "%1%: Program's main declaration is a %2%, not a Declaration_Instance",
               mainNode, mainNode->node_type_name());
 
-    return initProgramImpl(program, mainDecl);
+    return produceProgramInfoImpl(program, mainDecl);
 }
 
 P4RuntimeFuzzer &RtSmithTarget::getFuzzer(const ProgramInfo &programInfo) {
@@ -40,8 +40,8 @@ P4RuntimeFuzzer &RtSmithTarget::getFuzzer(const ProgramInfo &programInfo) {
 
 const RtSmithTarget &RtSmithTarget::get() { return Target::get<RtSmithTarget>("rtsmith"); }
 
-const ProgramInfo *RtSmithTarget::initProgram(const IR::P4Program *program) {
-    return get().initProgramImpl(program);
+const ProgramInfo *RtSmithTarget::produceProgramInfo(const IR::P4Program *program) {
+    return get().produceProgramInfoImpl(program);
 }
 
 }  // namespace P4Tools::RTSmith
