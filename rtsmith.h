@@ -3,7 +3,6 @@
 
 #include "backends/p4tools/common/p4ctool.h"
 #include "backends/p4tools/modules/p4rtsmith/options.h"
-#include "ir/ir.h"
 
 namespace P4Tools::RTSmith {
 
@@ -12,7 +11,7 @@ class RtSmith : public AbstractP4cTool<RtSmithOptions> {
  protected:
     void registerTarget() override;
 
-    int mainImpl(const IR::P4Program *program) override;
+    int mainImpl(const CompilerResult &compilerResult) override;
 
  public:
     virtual ~RtSmith() = default;

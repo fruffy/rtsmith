@@ -19,7 +19,7 @@ void Bmv2V1ModelRtSmithTarget::make() {
     }
 }
 
-const ProgramInfo *Bmv2V1ModelRtSmithTarget::initProgramImpl(
+const ProgramInfo *Bmv2V1ModelRtSmithTarget::produceProgramInfoImpl(
     const IR::P4Program *program, const IR::Declaration_Instance * /*mainDecl*/) const {
     return new Bmv2V1ModelProgramInfo(program);
 }
