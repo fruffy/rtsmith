@@ -3,7 +3,6 @@
 
 #include "control-plane/p4RuntimeSerializer.h"
 #include "ir/ir.h"
-#include "ir/node.h"
 #include "lib/castable.h"
 
 namespace P4Tools::RTSmith {
