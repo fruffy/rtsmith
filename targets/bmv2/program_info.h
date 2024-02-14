@@ -10,6 +10,8 @@ namespace P4Tools::RTSmith::V1Model {
 class Bmv2V1ModelProgramInfo : public ProgramInfo {
  public:
     explicit Bmv2V1ModelProgramInfo(const IR::P4Program *program);
+
+    DECLARE_TYPEINFO(Bmv2V1ModelProgramInfo);
 };
 
 }  // namespace P4Tools::RTSmith::V1Model
