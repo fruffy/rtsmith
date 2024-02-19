@@ -1,4 +1,5 @@
 #include "backends/p4tools/modules/p4rtsmith/targets/bmv2/fuzzer.h"
+
 #include "backends/p4tools/common/lib/util.h"
 #include "control-plane/bytestrings.h"
 #include "control-plane/p4infoApi.h"
@@ -47,27 +48,29 @@ p4::v1::Action_Param produceActionParam(p4::config::v1::Action_Param &param, int
 
     auto paramBitWidth = param.bitwidth();
     auto value = Utils::getRandConstantForWidth(paramBitWidth)->value;
-    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, paramBitWidth);
-    protoParam.set_param_id(parameterId); 
+    std::optional<std::string> valueStr =
+        P4::ControlPlaneAPI::stringReprConstant(value, paramBitWidth);
+    protoParam.set_param_id(parameterId);
     protoParam.set_value(*valueStr);
 
     return protoParam;
 }
 
 p4::v1::Action produceTableAction(
-    const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs, 
+    const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
     const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
     p4::v1::Action protoAction;
 
-    auto action_index = Utils::getRandInt(action_refs.size()-1);
+    auto action_index = Utils::getRandInt(action_refs.size() - 1);
     auto action_ref_id = action_refs[action_index].id();
 
-    auto action = P4::ControlPlaneAPI::findP4InfoObject(actions.begin(), actions.end(), action_ref_id);
+    auto action =
+        P4::ControlPlaneAPI::findP4InfoObject(actions.begin(), actions.end(), action_ref_id);
     auto action_id = action->preamble().id();
     auto params = action->params();
 
     protoAction.set_action_id(action_id);
-    for (auto i=0; i<params.size(); i++) {
+    for (auto i = 0; i < params.size(); i++) {
         auto param = params[i];
         auto protoParam = produceActionParam(param, ++i);
         *protoAction.add_params() = protoParam;
@@ -76,13 +79,14 @@ p4::v1::Action produceTableAction(
     return protoAction;
 }
 
-uint32_t producePriority(const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields) {
-    for (auto i=0; i<matchFields.size(); i++) {
+uint32_t producePriority(
+    const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields) {
+    for (auto i = 0; i < matchFields.size(); i++) {
         auto match = matchFields[i];
         auto matchType = match.match_type();
-        if (matchType == p4::config::v1::MatchField::TERNARY 
-        || matchType == p4::config::v1::MatchField::RANGE 
-        || matchType == p4::config::v1::MatchField::OPTIONAL) {
+        if (matchType == p4::config::v1::MatchField::TERNARY ||
+            matchType == p4::config::v1::MatchField::RANGE ||
+            matchType == p4::config::v1::MatchField::OPTIONAL) {
             auto value = Utils::getRandConstantForWidth(32)->value;
             auto priority = static_cast<int>(value);
             return priority;
@@ -92,7 +96,8 @@ uint32_t producePriority(const google::protobuf::RepeatedPtrField<p4::config::v1
     return 0;
 }
 
-std::optional<p4::v1::FieldMatch> produceMatchField(p4::config::v1::MatchField &match, int fieldId) {
+std::optional<p4::v1::FieldMatch> produceMatchField(p4::config::v1::MatchField &match,
+                                                    int fieldId) {
     auto matchType = match.match_type();
     auto bitwidth = match.bitwidth();
 
@@ -112,17 +117,17 @@ std::optional<p4::v1::FieldMatch> produceMatchField(p4::config::v1::MatchField &
 }
 
 p4::v1::TableEntry produceTableEntry(
-    const p4::config::v1::Table &table, 
+    const p4::config::v1::Table &table,
     const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
     p4::v1::TableEntry protoEntry;
 
     // set table id
     const auto &pre_t = table.preamble();
     protoEntry.set_table_id(pre_t.id());
-    
+
     // add matches
     const auto &matchFields = table.match_fields();
-    for (auto i=0; i<matchFields.size(); i++) {
+    for (auto i = 0; i < matchFields.size(); i++) {
         auto match = matchFields[i];
         auto protoMatch = produceMatchField(match, ++i);
         *protoEntry.add_match() = *protoMatch;
@@ -140,7 +145,7 @@ p4::v1::TableEntry produceTableEntry(
     return protoEntry;
 }
 
-InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() { 
+InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
     p4::v1::WriteRequest request;
 
     auto p4Info = getProgramInfo().getP4RuntimeApi().p4Info;
@@ -154,8 +159,8 @@ InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
     }
 
     // printInfo("Request:\n%1%", request.DebugString());
-    std::vector<p4::v1::WriteRequest> requests { request };
-    return requests; 
+    std::vector<p4::v1::WriteRequest> requests{request};
+    return requests;
 }
 
 P4RuntimeUpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() { return {}; }
