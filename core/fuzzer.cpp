@@ -7,8 +7,8 @@
 namespace P4Tools::RTSmith {
 
 /// @brief Produce a match field with match type TERNARY
-/// @param fieldId 
-/// @param bitwidth 
+/// @param fieldId
+/// @param bitwidth
 /// @return A field match or null
 std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceTernaryMatch(int fieldId, int bitwidth) {
     p4::v1::FieldMatch protoMatch;
@@ -27,8 +27,8 @@ std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceTernaryMatch(int field
 }
 
 /// @brief Produce a match field with match type EXACT
-/// @param fieldId 
-/// @param bitwidth 
+/// @param fieldId
+/// @param bitwidth
 /// @return A field match or null
 std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceExactMatch(int fieldId, int bitwidth) {
     p4::v1::FieldMatch protoMatch;
@@ -45,10 +45,11 @@ std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceExactMatch(int fieldId
 }
 
 /// @brief Produce a param for an action in the table entry
-/// @param param 
-/// @param parameterId 
+/// @param param
+/// @param parameterId
 /// @return An action param
-p4::v1::Action_Param P4RuntimeFuzzer::produceActionParam(p4::config::v1::Action_Param &param, int parameterId) {
+p4::v1::Action_Param P4RuntimeFuzzer::produceActionParam(p4::config::v1::Action_Param &param,
+                                                         int parameterId) {
     p4::v1::Action_Param protoParam;
 
     auto paramBitWidth = param.bitwidth();
@@ -62,8 +63,8 @@ p4::v1::Action_Param P4RuntimeFuzzer::produceActionParam(p4::config::v1::Action_
 }
 
 /// @brief Produce a random action selected for a table entry
-/// @param action_refs 
-/// @param actions 
+/// @param action_refs
+/// @param actions
 /// @return A table action
 p4::v1::Action P4RuntimeFuzzer::produceTableAction(
     const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
@@ -89,7 +90,7 @@ p4::v1::Action P4RuntimeFuzzer::produceTableAction(
 }
 
 /// @brief Produce priority for an entry given match fields
-/// @param matchFields 
+/// @param matchFields
 /// @return A 32-bit integer
 uint32_t P4RuntimeFuzzer::producePriority(
     const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields) {
@@ -109,11 +110,11 @@ uint32_t P4RuntimeFuzzer::producePriority(
 }
 
 /// @brief Produce match field given match type
-/// @param match 
-/// @param fieldId 
+/// @param match
+/// @param fieldId
 /// @return FieldMatch or Null
-std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceMatchField(p4::config::v1::MatchField &match,
-                                                    int fieldId) {
+std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceMatchField(
+    p4::config::v1::MatchField &match, int fieldId) {
     auto matchType = match.match_type();
     auto bitwidth = match.bitwidth();
 
@@ -132,9 +133,9 @@ std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceMatchField(p4::config:
     return std::nullopt;
 }
 
-/// @brief Produce a table entry with id, match fields, priority and action 
-/// @param table 
-/// @param actions 
+/// @brief Produce a table entry with id, match fields, priority and action
+/// @param table
+/// @param actions
 /// @return A table entry
 p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const p4::config::v1::Table &table,
@@ -165,8 +166,8 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     return protoEntry;
 }
 
-InitialP4RuntimeConfig P4RuntimeFuzzer::produceInitialConfig() { return {};}
+InitialP4RuntimeConfig P4RuntimeFuzzer::produceInitialConfig() { return {}; }
 
 P4RuntimeUpdateSeries P4RuntimeFuzzer::produceUpdateTimeSeries() { return {}; }
 
-} // namespace P4Tools::RTSmith
+}  // namespace P4Tools::RTSmith

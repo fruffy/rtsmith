@@ -1,7 +1,7 @@
 #include "backends/p4tools/modules/p4rtsmith/targets/bmv2/fuzzer.h"
 
-#include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "backends/p4tools/common/lib/util.h"
+#include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "control-plane/bytestrings.h"
 #include "control-plane/p4infoApi.h"
 
@@ -34,4 +34,4 @@ InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
 
 P4RuntimeUpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() { return {}; }
 
-} // namespace P4Tools::RTSmith::V1Model
+}  // namespace P4Tools::RTSmith::V1Model

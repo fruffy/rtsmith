@@ -33,23 +33,24 @@ class P4RuntimeFuzzer {
     virtual ~P4RuntimeFuzzer() = default;
 
     virtual std::optional<p4::v1::FieldMatch> produceTernaryMatch(int fieldId, int bitwidth);
-    
+
     virtual std::optional<p4::v1::FieldMatch> produceExactMatch(int fieldId, int bitwidth);
 
-    virtual p4::v1::Action_Param produceActionParam(p4::config::v1::Action_Param &param, int parameterId);
+    virtual p4::v1::Action_Param produceActionParam(p4::config::v1::Action_Param &param,
+                                                    int parameterId);
 
     virtual p4::v1::Action produceTableAction(
-    const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
-    const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
+        const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
+        const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
 
     virtual uint32_t producePriority(
-    const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields);
+        const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields);
 
     virtual std::optional<p4::v1::FieldMatch> produceMatchField(p4::config::v1::MatchField &match,
-                                                    int fieldId);
+                                                                int fieldId);
     virtual p4::v1::TableEntry produceTableEntry(
-    const p4::config::v1::Table &table,
-    const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
+        const p4::config::v1::Table &table,
+        const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
 
     virtual InitialP4RuntimeConfig produceInitialConfig() = 0;
 
