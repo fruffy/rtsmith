@@ -22,7 +22,11 @@ InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
     const auto tables = p4Info->tables();
     const auto actions = p4Info->actions();
 
-    for (auto &table : tables) {
+    // not for every table
+    // random number of entries
+    auto
+
+        for (auto &table : tables) {
         auto tableEntry = produceTableEntry(table, actions);
         *request.add_updates()->mutable_entity()->mutable_table_entry() = tableEntry;
     }
