@@ -23,8 +23,12 @@ InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
     const auto actions = p4Info->actions();
 
     for (auto &table : tables) {
+        p4::v1::Update update;
+        update.set_type(p4::v1::Update_Type::Update_Type_INSERT);
+
         auto tableEntry = produceTableEntry(table, actions);
-        *request.add_updates()->mutable_entity()->mutable_table_entry() = tableEntry;
+        *update.mutable_entity()->mutable_table_entry() = tableEntry;
+        *request.add_updates() = update;
     }
 
     // printInfo("Request:\n%1%", request.DebugString());
