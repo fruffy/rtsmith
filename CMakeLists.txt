@@ -20,7 +20,7 @@ set(RTSMITH_SOURCES
 )
 
 # RTSmith libraries.
-set(RTSMITH_LIBS p4tools-common)
+set(RTSMITH_LIBS p4tools-common controlplane)
 
 file(GLOB rtsmith_targets RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/targets
      ${CMAKE_CURRENT_SOURCE_DIR}/targets/*
@@ -55,8 +55,8 @@ endforeach()
 configure_file(register.h.in register.h)
 
 add_p4tools_library(librtsmith ${RTSMITH_SOURCES})
-add_dependencies(librtsmith p4tools-common controlplane)
-target_include_directories(librtsmith SYSTEM BEFORE PUBLIC ${Protobuf_INCLUDE_DIRS})
+add_dependencies(librtsmith p4tools-common)
+target_link_libraries(librtsmith PRIVATE controlplane)
 
 add_p4tools_executable(p4rtsmith main.cpp)
 
