@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "backends/p4tools/common/compiler/compiler_target.h"
 #include "backends/p4tools/common/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
@@ -18,7 +19,7 @@ class RtSmithTarget : public Target {
     /// Produces a @ProgramInfo for the given P4 program.
     ///
     /// @returns nullptr if the program is not supported by this target.
-    static const ProgramInfo *produceProgramInfo(const IR::P4Program *program);
+    static const ProgramInfo *produceProgramInfo(const CompilerResult &compilerResult);
 
     /// @returns the fuzzer that will produce an initial configuration and a series of random write
     /// requests..
@@ -26,11 +27,12 @@ class RtSmithTarget : public Target {
 
  protected:
     /// @see @produceProgramInfo.
-    const ProgramInfo *produceProgramInfoImpl(const IR::P4Program *program) const;
+    [[nodiscard]] virtual const ProgramInfo *produceProgramInfoImpl(
+        const CompilerResult &compilerResult) const;
 
     /// @see @produceProgramInfo.
     virtual const ProgramInfo *produceProgramInfoImpl(
-        const IR::P4Program *program, const IR::Declaration_Instance *mainDecl) const = 0;
+        const CompilerResult &compilerResult, const IR::Declaration_Instance *mainDecl) const = 0;
 
     /// @see @getStepper.
     [[nodiscard]] virtual P4RuntimeFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const = 0;
