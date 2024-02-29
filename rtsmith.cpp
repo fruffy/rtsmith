@@ -25,6 +25,11 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
 
     enableInformationLogging();
 
+    auto seed = Utils::getCurrentSeed();
+    if (seed) {
+        printFeature("test_info", 4, "============ Program seed %1% =============\n", *seed);
+    }
+
     const auto *programInfo = RtSmithTarget::produceProgramInfo(&compilerResult.getProgram());
     if (programInfo == nullptr) {
         ::error("Program not supported by target device and architecture.");

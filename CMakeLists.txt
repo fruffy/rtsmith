@@ -16,6 +16,7 @@ set(RTSMITH_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/rtsmith.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/core/program_info.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/core/target.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/fuzzer.cpp
 )
 
 # RTSmith libraries.
