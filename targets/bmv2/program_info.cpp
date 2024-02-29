@@ -12,7 +12,8 @@
 
 namespace P4Tools::RTSmith::V1Model {
 
-Bmv2V1ModelProgramInfo::Bmv2V1ModelProgramInfo(const IR::P4Program *program)
-    : ProgramInfo(program, P4::P4RuntimeSerializer::get()->generateP4Runtime(program, "v1model")) {}
+Bmv2V1ModelProgramInfo::Bmv2V1ModelProgramInfo(const CompilerResult &compilerResult)
+    : ProgramInfo(compilerResult, P4::P4RuntimeSerializer::get()->generateP4Runtime(
+                                      &compilerResult.getProgram(), "v1model")) {}
 
 }  // namespace P4Tools::RTSmith::V1Model

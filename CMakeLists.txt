@@ -19,8 +19,16 @@ set(RTSMITH_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/core/fuzzer.cpp
 )
 
+# GTest source files for P4RuntimeSmith.
+set(RTSMITH_GTEST_SOURCES
+   # # XXX These should be in a library.
+  ${P4C_SOURCE_DIR}/test/gtest/helpers.cpp
+  ${P4C_SOURCE_DIR}/test/gtest/gtestp4c.cpp
+  test/core/rtsmith_api_test.cpp
+)
+
 # RTSmith libraries.
-set(RTSMITH_LIBS p4tools-common)
+set(RTSMITH_LIBS p4tools-common controlplane)
 
 file(GLOB rtsmith_targets RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/targets
      ${CMAKE_CURRENT_SOURCE_DIR}/targets/*
@@ -55,8 +63,8 @@ endforeach()
 configure_file(register.h.in register.h)
 
 add_p4tools_library(librtsmith ${RTSMITH_SOURCES})
-add_dependencies(librtsmith p4tools-common controlplane)
-target_include_directories(librtsmith SYSTEM BEFORE PUBLIC ${Protobuf_INCLUDE_DIRS})
+add_dependencies(librtsmith p4tools-common)
+target_link_libraries(librtsmith PRIVATE controlplane)
 
 add_p4tools_executable(p4rtsmith main.cpp)
 
@@ -73,3 +81,17 @@ add_custom_target(
 )
 
 add_dependencies(p4rtsmith linkrtsmith)
+
+
+if(ENABLE_GTESTS)
+  add_executable(rtsmith-gtest ${RTSMITH_GTEST_SOURCES})
+  target_link_libraries(
+    rtsmith-gtest PRIVATE librtsmith PRIVATE gtest ${RTSMITH_LIBS} ${P4C_LIBRARIES} ${P4C_LIB_DEPS}
+  )
+
+  if(ENABLE_TESTING)
+    add_test(NAME rtsmith-gtest COMMAND rtsmith-gtest)
+    set_tests_properties(rtsmith-gtest PROPERTIES LABELS "gtest-flay")
+  endif()
+
+endif()

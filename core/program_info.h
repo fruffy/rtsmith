@@ -1,6 +1,9 @@
 #ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_PROGRAM_INFO_H_
 #define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_PROGRAM_INFO_H_
 
+#include <functional>
+
+#include "backends/p4tools/common/compiler/compiler_target.h"
 #include "control-plane/p4RuntimeSerializer.h"
 #include "ir/ir.h"
 #include "lib/castable.h"
@@ -11,12 +14,12 @@ namespace P4Tools::RTSmith {
 class ProgramInfo : public ICastable {
  private:
     /// The P4 program from which this object is derived.
-    const IR::P4Program *program;
+    std::reference_wrapper<const CompilerResult> compilerResult;
 
     P4::P4RuntimeAPI p4runtimeApi;
 
  protected:
-    explicit ProgramInfo(const IR::P4Program *program, P4::P4RuntimeAPI p4runtimeApi);
+    explicit ProgramInfo(const CompilerResult &compilerResult, P4::P4RuntimeAPI p4runtimeApi);
 
  public:
     ProgramInfo(const ProgramInfo &) = default;

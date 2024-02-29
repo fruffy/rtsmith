@@ -18,7 +18,8 @@ class Bmv2V1ModelRtSmithTarget : public RtSmithTarget {
 
  protected:
     const ProgramInfo *produceProgramInfoImpl(
-        const IR::P4Program *program, const IR::Declaration_Instance *mainDecl) const override;
+        const CompilerResult &compilerResult,
+        const IR::Declaration_Instance *mainDecl) const override;
 
     [[nodiscard]] Bmv2V1ModelFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const override;
 };
