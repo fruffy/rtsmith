@@ -14,8 +14,6 @@ concurrency:
 jobs:
   # Build and test P4RuntimeSmith on Ubuntu 22.04.
   build-and-test-rtsmith:
-    strategy:
-      fail-fast: false
     runs-on: ubuntu-22.04
     env:
       CTEST_PARALLEL_LEVEL: 4
@@ -43,16 +41,15 @@ jobs:
         tools/ci-build.sh
       working-directory: ../p4c
 
+    - name: Test
+      run: |
+        ctest -R rtsmith- --output-on-failure --schedule-random
+      working-directory: ../p4c/build
 
-  # Build and test P4RuntimeSmith on MacOS 11
+
+  # Build and test P4RuntimeSmith on MacOS 14
   test-mac-os:
-    strategy:
-      fail-fast: false
-    runs-on: macos-11
-    env:
-      CTEST_PARALLEL_LEVEL: 4
-      CMAKE_UNITY_BUILD: ON
-      ENABLE_TEST_TOOLS: ON
+    runs-on: macos-14
     steps:
     - uses: actions/checkout@v3
       with:
@@ -73,7 +70,13 @@ jobs:
       run: |
           tools/install_mac_deps.sh
           source ~/.bash_profile
-          ./bootstrap.sh
-          make -C build -j2
-          update_dyld_shared_cache
+          ./bootstrap.sh -DENABLE_GC=ON -DCMAKE_BUILD_TYPE=RELEASE \
+              -DCMAKE_UNITY_BUILD=ON -DENABLE_TEST_TOOLS=ON
+          make -C build -j$((`nproc`+1))
       working-directory: ../p4c
+
+    - name: Run tests (MacOS)
+      run: |
+        source ~/.bash_profile
+        ctest -R rtsmith- --output-on-failure --schedule-random
+      working-directory: ../p4c/build
