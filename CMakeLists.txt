@@ -63,8 +63,6 @@ endforeach()
 configure_file(register.h.in register.h)
 
 add_p4tools_library(librtsmith ${RTSMITH_SOURCES})
-# add_dependencies(librtsmith p4tools-common)
-# target_link_libraries(librtsmith PRIVATE controlplane)
 target_link_libraries(librtsmith ${RTSMITH_LIBS})
 
 add_p4tools_executable(p4rtsmith main.cpp)
