@@ -63,8 +63,7 @@ endforeach()
 configure_file(register.h.in register.h)
 
 add_p4tools_library(librtsmith ${RTSMITH_SOURCES})
-add_dependencies(librtsmith p4tools-common)
-target_link_libraries(librtsmith PRIVATE controlplane)
+target_link_libraries(librtsmith ${RTSMITH_LIBS})
 
 add_p4tools_executable(p4rtsmith main.cpp)
 
@@ -91,7 +90,7 @@ if(ENABLE_GTESTS)
 
   if(ENABLE_TESTING)
     add_test(NAME rtsmith-gtest COMMAND rtsmith-gtest)
-    set_tests_properties(rtsmith-gtest PROPERTIES LABELS "gtest-flay")
+    set_tests_properties(rtsmith-gtest PROPERTIES LABELS "gtest-rtsmith")
   endif()
 
 endif()
