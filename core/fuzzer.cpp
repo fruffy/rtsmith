@@ -149,7 +149,7 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
 
     // add matches
     const auto &matchFields = table.match_fields();
-    for (auto fieldId = 1; fieldId <= maxEntryGenCnt; fieldId++) {
+    for (auto fieldId = 1; (uint64_t)fieldId <= maxEntryGenCnt; fieldId++) {
         auto matchId = Utils::getRandInt(matchFields.size() - 1);
         auto match = matchFields[matchId];
         auto protoMatch = produceMatchField(match, fieldId);
