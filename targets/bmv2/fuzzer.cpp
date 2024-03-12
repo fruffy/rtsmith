@@ -2,7 +2,6 @@
 
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
-#include "control-plane/bytestrings.h"
 #include "control-plane/p4infoApi.h"
 
 namespace P4Tools::RTSmith::V1Model {
@@ -22,16 +21,22 @@ InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
     const auto tables = p4Info->tables();
     const auto actions = p4Info->actions();
 
-    for (auto &table : tables) {
+    auto tableCnt = tables.size();
+    auto tableGenCnt = Utils::getRandInt(tableCnt);
+
+    for (auto i = 0; (uint64_t)i < tableGenCnt; i++) {
+        auto tableId = Utils::getRandInt(tableCnt - 1);
+        auto table = tables.Get(tableId);
+        auto maxEntryGenCnt = table.size();
+
         p4::v1::Update update;
         update.set_type(p4::v1::Update_Type::Update_Type_INSERT);
 
-        auto tableEntry = produceTableEntry(table, actions);
+        auto tableEntry = produceTableEntry(table, actions, maxEntryGenCnt);
         *update.mutable_entity()->mutable_table_entry() = tableEntry;
         *request.add_updates() = update;
     }
 
-    // printInfo("Request:\n%1%", request.DebugString());
     std::vector<p4::v1::WriteRequest> requests{request};
     return requests;
 }
