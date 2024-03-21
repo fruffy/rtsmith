@@ -62,7 +62,7 @@ endforeach()
 # Fill the template
 configure_file(register.h.in register.h)
 
-add_p4tools_library(librtsmith ${RTSMITH_SOURCES})
+add_library(librtsmith STATIC ${RTSMITH_SOURCES})
 target_link_libraries(librtsmith ${RTSMITH_LIBS})
 
 add_p4tools_executable(p4rtsmith main.cpp)
