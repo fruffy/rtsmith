@@ -6,26 +6,24 @@
 #include "backends/p4tools/modules/p4rtsmith/targets/tofino/fuzzer.h"
 #include "ir/ir.h"
 
-namespace P4Tools::RTSmith::Tna
-{
+namespace P4Tools::RTSmith::Tna {
 
-   class TofinoTnaRtSmithTarget : public RtSmithTarget
-   {
-   private:
-      TofinoTnaRtSmithTarget();
+class TofinoTnaRtSmithTarget : public RtSmithTarget {
+ private:
+    TofinoTnaRtSmithTarget();
 
-   public:
-      /// Registers this target.
-      static void make();
+ public:
+    /// Registers this target.
+    static void make();
 
-   protected:
-      const ProgramInfo *produceProgramInfoImpl(
-          const CompilerResult &compilerResult,
-          const IR::Declaration_Instance *mainDecl) const override;
+ protected:
+    const ProgramInfo *produceProgramInfoImpl(
+        const CompilerResult &compilerResult,
+        const IR::Declaration_Instance *mainDecl) const override;
 
-      [[nodiscard]] TofinoTnaFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const override;
-   };
+    [[nodiscard]] TofinoTnaFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const override;
+};
 
-} // namespace P4Tools::RTSmith::Tna
+}  // namespace P4Tools::RTSmith::Tna
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_TARGET_H_ */

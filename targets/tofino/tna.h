@@ -5,21 +5,19 @@
 #include "backends/p4tools/common/compiler/midend.h"
 #include "frontends/common/options.h"
 
-namespace P4Tools::RTSmith::Tna
-{
+namespace P4Tools::RTSmith::Tna {
 
-   class TofinoTnaCompilerTarget : public CompilerTarget
-   {
-   public:
-      /// Registers this target.
-      static void make();
+class TofinoTnaCompilerTarget : public CompilerTarget {
+ public:
+    /// Registers this target.
+    static void make();
 
-   private:
-      [[nodiscard]] MidEnd mkMidEnd(const CompilerOptions &options) const override;
+ private:
+    [[nodiscard]] MidEnd mkMidEnd(const CompilerOptions &options) const override;
 
-      TofinoTnaCompilerTarget();
-   };
+    TofinoTnaCompilerTarget();
+};
 
-} // namespace P4Tools::RTSmith::Tna
+}  // namespace P4Tools::RTSmith::Tna
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_TNA_H_ */
