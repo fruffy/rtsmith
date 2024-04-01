@@ -11,7 +11,6 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-
 PARSER = argparse.ArgumentParser()
 PARSER.add_argument(
     "rootdir",
@@ -62,8 +61,8 @@ FILE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = Path(ARGS.rootdir).absolute()
 sys.path.append(str(ROOT_DIR))
 
-from tools import testutils  # pylint: disable=wrong-import-position
 from backends.ebpf.targets.ebpfenv import Bridge  # pylint: disable=wrong-import-position
+from tools import testutils  # pylint: disable=wrong-import-position
 
 # 9559 is the default P4Runtime API server port
 P4RUNTIME_PORT: int = 9559
@@ -178,8 +177,37 @@ class VethEnv(ProtobufTestEnv):
             return self.switch_proc
         return None
 
+    def get_iface_str(self, num_ifaces: int, prefix: str = "") -> str:
+        """Produce the PTF interface arguments based on the number of interfaces the PTF test uses."""
+        iface_str = ""
+        for iface_num in range(num_ifaces):
+            iface_str += f"-i {iface_num}@{prefix}{iface_num} "
+        return iface_str
+
     def run_switch_test(self, grpc_port: int, json_name: Path, info_name: Path) -> int:
-        raise NotImplementedError("method run_switch_test not implemented for this class")
+        if not self.bridge:
+            testutils.log.error("Unable to run run_ptf without a bridge.")
+            return testutils.FAILURE
+        """Run the PTF test."""
+        testutils.log.info("---------------------- Run PTF test ----------------------")
+        # Add the tools PTF folder to the python path, it contains the base test.
+        pypath = ROOT_DIR
+        # Show list of the tests
+        test_list_cmd = f"ptf --pypath {pypath} --test-dir {FILE_DIR} --list"
+        returncode = self.bridge.ns_exec(test_list_cmd)
+        if returncode != testutils.SUCCESS:
+            return returncode
+        ifaces = self.get_iface_str(num_ifaces=self.options.interface_count, prefix="br_")
+        test_params = (
+            f"grpcaddr='{GRPC_ADDRESS}:{grpc_port}';p4info='{info_name}';config='{json_name}';"
+            f"packet_wait_time='0.1';"
+        )
+        run_ptf_cmd = (
+            f"ptf --pypath {pypath} {ifaces} --log-file {self.options.testdir.joinpath('ptf.log')} "
+            f"--test-params={test_params} --test-dir {FILE_DIR}"
+        )
+        returncode = self.bridge.ns_exec(run_ptf_cmd)
+        return returncode
 
 
 def run_test(options: Options) -> int:
