@@ -16,12 +16,12 @@ from tools.ptf import base_test as bt
 
 class AbstractTest(bt.P4RuntimeTest):
     @bt.autocleanup
-    def setUp(self):
+    def setUp(self) -> None:
         bt.P4RuntimeTest.setUp(self)
         success = bt.P4RuntimeTest.updateConfig(self)
         assert success
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         bt.P4RuntimeTest.tearDown(self)
 
     def createWriteRequest(self) -> p4runtime_pb2.WriteRequest:
@@ -38,7 +38,9 @@ class AbstractTest(bt.P4RuntimeTest):
                 initial_config_file.read(), req, allow_unknown_field=True
             )
         testutils.log.info("Initial configuration %s", req)
-        raise NotImplementedError("Fill the missing parts of this method where you send this request to BMv2.")
+        raise NotImplementedError(
+            "Fill the missing parts of this method where you send this request to BMv2."
+        )
 
     def sendCtrlPlaneUpdate(self) -> None:
         pass
@@ -52,5 +54,5 @@ class AbstractTest(bt.P4RuntimeTest):
 
 
 class SetUpControlPlaneTest(AbstractTest):
-    def runTest(self):
+    def runTest(self) -> None:
         self.runTestImpl()
