@@ -24,8 +24,21 @@ class AbstractTest(bt.P4RuntimeTest):
     def tearDown(self):
         bt.P4RuntimeTest.tearDown(self)
 
+    def createWriteRequest(self) -> p4runtime_pb2.WriteRequest:
+        req = p4runtime_pb2.WriteRequest()
+        req.device_id = self.device_id
+        return req
+
     def setupCtrlPlane(self) -> None:
-        pass
+        initial_config_path = ptfutils.test_param_get("initial_config_file")
+        assert initial_config_path is not None
+        req = self.createWriteRequest()
+        with open(initial_config_path, "r", encoding="utf-8") as initial_config_file:
+            google.protobuf.text_format.Merge(
+                initial_config_file.read(), req, allow_unknown_field=True
+            )
+        testutils.log.info("Initial configuration %s", req)
+        raise NotImplementedError("Fill the missing parts of this method where you send this request to BMv2.")
 
     def sendCtrlPlaneUpdate(self) -> None:
         pass

@@ -200,7 +200,7 @@ class VethEnv(ProtobufTestEnv):
         ifaces = self.get_iface_str(num_ifaces=self.options.interface_count, prefix="br_")
         test_params = (
             f"grpcaddr='{GRPC_ADDRESS}:{grpc_port}';p4info='{info_name}';config='{json_name}';"
-            f"packet_wait_time='0.1';"
+            f"packet_wait_time='0.1';initial_config_file='{self.options.testfile}'"
         )
         run_ptf_cmd = (
             f"ptf --pypath {pypath} {ifaces} --log-file {self.options.testdir.joinpath('ptf.log')} "
