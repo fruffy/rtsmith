@@ -26,10 +26,13 @@ class AbstractTest(bt.P4RuntimeTest):
 
     def createWriteRequest(self) -> p4runtime_pb2.WriteRequest:
         req = p4runtime_pb2.WriteRequest()
+        election_id = req.election_id
+        election_id.high = 0
+        election_id.low = 1
         req.device_id = self.device_id
         return req
 
-    def setupCtrlPlane(self) -> None:
+    def setupCtrlPlane(self):
         initial_config_path = ptfutils.test_param_get("initial_config_file")
         assert initial_config_path is not None
         req = self.createWriteRequest()
@@ -38,9 +41,7 @@ class AbstractTest(bt.P4RuntimeTest):
                 initial_config_file.read(), req, allow_unknown_field=True
             )
         testutils.log.info("Initial configuration %s", req)
-        raise NotImplementedError(
-            "Fill the missing parts of this method where you send this request to BMv2."
-        )
+        return self.write_request(req)
 
     def sendCtrlPlaneUpdate(self) -> None:
         pass
