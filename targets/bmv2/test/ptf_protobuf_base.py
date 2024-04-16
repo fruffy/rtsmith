@@ -32,18 +32,6 @@ class AbstractTest(bt.P4RuntimeTest):
         req.device_id = self.device_id
         return req
 
-    def _write(self, req):
-        try:
-            return self.stub.Write(req, timeout=2)
-        except grpc.RpcError as e:
-            if e.code() != grpc.StatusCode.UNKNOWN:
-                raise e
-            raise P4RuntimeWriteException(e) from e
-
-    def write_request(self, req):
-        rep = self._write(req)
-        return rep
-
     def setupCtrlPlane(self):
         initial_config_path = ptfutils.test_param_get("initial_config_file")
         assert initial_config_path is not None
