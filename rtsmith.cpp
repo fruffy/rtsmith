@@ -3,6 +3,9 @@
 #include <google/protobuf/text_format.h>
 
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 
 #include "backends/p4tools/common/compiler/context.h"
 #include "backends/p4tools/common/lib/logging.h"
@@ -41,17 +44,29 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
 
     auto &fuzzer = RtSmithTarget::getFuzzer(*programInfo);
 
+    std::filesystem::path currentDir = std::filesystem::current_path();
+    std::filesystem::path newDir = currentDir / "gen_configs";
+    std::filesystem::create_directory(newDir);
+
+    std::ofstream initialConfigFile(newDir / ("initial_config.txtpb"));
+    std::ofstream timedUpdatesFile(newDir / ("timed_updates.txtpb"));
+
     auto initialConfig = fuzzer.produceInitialConfig();
     printInfo("Generated initial configuration:");
     for (const auto &writeRequest : initialConfig) {
         printInfo("%1%", writeRequest.DebugString());
+        initialConfigFile << writeRequest.DebugString();
     }
 
     auto timeSeriesUpdates = fuzzer.produceUpdateTimeSeries();
     printInfo("Time series updates:");
     for (const auto &[time, writeRequest] : timeSeriesUpdates) {
         printInfo("Time %1%:\n%2%", writeRequest.DebugString());
+        timedUpdatesFile << writeRequest.DebugString();
     }
+
+    timedUpdatesFile.close();
+    initialConfigFile.close();
 
     return ::errorCount() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
