@@ -1,10 +1,10 @@
 import argparse
 import logging
-import subprocess
 import os
-from pathlib import Path
+import subprocess
 import sys
 import tempfile
+from pathlib import Path
 from typing import Any, Optional
 
 PARSER = argparse.ArgumentParser()
