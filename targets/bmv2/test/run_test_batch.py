@@ -34,8 +34,10 @@ ARGS, ARGV = PARSER.parse_known_args()
 # Append the root directory to the import path.
 FILE_DIR = Path(__file__).resolve().parent
 
+
 class Options:
     """Options for this testing script. Usually correspond to command line inputs."""
+
     # File that is being compiled.
     p4_file: Path = Path(".")
     # The path for the p4rtsmith bin file for this test.
@@ -50,9 +52,11 @@ def generate_config(p4rtsmith_path, seed, p4_program_path, testdir, config_file_
     command = f"{p4rtsmith_path} --target bmv2 --arch v1model --seed {seed} --output-dir {testdir} --generate-config {config_file_path} {p4_program_path}"
     subprocess.run(command, shell=True)
 
+
 def run_test(run_test_script, p4_program_path, config_file_path):
     command = f"sudo -E {run_test_script} .. {p4_program_path} -tf {config_file_path}"
     subprocess.run(command, shell=True)
+
 
 def find_p4c_dir():
     current_dir = Path(__file__).resolve()
@@ -66,11 +70,11 @@ def find_p4c_dir():
 
         if current_dir == current_dir.parent:
             raise RuntimeError("p4c/build directory not found.")
-        
+
 
 def run_tests(options: Options) -> int:
     config_file_path = "initial_config.txtpb"
-    
+
     seed = options.seed
     testdir = options.testdir
     p4rtsmith_path = options.p4rtsmith
@@ -110,10 +114,10 @@ def create_options(test_args: Any) -> Optional[Options]:
     logging.getLogger().addHandler(stderr_log)
     return options
 
+
 if __name__ == "__main__":
     test_options = create_options(ARGS)
     if not test_options:
         sys.exit()
 
     run_tests(test_options)
-    
