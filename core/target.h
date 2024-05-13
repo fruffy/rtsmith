@@ -4,14 +4,13 @@
 #include <string>
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
-#include "backends/p4tools/common/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
 #include "ir/ir.h"
 
 namespace P4Tools::RTSmith {
 
-class RtSmithTarget : public Target {
+class RtSmithTarget : public CompilerTarget {
  public:
     /// @returns the singleton instance for the current target.
     static const RtSmithTarget &get();
@@ -37,7 +36,7 @@ class RtSmithTarget : public Target {
     /// @see @getStepper.
     [[nodiscard]] virtual P4RuntimeFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const = 0;
 
-    explicit RtSmithTarget(std::string deviceName, std::string archName);
+    explicit RtSmithTarget(const std::string &deviceName, const std::string &archName);
 
  private:
 };

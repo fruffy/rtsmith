@@ -19,6 +19,13 @@ void TofinoTnaRtSmithTarget::make() {
     }
 }
 
+MidEnd TofinoTnaRtSmithTarget::mkMidEnd(const CompilerOptions &options) const {
+    MidEnd midEnd(options);
+    // Currently a no-op because we have all the necessary information from the front-end.
+    midEnd.addPasses({});
+    return midEnd;
+}
+
 const ProgramInfo *TofinoTnaRtSmithTarget::produceProgramInfoImpl(
     const CompilerResult &compilerResult, const IR::Declaration_Instance * /*mainDecl*/) const {
     return new TofinoTnaProgramInfo(compilerResult);

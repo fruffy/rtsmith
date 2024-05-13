@@ -10,6 +10,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/util.h"
 #include "backends/p4tools/modules/p4rtsmith/register.h"
+#include "backends/p4tools/modules/p4rtsmith/toolname.h"
 #include "control-plane/p4RuntimeSerializer.h"
 #include "lib/error.h"
 #include "lib/nullstream.h"
@@ -19,7 +20,7 @@ namespace P4Tools::RTSmith {
 void RtSmith::registerTarget() {
     // Register all available compiler targets.
     // These are discovered by CMAKE, which fills out the register.h.in file.
-    registerCompilerTargets();
+    registerRtSmithTargets();
 }
 
 int RtSmith::mainImpl(const CompilerResult &compilerResult) {
@@ -104,9 +105,6 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
 std::optional<RtSmithResult> generateConfigImpl(
     std::optional<std::reference_wrapper<const std::string>> program,
     const CompilerOptions &compilerOptions, const RtSmithOptions & /*rtSmithOptions*/) {
-    // Register supported compiler targets.
-    registerCompilerTargets();
-
     // Register supported P4RTSmith targets.
     registerRtSmithTargets();
 
@@ -121,12 +119,14 @@ std::optional<RtSmithResult> generateConfigImpl(
     if (program.has_value()) {
         // Run the compiler to get an IR and invoke the tool.
         ASSIGN_OR_RETURN(compilerResult,
-                         P4Tools::CompilerTarget::runCompiler(program.value().get()), std::nullopt);
+                         P4Tools::CompilerTarget::runCompiler(TOOL_NAME, program.value().get()),
+                         std::nullopt);
     } else {
         RETURN_IF_FALSE_WITH_MESSAGE(!compilerOptions.file.isNullOrEmpty(), std::nullopt,
                                      ::error("Expected a file input."));
         // Run the compiler to get an IR and invoke the tool.
-        ASSIGN_OR_RETURN(compilerResult, P4Tools::CompilerTarget::runCompiler(), std::nullopt);
+        ASSIGN_OR_RETURN(compilerResult, P4Tools::CompilerTarget::runCompiler(TOOL_NAME),
+                         std::nullopt);
     }
 
     const auto *programInfo = RtSmithTarget::produceProgramInfo(compilerResult.value());

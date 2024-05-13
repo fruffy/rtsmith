@@ -1,11 +1,11 @@
 #include "backends/p4tools/modules/p4rtsmith/core/target.h"
 
 #include <string>
-#include <utility>
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
 #include "backends/p4tools/common/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
+#include "backends/p4tools/modules/p4rtsmith/toolname.h"
 #include "ir/declaration.h"
 #include "ir/ir.h"
 #include "ir/node.h"
@@ -14,8 +14,8 @@
 
 namespace P4Tools::RTSmith {
 
-RtSmithTarget::RtSmithTarget(std::string deviceName, std::string archName)
-    : Target("rtsmith", std::move(deviceName), std::move(archName)) {}
+RtSmithTarget::RtSmithTarget(const std::string &deviceName, const std::string &archName)
+    : CompilerTarget(TOOL_NAME, deviceName, archName) {}
 
 const ProgramInfo *RtSmithTarget::produceProgramInfoImpl(
     const CompilerResult &compilerResult) const {
@@ -41,7 +41,7 @@ P4RuntimeFuzzer &RtSmithTarget::getFuzzer(const ProgramInfo &programInfo) {
     return get().getFuzzerImpl(programInfo);
 }
 
-const RtSmithTarget &RtSmithTarget::get() { return Target::get<RtSmithTarget>("rtsmith"); }
+const RtSmithTarget &RtSmithTarget::get() { return Target::get<RtSmithTarget>(TOOL_NAME); }
 
 const ProgramInfo *RtSmithTarget::produceProgramInfo(const CompilerResult &compilerResult) {
     return get().produceProgramInfoImpl(compilerResult);

@@ -22,6 +22,8 @@ class TofinoTnaRtSmithTarget : public RtSmithTarget {
         const IR::Declaration_Instance *mainDecl) const override;
 
     [[nodiscard]] TofinoTnaFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const override;
+
+    [[nodiscard]] MidEnd mkMidEnd(const CompilerOptions &options) const override;
 };
 
 }  // namespace P4Tools::RTSmith::Tna

@@ -48,7 +48,6 @@ foreach(ext ${rtsmith_targets})
       set(include_statements_var
           "${include_statements_var}#include \"backends/p4tools/modules/p4rtsmith/targets/${ext}/register.h\"\n"
       )
-      set(compiler_targets_var "${compiler_targets_var}    ${ext}_registerCompilerTarget();\n")
       set(rtsmith_targets_var "${rtsmith_targets_var}    ${ext}_registerRtSmithTarget();\n")
     endif()
   endif()
