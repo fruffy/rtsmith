@@ -22,6 +22,8 @@ class Bmv2V1ModelRtSmithTarget : public RtSmithTarget {
         const IR::Declaration_Instance *mainDecl) const override;
 
     [[nodiscard]] Bmv2V1ModelFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const override;
+
+    [[nodiscard]] MidEnd mkMidEnd(const CompilerOptions &options) const override;
 };
 
 }  // namespace P4Tools::RTSmith::V1Model
