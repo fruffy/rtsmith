@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 import logging
 import os
@@ -26,6 +27,12 @@ PARSER.add_argument(
     dest="seed",
     help="Random seed for generating configs.",
 )
+PARSER.add_argument(
+    "--num_init_config",
+    default=1,
+    dest="num_init_config",
+    help="Number of initial configs to generate for the given P4 program.",
+)
 
 
 # Parse options and process argv
@@ -46,16 +53,20 @@ class Options:
     testdir: Path = Path(".")
     # Random seed for generating configs.
     seed: int = 1
+    # Number of initial configs to generate for the given P4 program.
+    num_init_config: int = 1
 
 
 def generate_config(p4rtsmith_path, seed, p4_program_path, testdir, config_file_path):
     command = f"{p4rtsmith_path} --target bmv2 --arch v1model --seed {seed} --output-dir {testdir} --generate-config {config_file_path} {p4_program_path}"
-    subprocess.run(command, shell=True)
+    returncode = subprocess.run(command, shell=True)
+    return returncode.returncode
 
 
 def run_test(run_test_script, p4_program_path, config_file_path):
     command = f"sudo -E {run_test_script} .. {p4_program_path} -tf {config_file_path}"
-    subprocess.run(command, shell=True)
+    returncode = subprocess.run(command, shell=True)
+    return returncode.returncode
 
 
 def find_p4c_dir():
@@ -73,16 +84,24 @@ def find_p4c_dir():
 
 
 def run_tests(options: Options) -> int:
-    config_file_path = "initial_config.txtpb"
-
     seed = options.seed
     testdir = options.testdir
     p4rtsmith_path = options.p4rtsmith
     run_test_script = FILE_DIR / "run-bmv2-proto-test.py"
     p4_program_path = options.p4_file
+    filename = os.path.splitext(os.path.basename(p4_program_path))[0]
 
-    generate_config(p4rtsmith_path, seed, p4_program_path, testdir, config_file_path)
-    run_test(run_test_script, p4_program_path, testdir / config_file_path)
+    for i in range(options.num_init_config):
+        config_file_path = f"initial_config_{filename}_{i}.txtpb"
+        result = generate_config(
+            p4rtsmith_path, seed, p4_program_path, testdir, config_file_path
+        )
+        if result != 0:
+            return result
+        result = run_test(run_test_script, p4_program_path, testdir / config_file_path)
+        if result != 0:
+            return result
+    return 0
 
 
 def create_options(test_args: Any) -> Optional[Options]:
@@ -101,6 +120,7 @@ def create_options(test_args: Any) -> Optional[Options]:
         os.chmod(testdir, 0o755)
     options.testdir = Path(testdir)
     options.seed = test_args.seed
+    options.num_init_config = test_args.num_init_config
 
     # Configure logging.
     logging.basicConfig(
@@ -120,4 +140,5 @@ if __name__ == "__main__":
     if not test_options:
         sys.exit()
 
-    run_tests(test_options)
+    test_result = run_tests(test_options)
+    sys.exit(test_result)
