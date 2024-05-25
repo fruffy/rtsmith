@@ -1,3 +1,5 @@
+# General test utilities.
+include(${P4TOOLS_SOURCE_DIR}/cmake/TestUtils.cmake)
 # This file defines how a test should be written for a particular target. This is used by testutils
 
 # Add a single test to the testsuite. Arguments: - TAG is a label for the set of test suite where
