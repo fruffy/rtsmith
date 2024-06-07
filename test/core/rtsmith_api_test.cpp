@@ -52,8 +52,9 @@ V1Switch(parse(), verifyChecksum(), ingress(), egress(), computeChecksum(), depa
 
 CompilerOptions generateDefaultApiTestCompilerOptions() {
     auto compilerOptions = CompilerOptions();
-    compilerOptions.target = "bmv2";
-    compilerOptions.arch = "v1model";
+    // TODO: Remove the cstring copy.
+    compilerOptions.target = cstring("bmv2");
+    compilerOptions.arch = cstring("v1model");
     return compilerOptions;
 }
 

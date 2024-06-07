@@ -2,7 +2,6 @@
 
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
 #include "control-plane/p4RuntimeSerializer.h"
-#include "ir/ir.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -14,6 +13,6 @@ namespace P4Tools::RTSmith::V1Model {
 
 Bmv2V1ModelProgramInfo::Bmv2V1ModelProgramInfo(const CompilerResult &compilerResult)
     : ProgramInfo(compilerResult, P4::P4RuntimeSerializer::get()->generateP4Runtime(
-                                      &compilerResult.getProgram(), "v1model")) {}
+                                      &compilerResult.getProgram(), cstring("v1model"))) {}
 
 }  // namespace P4Tools::RTSmith::V1Model
