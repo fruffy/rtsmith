@@ -11,6 +11,8 @@ namespace P4Tools {
 /// Encapsulates and processes command-line options for P4RtSmith.
 class RtSmithOptions : public AbstractP4cToolOptions {
  public:
+    RtSmithOptions();
+
     RtSmithOptions(const RtSmithOptions &) = delete;
 
     RtSmithOptions(RtSmithOptions &&) = delete;
@@ -24,7 +26,7 @@ class RtSmithOptions : public AbstractP4cToolOptions {
     /// @returns the singleton instance of this class.
     static RtSmithOptions &get();
 
-    const char *getIncludePath() override;
+    const char *getIncludePath();
 
     /// @returns true when the --print-to-stdout option has been set.
     [[nodiscard]] bool printToStdout() const;
@@ -36,8 +38,6 @@ class RtSmithOptions : public AbstractP4cToolOptions {
     [[nodiscard]] std::optional<std::string> getConfigFilePath() const;
 
  private:
-    RtSmithOptions();
-
     // Write the generated config to the specified file.
     std::optional<std::filesystem::path> configFilePath = std::nullopt;
 
