@@ -1,5 +1,6 @@
 #include "backends/p4tools/modules/p4rtsmith/options.h"
 
+#include "backends/p4tools/common/compiler/context.h"
 #include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
 #include "lib/cstring.h"
@@ -8,8 +9,7 @@
 namespace P4Tools {
 
 RtSmithOptions &RtSmithOptions::get() {
-    static RtSmithOptions INSTANCE;
-    return INSTANCE;
+    return P4Tools::CompileContext<RtSmithOptions>::get().options();
 }
 
 const char *RtSmithOptions::getIncludePath() {

@@ -81,6 +81,8 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
             if (!outputFile->good()) {
                 ::error(ErrorType::ERR_IO, "Failed to write text protobuf message to the output");
                 return false;
+            } else {
+                printInfo("Wrote initial configuration to %1%", fullFilePath);
             }
 
             outputFile->flush();
