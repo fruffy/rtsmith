@@ -1,9 +1,18 @@
 
+#include <stdlib.h>
+
 #include <gtest/gtest.h>
 
 #include <sstream>
 
+#include "backends/p4tools/common/compiler/compiler_target.h"
+#include "backends/p4tools/common/compiler/context.h"
+#include "backends/p4tools/common/core/target.h"
+#include "backends/p4tools/common/lib/logging.h"
+#include "backends/p4tools/common/options.h"
+#include "backends/p4tools/modules/p4rtsmith/register.h"
 #include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
+#include "backends/p4tools/modules/p4rtsmith/toolname.h"
 #include "test/gtest/helpers.h"
 
 namespace Test {
@@ -90,6 +99,13 @@ TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApi) {
             drop_table.apply();
         }
     })");
+
+    // Initialize the target and the context.
+    P4Tools::RTSmith::registerRtSmithTargets();
+    auto context = P4Tools::Target::initializeTarget(P4Tools::RTSmith::TOOL_NAME,
+                                                     {"", "--target", "bmv2", "--arch", "v1model"});
+    AutoCompileContext autoContext(context.value());
+
     auto compilerOptions = generateDefaultApiTestCompilerOptions();
     auto &rtsmithOptions = generateDefaultApiTestRtSmithOptions();
 
