@@ -32,6 +32,8 @@
 *.app
 
 
+# VSCode
+.vscode
 
 
 ############ PYTHON

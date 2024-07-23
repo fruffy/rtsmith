@@ -3,8 +3,10 @@
 #include <string>
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
+#include "backends/p4tools/common/compiler/context.h"
 #include "backends/p4tools/common/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
+#include "backends/p4tools/modules/p4rtsmith/options.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
 #include "ir/declaration.h"
 #include "ir/ir.h"
@@ -47,4 +49,7 @@ const ProgramInfo *RtSmithTarget::produceProgramInfo(const CompilerResult &compi
     return get().produceProgramInfoImpl(compilerResult);
 }
 
+ICompileContext *RtSmithTarget::makeContext() const {
+    return new P4Tools::CompileContext<RtSmithOptions>();
+}
 }  // namespace P4Tools::RTSmith

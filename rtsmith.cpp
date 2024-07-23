@@ -81,6 +81,8 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
             if (!outputFile->good()) {
                 ::error(ErrorType::ERR_IO, "Failed to write text protobuf message to the output");
                 return false;
+            } else {
+                printInfo("Wrote initial configuration to %1%", fullFilePath);
             }
 
             outputFile->flush();
@@ -104,7 +106,7 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
 
 std::optional<RtSmithResult> generateConfigImpl(
     std::optional<std::reference_wrapper<const std::string>> program,
-    const CompilerOptions &compilerOptions, const RtSmithOptions & /*rtSmithOptions*/) {
+    const CompilerOptions &compilerOptions, const RtSmithOptions &rtSmithOptions) {
     // Register supported P4RTSmith targets.
     registerRtSmithTargets();
 
@@ -118,14 +120,16 @@ std::optional<RtSmithResult> generateConfigImpl(
     CompilerResultOrError compilerResult;
     if (program.has_value()) {
         // Run the compiler to get an IR and invoke the tool.
-        ASSIGN_OR_RETURN(compilerResult,
-                         P4Tools::CompilerTarget::runCompiler(TOOL_NAME, program.value().get()),
-                         std::nullopt);
+        ASSIGN_OR_RETURN(
+            compilerResult,
+            P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME, program->get()),
+            std::nullopt);
     } else {
         RETURN_IF_FALSE_WITH_MESSAGE(!compilerOptions.file.empty(), std::nullopt,
                                      ::error("Expected a file input."));
         // Run the compiler to get an IR and invoke the tool.
-        ASSIGN_OR_RETURN(compilerResult, P4Tools::CompilerTarget::runCompiler(TOOL_NAME),
+        ASSIGN_OR_RETURN(compilerResult,
+                         P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME),
                          std::nullopt);
     }
 
