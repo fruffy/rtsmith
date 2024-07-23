@@ -86,7 +86,9 @@ bool RtSmithOptions::printToStdout() const { return printToStdout_; }
 
 std::optional<std::string> RtSmithOptions::getConfigFilePath() const { return configFilePath; }
 
-std::optional<std::filesystem::path> RtSmithOptions::p4InfoFilePath() const { return _p4InfoFilePath; }
+std::optional<std::filesystem::path> RtSmithOptions::p4InfoFilePath() const {
+    return _p4InfoFilePath;
+}
 
 std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneApi; }
 
