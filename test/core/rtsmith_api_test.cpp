@@ -1,15 +1,7 @@
-
-#include <stdlib.h>
-
 #include <gtest/gtest.h>
 
 #include <sstream>
 
-#include "backends/p4tools/common/compiler/compiler_target.h"
-#include "backends/p4tools/common/compiler/context.h"
-#include "backends/p4tools/common/core/target.h"
-#include "backends/p4tools/common/lib/logging.h"
-#include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/register.h"
 #include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
@@ -18,6 +10,25 @@
 namespace Test {
 
 namespace {
+
+using namespace P4::literals;
+
+class RtSmithTest : public ::testing::Test {
+ public:
+    [[nodiscard]] static std::optional<std::unique_ptr<AutoCompileContext>> SetUp(
+        std::string_view target, std::string_view archName) {
+        P4Tools::RTSmith::registerRtSmithTargets();
+        /// Set up the appropriate compile context for RtSmith tests.
+        /// TODO: Remove this once options are not initialized statically anymore.
+        auto ctxOpt = P4Tools::RTSmith::RtSmithTarget::initializeTarget(P4Tools::RTSmith::TOOL_NAME,
+                                                                        target, archName);
+
+        if (!ctxOpt.has_value()) {
+            return std::nullopt;
+        }
+        return std::make_unique<AutoCompileContext>(ctxOpt.value());
+    }
+};
 
 std::string generateTestProgram(const char *ingressBlock) {
     std::stringstream templateString;
@@ -59,22 +70,8 @@ V1Switch(parse(), verifyChecksum(), ingress(), egress(), computeChecksum(), depa
     return P4_SOURCE(P4Headers::V1MODEL, templateString.str().c_str());
 }
 
-CompilerOptions generateDefaultApiTestCompilerOptions() {
-    auto compilerOptions = CompilerOptions();
-    // TODO: Remove the cstring copy.
-    compilerOptions.target = cstring("bmv2");
-    compilerOptions.arch = cstring("v1model");
-    return compilerOptions;
-}
-
-P4Tools::RtSmithOptions &generateDefaultApiTestRtSmithOptions() {
-    auto &rtsmithOptions = P4Tools::RtSmithOptions::get();
-
-    return rtsmithOptions;
-}
-
 /// Helper methods to build configurations for Optimization Tests.
-class P4RuntimeApiTest : public ::testing::Test {};
+class P4RuntimeApiTest : public RtSmithTest {};
 
 // Tests for the optimization of various expressions.
 TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApi) {
@@ -99,18 +96,11 @@ TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApi) {
             drop_table.apply();
         }
     })");
-
-    // Initialize the target and the context.
-    P4Tools::RTSmith::registerRtSmithTargets();
-    auto context = P4Tools::Target::initializeTarget(P4Tools::RTSmith::TOOL_NAME,
-                                                     {"", "--target", "bmv2", "--arch", "v1model"});
-    AutoCompileContext autoContext(context.value());
-
-    auto compilerOptions = generateDefaultApiTestCompilerOptions();
-    auto &rtsmithOptions = generateDefaultApiTestRtSmithOptions();
-
-    auto rtSmithResultOpt =
-        P4Tools::RTSmith::RtSmith::generateConfig(source, compilerOptions, rtsmithOptions);
+    auto autoContext = SetUp("bmv2", "v1model");
+    auto &rtSmithOptions = P4Tools::RtSmithOptions::get();
+    rtSmithOptions.target = "bmv2"_cs;
+    rtSmithOptions.arch = "v1model"_cs;
+    auto rtSmithResultOpt = P4Tools::RTSmith::RtSmith::generateConfig(source, rtSmithOptions);
     ASSERT_TRUE(rtSmithResultOpt.has_value());
 }
 

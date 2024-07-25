@@ -23,11 +23,9 @@ class RtSmith : public AbstractP4cTool<RtSmithOptions> {
     virtual ~RtSmith() = default;
 
     static std::optional<RtSmithResult> generateConfig(const std::string &program,
-                                                       const CompilerOptions &compilerOptions,
                                                        const RtSmithOptions &rtSmithOptions);
 
-    static std::optional<RtSmithResult> generateConfig(const CompilerOptions &compilerOptions,
-                                                       const RtSmithOptions &rtSmithOptions);
+    static std::optional<RtSmithResult> generateConfig(const RtSmithOptions &rtSmithOptions);
 };
 
 }  // namespace P4Tools::RTSmith

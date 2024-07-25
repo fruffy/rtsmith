@@ -15,10 +15,6 @@ RtSmithOptions &RtSmithOptions::get() {
 
 const std::set<std::string> K_SUPPORTED_CONTROL_PLANES = {"P4RUNTIME", "BFRUNTIME"};
 
-const char *RtSmithOptions::getIncludePath() {
-    P4C_UNIMPLEMENTED("getIncludePath not implemented for P4RuntimeSmith.");
-}
-
 RtSmithOptions::RtSmithOptions()
     : AbstractP4cToolOptions(RTSmith::TOOL_NAME,
                              "Remove control-plane dead code from a P4 program.") {

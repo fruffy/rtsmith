@@ -13,16 +13,6 @@ class RtSmithOptions : public AbstractP4cToolOptions {
  public:
     RtSmithOptions();
 
-    RtSmithOptions(const RtSmithOptions &) = delete;
-
-    RtSmithOptions(RtSmithOptions &&) = delete;
-
-    RtSmithOptions &operator=(const RtSmithOptions &) = delete;
-
-    RtSmithOptions &operator=(RtSmithOptions &&) = delete;
-
-    virtual ~RtSmithOptions() = default;
-
     /// @returns the singleton instance of this class.
     static RtSmithOptions &get();
 

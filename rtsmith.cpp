@@ -5,9 +5,7 @@
 #include <cstdlib>
 #include <filesystem>
 
-#include "backends/p4tools/common/compiler/context.h"
 #include "backends/p4tools/common/lib/logging.h"
-#include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/util.h"
 #include "backends/p4tools/modules/p4rtsmith/register.h"
@@ -116,16 +114,11 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
 
 std::optional<RtSmithResult> generateConfigImpl(
     std::optional<std::reference_wrapper<const std::string>> program,
-    const CompilerOptions &compilerOptions, const RtSmithOptions &rtSmithOptions) {
+    const RtSmithOptions &rtSmithOptions) {
     // Register supported P4RTSmith targets.
     registerRtSmithTargets();
 
-    P4Tools::Target::init(compilerOptions.target.c_str(), compilerOptions.arch.c_str());
-
-    // Set up the compilation context.
-    auto *compileContext = new CompileContext<CompilerOptions>();
-    compileContext->options() = compilerOptions;
-    AutoCompileContext autoContext(compileContext);
+    P4Tools::Target::init(rtSmithOptions.target.c_str(), rtSmithOptions.arch.c_str());
 
     CompilerResultOrError compilerResult;
     if (program.has_value()) {
@@ -135,7 +128,7 @@ std::optional<RtSmithResult> generateConfigImpl(
             P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME, program->get()),
             std::nullopt);
     } else {
-        RETURN_IF_FALSE_WITH_MESSAGE(!compilerOptions.file.empty(), std::nullopt,
+        RETURN_IF_FALSE_WITH_MESSAGE(!rtSmithOptions.file.empty(), std::nullopt,
                                      ::error("Expected a file input."));
         // Run the compiler to get an IR and invoke the tool.
         ASSIGN_OR_RETURN(compilerResult,
@@ -169,10 +162,9 @@ std::optional<RtSmithResult> generateConfigImpl(
 }
 
 std::optional<RtSmithResult> RtSmith::generateConfig(const std::string &program,
-                                                     const CompilerOptions &compilerOptions,
                                                      const RtSmithOptions &rtSmithOptions) {
     try {
-        return generateConfigImpl(program, compilerOptions, rtSmithOptions);
+        return generateConfigImpl(program, rtSmithOptions);
     } catch (const std::exception &e) {
         std::cerr << "Internal error: " << e.what() << "\n";
         return std::nullopt;
@@ -182,10 +174,9 @@ std::optional<RtSmithResult> RtSmith::generateConfig(const std::string &program,
     return std::nullopt;
 }
 
-std::optional<RtSmithResult> RtSmith::generateConfig(const CompilerOptions &compilerOptions,
-                                                     const RtSmithOptions &rtSmithOptions) {
+std::optional<RtSmithResult> RtSmith::generateConfig(const RtSmithOptions &rtSmithOptions) {
     try {
-        return generateConfigImpl(std::nullopt, compilerOptions, rtSmithOptions);
+        return generateConfigImpl(std::nullopt, rtSmithOptions);
     } catch (const std::exception &e) {
         std::cerr << "Internal error: " << e.what() << "\n";
         return std::nullopt;

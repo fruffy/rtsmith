@@ -61,12 +61,12 @@ endforeach()
 # Fill the template
 configure_file(register.h.in register.h)
 
-add_library(librtsmith STATIC ${RTSMITH_SOURCES})
-target_link_libraries(librtsmith ${RTSMITH_LIBS})
+add_library(rtsmith STATIC ${RTSMITH_SOURCES})
+target_link_libraries(rtsmith ${RTSMITH_LIBS})
 
 add_p4tools_executable(p4rtsmith main.cpp)
 
-target_link_libraries(p4rtsmith librtsmith ${RTSMITH_LIBS})
+target_link_libraries(p4rtsmith rtsmith ${RTSMITH_LIBS})
 
 # Add some convenience links for invoking p4rtsmith.
 add_custom_target(
@@ -80,11 +80,12 @@ add_custom_target(
 
 add_dependencies(p4rtsmith linkrtsmith)
 
+add_subdirectory(tools)
 
 if(ENABLE_GTESTS)
   add_executable(rtsmith-gtest ${RTSMITH_GTEST_SOURCES})
   target_link_libraries(
-    rtsmith-gtest PRIVATE librtsmith PRIVATE gtest ${RTSMITH_LIBS} ${P4C_LIBRARIES} ${P4C_LIB_DEPS}
+    rtsmith-gtest PRIVATE rtsmith PRIVATE gtest ${RTSMITH_LIBS} ${P4C_LIBRARIES} ${P4C_LIB_DEPS}
   )
 
   if(ENABLE_TESTING)

@@ -1,0 +1,11 @@
+# ##################################################################################################
+# The Flay Checker - Add only when Flay is installed.
+# ##################################################################################################
+if (TARGET flay)
+  set(FLAY_CHECKER flay_checker.cpp)
+  add_executable(rtsmith_flay_checker ${FLAY_CHECKER})
+  target_link_libraries(
+    rtsmith_flay_checker PRIVATE flay rtsmith ${FLAY_LIBS} ${P4C_LIBRARIES} ${P4C_LIB_DEPS}
+                                   ${CMAKE_THREAD_LIBS_INIT}
+  )
+endif()
