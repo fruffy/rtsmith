@@ -7,6 +7,7 @@
 
 #include "backends/p4tools/common/compiler/context.h"
 #include "backends/p4tools/common/lib/logging.h"
+#include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/util.h"
 #include "backends/p4tools/modules/p4rtsmith/register.h"
@@ -30,6 +31,8 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
 
     enableInformationLogging();
 
+    const auto &rtsmithOptions = RtSmithOptions::get();
+
     const auto *programInfo = RtSmithTarget::produceProgramInfo(compilerResult);
     if (programInfo == nullptr) {
         ::error("Program not supported by target device and architecture.");
@@ -43,8 +46,15 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
     auto p4RuntimeApi = programInfo->getP4RuntimeApi();
     printInfo("Inferred API:\n%1%", p4RuntimeApi.p4Info->DebugString());
 
+    if (rtsmithOptions.p4InfoFilePath().has_value()) {
+        auto *outputFile = openFile(rtsmithOptions.p4InfoFilePath().value(), true);
+        if (outputFile == nullptr) {
+            return EXIT_FAILURE;
+        }
+        p4RuntimeApi.serializeP4InfoTo(outputFile, P4::P4RuntimeFormat::TEXT_PROTOBUF);
+    }
+
     auto &fuzzer = RtSmithTarget::getFuzzer(*programInfo);
-    const auto &rtsmithOptions = RtSmithOptions::get();
 
     auto initialConfig = fuzzer.produceInitialConfig();
     auto timeSeriesUpdates = fuzzer.produceUpdateTimeSeries();
