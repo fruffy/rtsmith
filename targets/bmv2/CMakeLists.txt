@@ -1,3 +1,9 @@
+if(ENABLE_TESTING)
+  # Include the test subdirectory.
+  message("-- Adding Rtsmith v1model test suite.")
+  include(test/P4Tests.cmake)
+endif()
+
 # Source files for the main P4RtSmith.
 set(RTSMITH_SOURCES
     ${RTSMITH_SOURCES}
