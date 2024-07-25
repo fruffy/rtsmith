@@ -27,12 +27,11 @@ InitialP4RuntimeConfig TofinoTnaFuzzer::produceInitialConfig() {
     for (auto i = 0; (uint64_t)i < tableGenCnt; i++) {
         auto tableId = Utils::getRandInt(tableCnt - 1);
         auto table = tables.Get(tableId);
-        auto maxEntryGenCnt = table.size();
 
         p4::v1::Update update;
         update.set_type(p4::v1::Update_Type::Update_Type_INSERT);
 
-        auto tableEntry = produceTableEntry(table, actions, maxEntryGenCnt);
+        auto tableEntry = produceTableEntry(table, actions);
         *update.mutable_entity()->mutable_table_entry() = tableEntry;
         *request.add_updates() = update;
     }

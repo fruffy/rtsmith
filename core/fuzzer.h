@@ -50,8 +50,7 @@ class P4RuntimeFuzzer {
                                                                 int fieldId);
     virtual p4::v1::TableEntry produceTableEntry(
         const p4::config::v1::Table &table,
-        const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions,
-        uint64_t maxEntryGenCnt);
+        const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
 
     virtual InitialP4RuntimeConfig produceInitialConfig() = 0;
 

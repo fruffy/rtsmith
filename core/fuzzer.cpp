@@ -139,8 +139,7 @@ std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceMatchField(
 /// @return A table entry
 p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const p4::config::v1::Table &table,
-    const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions,
-    uint64_t maxEntryGenCnt) {
+    const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
     p4::v1::TableEntry protoEntry;
 
     // set table id
@@ -149,9 +148,9 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
 
     // add matches
     const auto &matchFields = table.match_fields();
-    for (auto fieldId = 1; (uint64_t)fieldId <= maxEntryGenCnt; fieldId++) {
-        auto matchId = Utils::getRandInt(matchFields.size() - 1);
-        auto match = matchFields[matchId];
+    for (auto i = 0; i < matchFields.size(); i++) {
+        auto match = matchFields[i];
+        auto fieldId = match.id();
         auto protoMatch = produceMatchField(match, fieldId);
         *protoEntry.add_match() = *protoMatch;
     }

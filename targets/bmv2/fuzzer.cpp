@@ -22,19 +22,22 @@ InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
     const auto actions = p4Info->actions();
 
     auto tableCnt = tables.size();
-    auto tableGenCnt = Utils::getRandInt(tableCnt);
 
-    for (auto i = 0; (uint64_t)i < tableGenCnt; i++) {
-        auto tableId = Utils::getRandInt(tableCnt - 1);
+    for (auto tableId = 0; tableId < tableCnt; tableId++) {
+        // NOTE: temporary use a coin to decide if generating entries for the table
+        if (Utils::getRandInt(0, 1) == 0) {
+            continue;
+        }
         auto table = tables.Get(tableId);
         auto maxEntryGenCnt = table.size();
+        for (auto i = 0; i < maxEntryGenCnt; i++) {
+            p4::v1::Update update;
+            update.set_type(p4::v1::Update_Type::Update_Type_INSERT);
 
-        p4::v1::Update update;
-        update.set_type(p4::v1::Update_Type::Update_Type_INSERT);
-
-        auto tableEntry = produceTableEntry(table, actions, maxEntryGenCnt);
-        *update.mutable_entity()->mutable_table_entry() = tableEntry;
-        *request.add_updates() = update;
+            auto tableEntry = produceTableEntry(table, actions);
+            *update.mutable_entity()->mutable_table_entry() = tableEntry;
+            *request.add_updates() = update;
+        }
     }
 
     std::vector<p4::v1::WriteRequest> requests{request};
