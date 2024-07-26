@@ -66,7 +66,7 @@ RtSmithOptions::RtSmithOptions()
             }
             return true;
         },
-        "Write the P4Runtime control plane API description (P4Info) to the specified .txtpb file.");
+        "Use user-provided P4Runtime control plane API description (P4Info).");
     registerOption(
         "--generate-p4info", "filePath",
         [this](const char *arg) {
