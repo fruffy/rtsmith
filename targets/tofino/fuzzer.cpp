@@ -23,7 +23,7 @@ bfrt_proto::TableEntry TofinoTnaFuzzer::produceTableEntry(
 }
 
 InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
-    auto request = std::make_shared<bfrt_proto::WriteRequest>();
+    auto request = std::make_unique<bfrt_proto::WriteRequest>();
 
     auto p4Info = getProgramInfo().getP4RuntimeApi().p4Info;
 
@@ -51,7 +51,9 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
         }
     }
 
-    return InitialConfig{request};
+    InitialConfig initialConfig;
+    initialConfig.push_back(std::move(request));
+    return initialConfig;
 }
 
 UpdateSeries TofinoTnaFuzzer::produceUpdateTimeSeries() { return {}; }

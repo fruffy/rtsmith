@@ -14,7 +14,7 @@ const Bmv2V1ModelProgramInfo &Bmv2V1ModelFuzzer::getProgramInfo() const {
 }
 
 InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
-    auto request = std::make_shared<p4::v1::WriteRequest>();
+    auto request = std::make_unique<p4::v1::WriteRequest>();
 
     auto p4Info = getProgramInfo().getP4RuntimeApi().p4Info;
 
@@ -39,7 +39,9 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
         }
     }
 
-    return InitialConfig{request};
+    InitialConfig initialConfig;
+    initialConfig.push_back(std::move(request));
+    return initialConfig;
 }
 
 UpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() { return {}; }

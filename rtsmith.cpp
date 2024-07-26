@@ -165,7 +165,7 @@ std::optional<RtSmithResult> generateConfigImpl(
     for (const auto &[time, writeRequest] : timeSeriesUpdates) {
         printInfo("Time %1%:\n%2%", writeRequest->DebugString());
     }
-    return {{initialConfig, timeSeriesUpdates}};
+    return {{std::move(initialConfig), std::move(timeSeriesUpdates)}};
 }
 
 std::optional<RtSmithResult> RtSmith::generateConfig(const std::string &program,

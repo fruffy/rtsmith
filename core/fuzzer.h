@@ -14,7 +14,7 @@ namespace P4Tools::RTSmith {
 
 enum class FuzzerType { P4Runtime, BFRuntime };
 
-using ProtobufMessagePtr = std::shared_ptr<google::protobuf::Message>;
+using ProtobufMessagePtr = std::unique_ptr<google::protobuf::Message>;
 using InitialConfig = std::vector<ProtobufMessagePtr>;
 using UpdateSeries = std::vector<std::pair<uint64_t, ProtobufMessagePtr>>;
 
