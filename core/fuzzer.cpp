@@ -6,6 +6,9 @@
 
 namespace P4Tools::RTSmith {
 
+/// @brief Produce bytes in form of std::string given bitwidth.
+/// @param bitwidth
+/// @return A random bytes of length bitwidth in form of std::string.
 std::string produceBytes(int bitwidth) {
     auto value = Utils::getRandConstantForWidth(bitwidth)->value;
     std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
@@ -13,24 +16,22 @@ std::string produceBytes(int bitwidth) {
     return valueStr.value();
 }
 
+/// @brief Produce bytes in form of std::string given bitwidth.
+/// @param bitwidth
+/// @param value
+/// @return A bytes of value of length bitwidth in form of std::string.
 std::string produceBytes(int bitwidth, big_int value) {
     std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
     BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value%1% < 0?", value.str());
     return valueStr.value();
 }
 
-/// @brief Produce a match field with match type EXACT
-/// @param bitwidth
-/// @return A field match
 p4::v1::FieldMatch_Exact P4RuntimeFuzzer::produceFieldMatch_Exact(int bitwidth) {
     p4::v1::FieldMatch_Exact protoExact;
     protoExact.set_value(produceBytes(bitwidth));
     return protoExact;
 }
 
-/// @brief Produce a match field with match type LPM
-/// @param bitwidth
-/// @return A field match
 p4::v1::FieldMatch_LPM P4RuntimeFuzzer::produceFieldMatch_LPM(int bitwidth) {
     p4::v1::FieldMatch_LPM protoLPM;
     protoLPM.set_value(produceBytes(bitwidth));
@@ -38,9 +39,6 @@ p4::v1::FieldMatch_LPM P4RuntimeFuzzer::produceFieldMatch_LPM(int bitwidth) {
     return protoLPM;
 }
 
-/// @brief Produce a match field with match type TERNARY
-/// @param bitwidth
-/// @return A field match
 p4::v1::FieldMatch_Ternary P4RuntimeFuzzer::produceFieldMatch_Ternary(int bitwidth) {
     p4::v1::FieldMatch_Ternary protoTernary;
     protoTernary.set_value(produceBytes(bitwidth));
@@ -49,31 +47,20 @@ p4::v1::FieldMatch_Ternary P4RuntimeFuzzer::produceFieldMatch_Ternary(int bitwid
     return protoTernary;
 }
 
-/// @brief Produce a match field with match type OPTIONAL
-/// @param bitwidth
-/// @return A field match
 p4::v1::FieldMatch_Optional P4RuntimeFuzzer::produceFieldMatch_Optional(int bitwidth) {
     p4::v1::FieldMatch_Optional protoOptional;
     protoOptional.set_value(produceBytes(bitwidth));
     return protoOptional;
 }
 
-/// @brief Produce a param for an action in the table entry
-/// @param param
-/// @param parameterId
-/// @return An action param
-p4::v1::Action_Param P4RuntimeFuzzer::produceActionParam(const p4::config::v1::Action_Param &param,
-                                                         int parameterId) {
+p4::v1::Action_Param P4RuntimeFuzzer::produceActionParam(
+    const p4::config::v1::Action_Param &param) {
     p4::v1::Action_Param protoParam;
-    protoParam.set_param_id(parameterId);
+    protoParam.set_param_id(param.id());
     protoParam.set_value(produceBytes(param.bitwidth()));
     return protoParam;
 }
 
-/// @brief Produce a random action selected for a table entry
-/// @param action_refs
-/// @param actions
-/// @return A table action
 p4::v1::Action P4RuntimeFuzzer::produceTableAction(
     const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
     const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
@@ -89,15 +76,12 @@ p4::v1::Action P4RuntimeFuzzer::produceTableAction(
 
     protoAction.set_action_id(action_id);
     for (auto &param : action->params()) {
-        protoAction.add_params()->CopyFrom(produceActionParam(param, param.id()));
+        protoAction.add_params()->CopyFrom(produceActionParam(param));
     }
 
     return protoAction;
 }
 
-/// @brief Produce priority for an entry given match fields
-/// @param matchFields
-/// @return A 32-bit integer
 uint32_t P4RuntimeFuzzer::producePriority(
     const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields) {
     for (auto i = 0; i < matchFields.size(); i++) {
@@ -115,14 +99,9 @@ uint32_t P4RuntimeFuzzer::producePriority(
     return 0;
 }
 
-/// @brief Produce match field given match type
-/// @param match
-/// @param fieldId
-/// @return FieldMatch or Null
-p4::v1::FieldMatch P4RuntimeFuzzer::produceMatchField(p4::config::v1::MatchField &match,
-                                                      int fieldId) {
+p4::v1::FieldMatch P4RuntimeFuzzer::produceMatchField(p4::config::v1::MatchField &match) {
     p4::v1::FieldMatch protoMatch;
-    protoMatch.set_field_id(fieldId);
+    protoMatch.set_field_id(match.id());
 
     auto matchType = match.match_type();
     auto bitwidth = match.bitwidth();
@@ -147,10 +126,6 @@ p4::v1::FieldMatch P4RuntimeFuzzer::produceMatchField(p4::config::v1::MatchField
     return protoMatch;
 }
 
-/// @brief Produce a table entry with id, match fields, priority and action
-/// @param table
-/// @param actions
-/// @return A table entry
 p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const p4::config::v1::Table &table,
     const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
@@ -164,8 +139,7 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const auto &matchFields = table.match_fields();
     for (auto i = 0; i < matchFields.size(); i++) {
         auto match = matchFields[i];
-        auto fieldId = match.id();
-        protoEntry.add_match()->CopyFrom(produceMatchField(match, fieldId));
+        protoEntry.add_match()->CopyFrom(produceMatchField(match));
     }
 
     // set priority
@@ -207,10 +181,9 @@ bfrt_proto::KeyField_Optional BFRuntimeFuzzer::produceKeyField_Optional(int bitw
     return protoOptional;
 }
 
-bfrt_proto::DataField BFRuntimeFuzzer::produceDataField(const p4::config::v1::Action_Param &param,
-                                                        int parameterId) {
+bfrt_proto::DataField BFRuntimeFuzzer::produceDataField(const p4::config::v1::Action_Param &param) {
     bfrt_proto::DataField protoDataField;
-    protoDataField.set_field_id(parameterId);
+    protoDataField.set_field_id(param.id());
     protoDataField.set_stream(produceBytes(param.bitwidth()));
     return protoDataField;
 }
@@ -227,16 +200,15 @@ bfrt_proto::TableData BFRuntimeFuzzer::produceTableData(
         P4::ControlPlaneAPI::findP4InfoObject(actions.begin(), actions.end(), action_ref_id);
     protoTableData.set_action_id(action->preamble().id());
     for (auto &param : action->params()) {
-        *protoTableData.add_fields() = produceDataField(param, param.id());
+        *protoTableData.add_fields() = produceDataField(param);
     }
 
     return protoTableData;
 }
 
-bfrt_proto::KeyField BFRuntimeFuzzer::produceKeyField(const p4::config::v1::MatchField &match,
-                                                      int fieldId) {
+bfrt_proto::KeyField BFRuntimeFuzzer::produceKeyField(const p4::config::v1::MatchField &match) {
     bfrt_proto::KeyField protoKeyField;
-    protoKeyField.set_field_id(fieldId);
+    protoKeyField.set_field_id(match.id());
     auto matchType = match.match_type();
     auto bitwidth = match.bitwidth();
 
@@ -273,8 +245,7 @@ bfrt_proto::TableEntry BFRuntimeFuzzer::produceTableEntry(
     const auto &matchFields = table.match_fields();
     for (auto i = 0; i < matchFields.size(); i++) {
         auto match = matchFields[i];
-        auto fieldId = match.id();
-        protoEntry.mutable_key()->add_fields()->CopyFrom(produceKeyField(match, fieldId));
+        protoEntry.mutable_key()->add_fields()->CopyFrom(produceKeyField(matchFields[i]));
     }
 
     // add action

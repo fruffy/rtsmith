@@ -42,8 +42,12 @@ class RuntimeFuzzer {
 
     [[nodiscard]] FuzzerType getFuzzerType() const { return fuzzerType; }
 
+    /// @brief Produce an `InitialConfig`, which is a vector of updates.
+    /// @return A InitialConfig
     virtual InitialConfig produceInitialConfig() = 0;
 
+    /// @brief Produce an `UpdateSeries`, which is a vector of indexed updates.
+    /// @return A InitialConfig
     virtual UpdateSeries produceUpdateTimeSeries() = 0;
 };
 
@@ -58,42 +62,57 @@ class P4RuntimeFuzzer : public RuntimeFuzzer {
     P4RuntimeFuzzer &operator=(P4RuntimeFuzzer &&) = delete;
     virtual ~P4RuntimeFuzzer() = default;
 
+    /// @brief Produce a FieldMatch_Exact with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_Exact
     virtual p4::v1::FieldMatch_Exact produceFieldMatch_Exact(int bitwidth);
 
+    /// @brief Produce a FieldMatch_LPM with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_LPM
     virtual p4::v1::FieldMatch_LPM produceFieldMatch_LPM(int bitwidth);
 
+    /// @brief Produce a FieldMatch_Ternary with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_Ternary
     virtual p4::v1::FieldMatch_Ternary produceFieldMatch_Ternary(int bitwidth);
 
+    /// @brief Produce a FieldMatch_Optional with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_Optional
     virtual p4::v1::FieldMatch_Optional produceFieldMatch_Optional(int bitwidth);
 
-    virtual p4::v1::Action_Param produceActionParam(const p4::config::v1::Action_Param &param,
-                                                    int parameterId);
+    /// @brief Produce a param for an action in the table entry
+    /// @param param
+    /// @return An action param
+    virtual p4::v1::Action_Param produceActionParam(const p4::config::v1::Action_Param &param);
 
+    /// @brief Produce a random action selected for a table entry
+    /// @param action_refs action reference options where we will randomly pick one from.
+    /// @param actions actions that containing `action_refs` for finding the action.
+    /// @return An `Action`
     virtual p4::v1::Action produceTableAction(
         const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
 
+    /// @brief Produce priority for an entry given match fields
+    /// @param matchFields
+    /// @return A 32-bit integer
     virtual uint32_t producePriority(
         const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields);
 
-    virtual p4::v1::FieldMatch produceMatchField(p4::config::v1::MatchField &match, int fieldId);
+    /// @brief Produce match field given match type
+    /// @param match
+    /// @return A `FieldMatch`
+    virtual p4::v1::FieldMatch produceMatchField(p4::config::v1::MatchField &match);
+
+    /// @brief Produce a `TableEntry` with id, match fields, priority and action
+    /// @param table
+    /// @param actions
+    /// @return A `TableEntry`
     virtual p4::v1::TableEntry produceTableEntry(
         const p4::config::v1::Table &table,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
-
-    virtual InitialConfig produceInitialConfig() = 0;
-
-    virtual UpdateSeries produceUpdateTimeSeries() = 0;
-};
-
-class BFRuntimeInitialConfig : public InitialConfig {
- public:
-    BFRuntimeInitialConfig() = default;
-    std::vector<bfrt_proto::WriteRequest> requests;
-};
-
-class BFRuntimeUpdateSeries : public UpdateSeries {
-    std::vector<std::pair<uint64_t, bfrt_proto::WriteRequest>> updates;
 };
 
 class BFRuntimeFuzzer : public RuntimeFuzzer {
@@ -107,31 +126,51 @@ class BFRuntimeFuzzer : public RuntimeFuzzer {
     BFRuntimeFuzzer &operator=(BFRuntimeFuzzer &&) = delete;
     virtual ~BFRuntimeFuzzer() = default;
 
+    /// @brief Produce a `produceKeyField_Exact` with bitwidth.
+    /// @param bitwidth
+    /// @return A `produceKeyField_Exact`.
     virtual bfrt_proto::KeyField_Exact produceKeyField_Exact(int bitwidth);
 
+    /// @brief Produce a `produceKeyField_LPM` with bitwidth.
+    /// @param bitwidth
+    /// @return A `produceKeyField_LPM`.
     virtual bfrt_proto::KeyField_LPM produceKeyField_LPM(int bitwidth);
 
+    /// @brief Produce a `produceKeyField_Ternary` with bitwidth.
+    /// @param bitwidth
+    /// @return A `produceKeyField_Ternary`.
     virtual bfrt_proto::KeyField_Ternary produceKeyField_Ternary(int bitwidth);
 
+    /// @brief Produce a `KeyField_Optional` with bitwidth.
+    /// @param bitwidth
+    /// @return A `KeyField_Optional`.
     virtual bfrt_proto::KeyField_Optional produceKeyField_Optional(int bitwidth);
 
-    virtual bfrt_proto::DataField produceDataField(const p4::config::v1::Action_Param &param,
-                                                   int parameterId);
+    /// @brief Produce a `DataField` for an action in the table entry.
+    /// @param param
+    /// @return A `DataField`.
+    virtual bfrt_proto::DataField produceDataField(const p4::config::v1::Action_Param &param);
 
+    /// @brief Produce a `TableData` for an action in the table entry.
+    /// @param action_refs action reference options where we will randomly pick one from.
+    /// @param actions actions that containing `action_refs` for finding the action.
+    /// @return A `TableData`.
     virtual bfrt_proto::TableData produceTableData(
         const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
 
-    virtual bfrt_proto::KeyField produceKeyField(const p4::config::v1::MatchField &match,
-                                                 int fieldId);
+    /// @brief Produce a random `KeyField`.
+    /// @param match The match field info.
+    /// @return A `KeyField`
+    virtual bfrt_proto::KeyField produceKeyField(const p4::config::v1::MatchField &match);
 
+    /// @brief Produce a `TableEntry` for `table` with a randomly selected action.
+    /// @param table
+    /// @param actions
+    /// @return A `TableEntry`.
     virtual bfrt_proto::TableEntry produceTableEntry(
         const p4::config::v1::Table &table,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
-
-    virtual InitialConfig produceInitialConfig() = 0;
-
-    virtual UpdateSeries produceUpdateTimeSeries() = 0;
 };
 
 }  // namespace P4Tools::RTSmith
