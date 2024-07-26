@@ -30,7 +30,7 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
         }
         auto table = tables.Get(tableId);
         // TODO: remove this `min`. It is for ease of debugging now.
-        auto maxEntryGenCnt = std::min(table.size(), 2l);
+        auto maxEntryGenCnt = std::min(table.size(), (int64_t)2);
         for (auto i = 0; i < maxEntryGenCnt; i++) {
             auto update = request->add_updates();
             update->set_type(p4::v1::Update_Type::Update_Type_INSERT);

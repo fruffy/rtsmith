@@ -41,7 +41,7 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
         }
         auto table = tables.Get(tableId);
         // TODO: remove this `min`. It is for ease of debugging now.
-        auto maxEntryGenCnt = std::min(table.size(), 2l);
+        auto maxEntryGenCnt = std::min(table.size(), (int64_t)2);
         for (auto i = 0; i < maxEntryGenCnt; i++) {
             auto update = request->add_updates();
             // TODO: add support for other types.

@@ -44,7 +44,7 @@ template <class T>
                                  ::error("Failed to parse configuration \"%1%\" for file %2%",
                                          protoObject.ShortDebugString(), inputFile.c_str()));
 
-    printFeature("flay_protobuf", 4, "Parsed configuration: %1%", protoObject.DebugString());
+    printFeature("p4rtsmith_protobuf", 4, "Parsed configuration: %1%", protoObject.DebugString());
     // Close the open file.
     close(fd);
     return protoObject;
@@ -52,4 +52,4 @@ template <class T>
 
 }  // namespace P4Tools::RTSmith::Protobuf
 
-#endif /* BACKENDS_P4TOOLS_MODULES_FLAY_CORE_CONTROL_PLANE_PROTOBUF_UTILS_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_CONTROL_PLANE_PROTOBUF_UTILS_H_ */

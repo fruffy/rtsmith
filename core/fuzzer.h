@@ -21,7 +21,7 @@ using UpdateSeries = std::vector<std::pair<uint64_t, ProtobufMessagePtr>>;
 class RuntimeFuzzer {
  private:
     /// fuzzer type to distinguish between P4Runtime and BFRuntime fuzzers.
-    const FuzzerType fuzzerType;
+    FuzzerType fuzzerType;
 
     /// The program info of the target.
     std::reference_wrapper<const ProgramInfo> programInfo;

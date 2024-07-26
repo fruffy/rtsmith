@@ -14,7 +14,7 @@ class TofinoTnaFuzzer : public BFRuntimeFuzzer {
  public:
     explicit TofinoTnaFuzzer(const TofinoTnaProgramInfo &programInfo);
 
-    virtual bfrt_proto::TableEntry produceTableEntry(
+    bfrt_proto::TableEntry produceTableEntry(
         const p4::config::v1::Table &table,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) override;
 
