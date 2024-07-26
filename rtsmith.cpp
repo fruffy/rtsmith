@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <filesystem>
 
+#include "backends/p4tools/common/compiler/compiler_result.h"
 #include "backends/p4tools/common/lib/logging.h"
 #include "backends/p4tools/modules/p4rtsmith/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/util.h"
@@ -22,32 +23,27 @@ void RtSmith::registerTarget() {
     registerRtSmithTargets();
 }
 
-int RtSmith::mainImpl(const CompilerResult &compilerResult) {
-    // Register all available P4RuntimeSmith targets.
-    // These are discovered by CMAKE, which fills out the register.h.in file.
-    registerRtSmithTargets();
+namespace {
 
-    enableInformationLogging();
-
-    const auto &rtsmithOptions = RtSmithOptions::get();
-
-    const auto *programInfo = RtSmithTarget::produceProgramInfo(compilerResult);
+std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
+                                        const RtSmithOptions &rtSmithOptions) {
+    const auto *programInfo = RtSmithTarget::produceProgramInfo(rtSmithResult);
     if (programInfo == nullptr) {
         ::error("Program not supported by target device and architecture.");
-        return EXIT_FAILURE;
+        return std::nullopt;
     }
     if (::errorCount() > 0) {
         ::error("P4RuntimeSmith: Encountered errors during preprocessing. Exiting");
-        return EXIT_FAILURE;
+        return std::nullopt;
     }
 
     auto p4RuntimeApi = programInfo->getP4RuntimeApi();
-    printInfo("Inferred API:\n%1%", p4RuntimeApi.p4Info->DebugString());
+    // printInfo("Inferred API:\n%1%", p4RuntimeApi.p4Info->DebugString());
 
-    if (rtsmithOptions.p4InfoFilePath().has_value()) {
-        auto *outputFile = openFile(rtsmithOptions.p4InfoFilePath().value(), true);
+    if (!rtSmithOptions.p4InfoFilePath().empty()) {
+        auto *outputFile = openFile(rtSmithOptions.p4InfoFilePath(), true);
         if (outputFile == nullptr) {
-            return EXIT_FAILURE;
+            return std::nullopt;
         }
         p4RuntimeApi.serializeP4InfoTo(outputFile, P4::P4RuntimeFormat::TEXT_PROTOBUF);
     }
@@ -57,47 +53,7 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
     auto initialConfig = fuzzer.produceInitialConfig();
     auto timeSeriesUpdates = fuzzer.produceUpdateTimeSeries();
 
-    if (rtsmithOptions.getConfigFilePath().has_value() &&
-        rtsmithOptions.getOutputDir().has_value()) {
-        auto dirPath = rtsmithOptions.getOutputDir().value();
-        auto fileName = rtsmithOptions.getConfigFilePath().value();
-
-        if (!(std::filesystem::exists(dirPath) && std::filesystem::is_directory(dirPath))) {
-            if (!std::filesystem::create_directory(dirPath)) {
-                ::error("P4RuntimeSmith: Failed to create output directory. Exiting");
-                return EXIT_FAILURE;
-            }
-        }
-
-        auto fullFilePath = (dirPath / fileName).generic_string();
-        auto *outputFile = openFile(fullFilePath, true);
-        if (outputFile == nullptr) {
-            ::error("P4RuntimeSmith: Config file path doesn't exist. Exiting");
-            return EXIT_FAILURE;
-        }
-
-        for (const auto &writeRequest : initialConfig) {
-            std::string output;
-            google::protobuf::TextFormat::Printer textPrinter;
-            textPrinter.SetExpandAny(true);
-            if (!textPrinter.PrintToString(writeRequest, &output)) {
-                ::error(ErrorType::ERR_IO, "Failed to serialize protobuf message to text");
-                return false;
-            }
-
-            *outputFile << output;
-            if (!outputFile->good()) {
-                ::error(ErrorType::ERR_IO, "Failed to write text protobuf message to the output");
-                return false;
-            } else {
-                printInfo("Wrote initial configuration to %1%", fullFilePath);
-            }
-
-            outputFile->flush();
-        }
-    }
-
-    if (rtsmithOptions.printToStdout()) {
+    if (rtSmithOptions.printToStdout()) {
         printInfo("Generated initial configuration:");
         for (const auto &writeRequest : initialConfig) {
             printInfo("%1%", writeRequest.DebugString());
@@ -109,7 +65,63 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
         }
     }
 
-    return ::errorCount() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    auto dirPath = rtSmithOptions.outputDir();
+    if (!dirPath.empty()) {
+        if (!std::filesystem::exists(dirPath)) {
+            if (!std::filesystem::create_directory(dirPath)) {
+                ::error("P4RuntimeSmith: Failed to create output directory. Exiting");
+                return std::nullopt;
+            }
+        }
+
+        auto initialConfigPath = dirPath;
+        if (rtSmithOptions.configName().has_value()) {
+            initialConfigPath = initialConfigPath / rtSmithOptions.configName().value();
+            initialConfigPath = initialConfigPath.replace_extension("_update_0");
+        } else {
+            initialConfigPath = initialConfigPath / "update_0";
+        }
+        initialConfigPath = initialConfigPath.replace_extension(".txtpb");
+
+        auto *outputFile = openFile(initialConfigPath, true);
+        if (outputFile == nullptr) {
+            ::error("P4RuntimeSmith: Config file path doesn't exist. Exiting");
+            return std::nullopt;
+        }
+
+        for (const auto &writeRequest : initialConfig) {
+            std::string output;
+            google::protobuf::TextFormat::Printer textPrinter;
+            textPrinter.SetExpandAny(true);
+            if (!textPrinter.PrintToString(writeRequest, &output)) {
+                ::error(ErrorType::ERR_IO, "Failed to serialize protobuf message to text");
+                return std::nullopt;
+            }
+
+            *outputFile << output;
+            if (!outputFile->good()) {
+                ::error(ErrorType::ERR_IO, "Failed to write text protobuf message to the output");
+                return std::nullopt;
+            }
+            printInfo("Wrote initial configuration to %1%", initialConfigPath);
+
+            outputFile->flush();
+        }
+    }
+
+    return {{initialConfig, timeSeriesUpdates}};
+}
+
+}  // namespace
+
+int RtSmith::mainImpl(const CompilerResult &compilerResult) {
+    // Register all available P4RuntimeSmith targets.
+    // These are discovered by CMAKE, which fills out the register.h.in file.
+    registerRtSmithTargets();
+
+    const auto &rtSmithOptions = RtSmithOptions::get();
+    auto result = runRtSmith(compilerResult, rtSmithOptions);
+    return (result.has_value() && ::errorCount() == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 std::optional<RtSmithResult> generateConfigImpl(
@@ -136,29 +148,7 @@ std::optional<RtSmithResult> generateConfigImpl(
                          std::nullopt);
     }
 
-    const auto *programInfo = RtSmithTarget::produceProgramInfo(compilerResult.value());
-    if (programInfo == nullptr || ::errorCount() > 0) {
-        ::error("P4RTSmith encountered errors during preprocessing.");
-        return std::nullopt;
-    }
-
-    auto p4RuntimeApi = programInfo->getP4RuntimeApi();
-    printInfo("Inferred API:\n%1%", p4RuntimeApi.p4Info->DebugString());
-
-    auto &fuzzer = RtSmithTarget::getFuzzer(*programInfo);
-
-    auto initialConfig = fuzzer.produceInitialConfig();
-    printInfo("Generated initial configuration:");
-    for (const auto &writeRequest : initialConfig) {
-        printInfo("%1%", writeRequest.DebugString());
-    }
-
-    auto timeSeriesUpdates = fuzzer.produceUpdateTimeSeries();
-    printInfo("Time series updates:");
-    for (const auto &[time, writeRequest] : timeSeriesUpdates) {
-        printInfo("Time %1%:\n%2%", writeRequest.DebugString());
-    }
-    return {{initialConfig, timeSeriesUpdates}};
+    return runRtSmith(compilerResult.value(), rtSmithOptions);
 }
 
 std::optional<RtSmithResult> RtSmith::generateConfig(const std::string &program,

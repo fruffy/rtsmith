@@ -4,8 +4,6 @@
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
-#include "lib/cstring.h"
-#include "lib/exceptions.h"
 
 namespace P4Tools {
 
@@ -21,37 +19,30 @@ RtSmithOptions::RtSmithOptions()
     registerOption(
         "--print-to-stdout", nullptr,
         [this](const char *) {
-            printToStdout_ = true;
+            _printToStdout = true;
             return true;
         },
         "Whether to write the generated config to a file or to stdout.");
-
     registerOption(
         "--output-dir", "outputDir",
         [this](const char *arg) {
-            outputDir_ = std::filesystem::path(arg);
+            _outputDir = std::filesystem::path(arg);
             return true;
         },
-        "The path to the output file of the config file(s).");
-
+        "The path where config file(s) are being emitted.");
     registerOption(
-        "--generate-config", "filePath",
+        "--config-name", "configName",
         [this](const char *arg) {
-            configFilePath = arg;
-            if (configFilePath.value().extension() != ".txtpb") {
-                ::error("%1% must have a .txtpb extension.", configFilePath.value().c_str());
-                return false;
-            }
+            _configName = arg;
             return true;
         },
-        "Write the generated config to the specified .txtpb file.");
+        "The base name of the config files. Optional.");
     registerOption(
         "--generate-p4info", "filePath",
         [this](const char *arg) {
             _p4InfoFilePath = arg;
-            std::cout << "_p4InfoFilePath: " << _p4InfoFilePath.value() << std::endl;
-            if (_p4InfoFilePath.value().extension() != ".txtpb") {
-                ::error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
+            if (_p4InfoFilePath.extension() != ".txtpb") {
+                ::error("%1% must have a .txtpb extension.", _p4InfoFilePath.c_str());
                 return false;
             }
             return true;
@@ -76,15 +67,13 @@ RtSmithOptions::RtSmithOptions()
         "Specifies the control plane API to use. Defaults to P4Rtuntime.");
 }
 
-std::optional<std::filesystem::path> RtSmithOptions::getOutputDir() const { return outputDir_; }
+std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }
 
-bool RtSmithOptions::printToStdout() const { return printToStdout_; }
+bool RtSmithOptions::printToStdout() const { return _printToStdout; }
 
-std::optional<std::string> RtSmithOptions::getConfigFilePath() const { return configFilePath; }
+std::optional<std::string> RtSmithOptions::configName() const { return _configName; }
 
-std::optional<std::filesystem::path> RtSmithOptions::p4InfoFilePath() const {
-    return _p4InfoFilePath;
-}
+std::filesystem::path RtSmithOptions::p4InfoFilePath() const { return _p4InfoFilePath; }
 
 std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneApi; }
 

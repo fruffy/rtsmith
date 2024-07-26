@@ -58,6 +58,9 @@ class FlayCheckerOptions : public RtSmithOptions {
     // Returns EXIT_FAILURE if an error occurred.
     int processOptions(int argc, char *const argv[]) {
         auto *unprocessedOptions = process(argc, argv);
+        if (unprocessedOptions == nullptr) {
+            return EXIT_FAILURE;
+        }
         if (unprocessedOptions != nullptr && !unprocessedOptions->empty()) {
             for (const auto &option : *unprocessedOptions) {
                 ::error("Unprocessed input: %s", option);
@@ -67,6 +70,10 @@ class FlayCheckerOptions : public RtSmithOptions {
         if (file.empty()) {
             ::error("No input file specified.");
             return EXIT_FAILURE;
+        }
+        if (_outputDir.empty()) {
+            _outputDir = std::tmpnam(nullptr);
+            printInfo("Using temporary directory: %s", _outputDir.c_str());
         }
         // If the environment variable P4FLAY_INFO or RTSMITH_INFO is set, enable information
         // logging.
@@ -91,18 +98,19 @@ int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions)
                      EXIT_FAILURE);
 
     printInfo("RtSmith configuration complete.");
+    printInfo("Starting Flay optimization...");
     {
-        printInfo("Starting Flay optimization...");
         auto *flayContext = new CompileContext<FlayOptions>();
-        AutoCompileContext autoContext3(flayContext);
+        AutoCompileContext autoContext(flayContext);
         FlayOptions &flayOptions = flayContext->options();
         flayOptions.target = options.target;
         flayOptions.arch = options.arch;
         flayOptions.file = options.file;
+        flayOptions.setConfigurationUpdatePattern(rtSmithOptions.outputDir() / "*update_*.txtpb");
         ASSIGN_OR_RETURN(auto flayServiceStatistics, Flay::Flay::optimizeProgram(flayOptions),
                          EXIT_FAILURE);
-        printInfo("Flay optimization complete.");
     }
+    printInfo("Flay optimization complete.");
 
     return EXIT_SUCCESS;
 }

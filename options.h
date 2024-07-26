@@ -22,29 +22,29 @@ class RtSmithOptions : public AbstractP4cToolOptions {
     [[nodiscard]] bool printToStdout() const;
 
     /// @returns the path set with --output-dir.
-    [[nodiscard]] std::optional<std::filesystem::path> getOutputDir() const;
+    [[nodiscard]] std::filesystem::path outputDir() const;
 
     /// @returns the path set with --generate-config.
-    [[nodiscard]] std::optional<std::string> getConfigFilePath() const;
+    [[nodiscard]] std::optional<std::string> configName() const;
 
     /// @returns the path set with --generate-p4info.
-    [[nodiscard]] std::optional<std::filesystem::path> p4InfoFilePath() const;
+    [[nodiscard]] std::filesystem::path p4InfoFilePath() const;
 
     /// @returns the control plane API to use.
     [[nodiscard]] std::string_view controlPlaneApi() const;
 
- private:
+ protected:
     // Write the generated config to the specified file.
-    std::optional<std::filesystem::path> configFilePath = std::nullopt;
+    std::optional<std::string> _configName = std::nullopt;
 
     /// The path to the output file of the config file.
-    std::optional<std::filesystem::path> outputDir_ = std::nullopt;
+    std::filesystem::path _outputDir;
 
     /// Whether to write the generated config to a file or to stdout.
-    bool printToStdout_ = false;
+    bool _printToStdout = false;
 
     // Write the P4Runtime control plane API description to the specified file.
-    std::optional<std::filesystem::path> _p4InfoFilePath = std::nullopt;
+    std::filesystem::path _p4InfoFilePath;
 
     // The control plane API to use. Defaults to P4Runtime.
     std::string _controlPlaneApi = "P4RUNTIME";

@@ -8,6 +8,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Declare common P4RuntimeSmith variables.
 set(RTSMITH_DIR ${P4C_BINARY_DIR}/rtsmith)
 set(RTSMITH_DRIVER "${CMAKE_CURRENT_BINARY_DIR}/p4rtsmith")
+if (TARGET flay)
+  set (FLAY_CHECKER_DRIVER ${CMAKE_CURRENT_BINARY_DIR}/tools/rtsmith_flay_checker)
+endif()
 
 
 # Source files for rtsmith.
