@@ -13,8 +13,8 @@ const Bmv2V1ModelProgramInfo &Bmv2V1ModelFuzzer::getProgramInfo() const {
     return *P4RuntimeFuzzer::getProgramInfo().checkedTo<Bmv2V1ModelProgramInfo>();
 }
 
-InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
-    p4::v1::WriteRequest request;
+InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
+    auto request = std::make_shared<p4::v1::WriteRequest>();
 
     auto p4Info = getProgramInfo().getP4RuntimeApi().p4Info;
 
@@ -29,21 +29,19 @@ InitialP4RuntimeConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
             continue;
         }
         auto table = tables.Get(tableId);
-        auto maxEntryGenCnt = table.size();
+        // TODO: remove this `min`. It is for ease of debugging now.
+        auto maxEntryGenCnt = std::min(table.size(), 2l);
         for (auto i = 0; i < maxEntryGenCnt; i++) {
-            p4::v1::Update update;
-            update.set_type(p4::v1::Update_Type::Update_Type_INSERT);
-
-            auto tableEntry = produceTableEntry(table, actions);
-            *update.mutable_entity()->mutable_table_entry() = tableEntry;
-            *request.add_updates() = update;
+            auto update = request->add_updates();
+            update->set_type(p4::v1::Update_Type::Update_Type_INSERT);
+            update->mutable_entity()->mutable_table_entry()->CopyFrom(
+                produceTableEntry(table, actions));
         }
     }
 
-    std::vector<p4::v1::WriteRequest> requests{request};
-    return requests;
+    return InitialConfig{request};
 }
 
-P4RuntimeUpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() { return {}; }
+UpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() { return {}; }
 
 }  // namespace P4Tools::RTSmith::V1Model

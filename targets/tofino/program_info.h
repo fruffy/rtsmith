@@ -10,7 +10,8 @@ namespace P4Tools::RTSmith::Tna {
 
 class TofinoTnaProgramInfo : public ProgramInfo {
  public:
-    explicit TofinoTnaProgramInfo(const CompilerResult &compilerResult);
+    explicit TofinoTnaProgramInfo(const CompilerResult &compilerResult,
+                                  const P4::P4RuntimeAPI &p4runtimeApi);
 
     DECLARE_TYPEINFO(TofinoTnaProgramInfo);
 };

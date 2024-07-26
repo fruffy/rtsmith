@@ -6,7 +6,7 @@
 
 namespace P4Tools::RTSmith::Tna {
 
-class TofinoTnaFuzzer : public P4RuntimeFuzzer {
+class TofinoTnaFuzzer : public BFRuntimeFuzzer {
  private:
     /// @returns the program info associated with the current target.
     [[nodiscard]] const TofinoTnaProgramInfo &getProgramInfo() const override;
@@ -14,9 +14,13 @@ class TofinoTnaFuzzer : public P4RuntimeFuzzer {
  public:
     explicit TofinoTnaFuzzer(const TofinoTnaProgramInfo &programInfo);
 
-    InitialP4RuntimeConfig produceInitialConfig() override;
+    virtual bfrt_proto::TableEntry produceTableEntry(
+        const p4::config::v1::Table &table,
+        const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) override;
 
-    P4RuntimeUpdateSeries produceUpdateTimeSeries() override;
+    InitialConfig produceInitialConfig() override;
+
+    UpdateSeries produceUpdateTimeSeries() override;
 };
 
 }  // namespace P4Tools::RTSmith::Tna

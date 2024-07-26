@@ -11,8 +11,8 @@
 
 namespace P4Tools::RTSmith::Tna {
 
-TofinoTnaProgramInfo::TofinoTnaProgramInfo(const CompilerResult &compilerResult)
-    : ProgramInfo(compilerResult, P4::P4RuntimeSerializer::get()->generateP4Runtime(
-                                      &compilerResult.getProgram(), cstring("tna"))) {}
+TofinoTnaProgramInfo::TofinoTnaProgramInfo(const CompilerResult &compilerResult,
+                                           const P4::P4RuntimeAPI &p4runtimeApi)
+    : ProgramInfo(compilerResult, p4runtimeApi) {}
 
 }  // namespace P4Tools::RTSmith::Tna

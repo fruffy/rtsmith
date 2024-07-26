@@ -82,7 +82,7 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
             std::string output;
             google::protobuf::TextFormat::Printer textPrinter;
             textPrinter.SetExpandAny(true);
-            if (!textPrinter.PrintToString(writeRequest, &output)) {
+            if (!textPrinter.PrintToString(*writeRequest, &output)) {
                 ::error(ErrorType::ERR_IO, "Failed to serialize protobuf message to text");
                 return false;
             }
@@ -102,12 +102,12 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
     if (rtsmithOptions.printToStdout()) {
         printInfo("Generated initial configuration:");
         for (const auto &writeRequest : initialConfig) {
-            printInfo("%1%", writeRequest.DebugString());
+            printInfo("%1%", writeRequest->DebugString());
         }
 
         printInfo("Time series updates:");
         for (const auto &[time, writeRequest] : timeSeriesUpdates) {
-            printInfo("Time %1%:\n%2%", writeRequest.DebugString());
+            printInfo("Time %1%:\n%2%", writeRequest->DebugString());
         }
     }
 
@@ -157,13 +157,13 @@ std::optional<RtSmithResult> generateConfigImpl(
     auto initialConfig = fuzzer.produceInitialConfig();
     printInfo("Generated initial configuration:");
     for (const auto &writeRequest : initialConfig) {
-        printInfo("%1%", writeRequest.DebugString());
+        printInfo("%1%", writeRequest->DebugString());
     }
 
     auto timeSeriesUpdates = fuzzer.produceUpdateTimeSeries();
     printInfo("Time series updates:");
     for (const auto &[time, writeRequest] : timeSeriesUpdates) {
-        printInfo("Time %1%:\n%2%", writeRequest.DebugString());
+        printInfo("Time %1%:\n%2%", writeRequest->DebugString());
     }
     return {{initialConfig, timeSeriesUpdates}};
 }

@@ -9,6 +9,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(RTSMITH_DIR ${P4C_BINARY_DIR}/rtsmith)
 set(RTSMITH_DRIVER "${CMAKE_CURRENT_BINARY_DIR}/p4rtsmith")
 
+# ############### Protobuf generation
+set(P4RTSMITH_CONTROL_PLANE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/core/control_plane)
+set(P4RTSMITH_BFRUNTIME_DIR ${P4RTSMITH_CONTROL_PLANE_DIR}/bfruntime)
+set(BFRUNTIME_RT_PROTO ${P4RTSMITH_BFRUNTIME_DIR}/bfruntime.proto)
+
 
 # Source files for rtsmith.
 set(RTSMITH_SOURCES
@@ -27,8 +32,11 @@ set(RTSMITH_GTEST_SOURCES
   test/core/rtsmith_api_test.cpp
 )
 
+# The core of the tool.
+add_subdirectory(core)
+
 # RTSmith libraries.
-set(RTSMITH_LIBS p4tools-common controlplane)
+set(RTSMITH_LIBS p4rtsmith-control-plane-runtime p4tools-common controlplane)
 
 file(GLOB rtsmith_targets RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/targets
      ${CMAKE_CURRENT_SOURCE_DIR}/targets/*

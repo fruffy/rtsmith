@@ -1,5 +1,7 @@
 #include "backends/p4tools/modules/p4rtsmith/targets/tofino/fuzzer.h"
 
+#include <algorithm>
+
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "control-plane/p4infoApi.h"
@@ -7,39 +9,51 @@
 namespace P4Tools::RTSmith::Tna {
 
 TofinoTnaFuzzer::TofinoTnaFuzzer(const TofinoTnaProgramInfo &programInfo)
-    : P4RuntimeFuzzer(programInfo) {}
+    : BFRuntimeFuzzer(programInfo) {}
 
 const TofinoTnaProgramInfo &TofinoTnaFuzzer::getProgramInfo() const {
-    return *P4RuntimeFuzzer::getProgramInfo().checkedTo<TofinoTnaProgramInfo>();
+    return *BFRuntimeFuzzer::getProgramInfo().checkedTo<TofinoTnaProgramInfo>();
 }
 
-InitialP4RuntimeConfig TofinoTnaFuzzer::produceInitialConfig() {
-    p4::v1::WriteRequest request;
+bfrt_proto::TableEntry TofinoTnaFuzzer::produceTableEntry(
+    const p4::config::v1::Table &table,
+    const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
+    // TODO: Special processing for things like selector, profile in Tofino.
+    return BFRuntimeFuzzer::produceTableEntry(table, actions);
+}
+
+InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
+    auto request = std::make_shared<bfrt_proto::WriteRequest>();
 
     auto p4Info = getProgramInfo().getP4RuntimeApi().p4Info;
 
+    // TODO: for Tofino, we also need to look at externs instances for
+    // ActionSelector, ActionProfile and so on.
     const auto tables = p4Info->tables();
     const auto actions = p4Info->actions();
 
     auto tableCnt = tables.size();
-    auto tableGenCnt = Utils::getRandInt(tableCnt);
 
-    for (auto i = 0; (uint64_t)i < tableGenCnt; i++) {
-        auto tableId = Utils::getRandInt(tableCnt - 1);
+    for (auto tableId = 0; tableId < tableCnt; tableId++) {
+        // NOTE: temporary use a coin to decide if generating entries for the table
+        if (Utils::getRandInt(0, 1) == 0) {
+            continue;
+        }
         auto table = tables.Get(tableId);
-
-        p4::v1::Update update;
-        update.set_type(p4::v1::Update_Type::Update_Type_INSERT);
-
-        auto tableEntry = produceTableEntry(table, actions);
-        *update.mutable_entity()->mutable_table_entry() = tableEntry;
-        *request.add_updates() = update;
+        // TODO: remove this `min`. It is for ease of debugging now.
+        auto maxEntryGenCnt = std::min(table.size(), 2l);
+        for (auto i = 0; i < maxEntryGenCnt; i++) {
+            auto update = request->add_updates();
+            // TODO: add support for other types.
+            update->set_type(bfrt_proto::Update_Type::Update_Type_INSERT);
+            update->mutable_entity()->mutable_table_entry()->CopyFrom(
+                produceTableEntry(table, actions));
+        }
     }
 
-    std::vector<p4::v1::WriteRequest> requests{request};
-    return requests;
+    return InitialConfig{request};
 }
 
-P4RuntimeUpdateSeries TofinoTnaFuzzer::produceUpdateTimeSeries() { return {}; }
+UpdateSeries TofinoTnaFuzzer::produceUpdateTimeSeries() { return {}; }
 
 }  // namespace P4Tools::RTSmith::Tna

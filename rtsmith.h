@@ -8,8 +8,8 @@
 namespace P4Tools::RTSmith {
 
 struct RtSmithResult {
-    InitialP4RuntimeConfig config;
-    P4RuntimeUpdateSeries updateSeries;
+    InitialConfig config;
+    UpdateSeries updateSeries;
 };
 
 /// This is main implementation of the P4RuntimeSmith tool.

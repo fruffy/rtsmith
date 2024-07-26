@@ -14,9 +14,9 @@ class Bmv2V1ModelFuzzer : public P4RuntimeFuzzer {
  public:
     explicit Bmv2V1ModelFuzzer(const Bmv2V1ModelProgramInfo &programInfo);
 
-    InitialP4RuntimeConfig produceInitialConfig() override;
+    InitialConfig produceInitialConfig() override;
 
-    P4RuntimeUpdateSeries produceUpdateTimeSeries() override;
+    UpdateSeries produceUpdateTimeSeries() override;
 };
 
 }  // namespace P4Tools::RTSmith::V1Model

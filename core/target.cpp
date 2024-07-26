@@ -39,7 +39,7 @@ const ProgramInfo *RtSmithTarget::produceProgramInfoImpl(
     return produceProgramInfoImpl(compilerResult, mainDecl);
 }
 
-P4RuntimeFuzzer &RtSmithTarget::getFuzzer(const ProgramInfo &programInfo) {
+RuntimeFuzzer &RtSmithTarget::getFuzzer(const ProgramInfo &programInfo) {
     return get().getFuzzerImpl(programInfo);
 }
 

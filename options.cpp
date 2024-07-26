@@ -50,12 +50,36 @@ RtSmithOptions::RtSmithOptions()
         },
         "Write the generated config to the specified .txtpb file.");
     registerOption(
+        "--user-p4info", "filePath",
+        [this](const char *arg) {
+            _userP4Info = arg;
+            if (!std::filesystem::exists(_userP4Info.value())) {
+                ::error("%1% does not exist. Please provide a valid file path.",
+                        _userP4Info.value().c_str());
+                return false;
+            }
+            if (_p4InfoFilePath.has_value()) {
+                ::error(
+                    "Both --user-p4info and --generate-p4info are specified. Please specify only "
+                    "one.");
+                return false;
+            }
+            return true;
+        },
+        "Write the P4Runtime control plane API description (P4Info) to the specified .txtpb file.");
+    registerOption(
         "--generate-p4info", "filePath",
         [this](const char *arg) {
             _p4InfoFilePath = arg;
             std::cout << "_p4InfoFilePath: " << _p4InfoFilePath.value() << std::endl;
             if (_p4InfoFilePath.value().extension() != ".txtpb") {
                 ::error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
+                return false;
+            }
+            if (_userP4Info.has_value()) {
+                ::error(
+                    "Both --user-p4info and --generate-p4info are specified. Please specify only "
+                    "one.");
                 return false;
             }
             return true;
@@ -85,6 +109,8 @@ std::optional<std::filesystem::path> RtSmithOptions::getOutputDir() const { retu
 bool RtSmithOptions::printToStdout() const { return printToStdout_; }
 
 std::optional<std::string> RtSmithOptions::getConfigFilePath() const { return configFilePath; }
+
+std::optional<std::filesystem::path> RtSmithOptions::userP4Info() const { return _userP4Info; }
 
 std::optional<std::filesystem::path> RtSmithOptions::p4InfoFilePath() const {
     return _p4InfoFilePath;
