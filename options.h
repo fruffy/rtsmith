@@ -28,6 +28,9 @@ class RtSmithOptions : public AbstractP4cToolOptions {
 
     const char *getIncludePath();
 
+    /// @returns if the options are valid.
+    [[nodiscard]] bool validateOptions() const override;
+
     /// @returns true when the --print-to-stdout option has been set.
     [[nodiscard]] bool printToStdout() const;
 

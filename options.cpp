@@ -58,12 +58,6 @@ RtSmithOptions::RtSmithOptions()
                         _userP4Info.value().c_str());
                 return false;
             }
-            if (_p4InfoFilePath.has_value()) {
-                ::error(
-                    "Both --user-p4info and --generate-p4info are specified. Please specify only "
-                    "one.");
-                return false;
-            }
             return true;
         },
         "Use user-provided P4Runtime control plane API description (P4Info).");
@@ -74,12 +68,6 @@ RtSmithOptions::RtSmithOptions()
             std::cout << "_p4InfoFilePath: " << _p4InfoFilePath.value() << std::endl;
             if (_p4InfoFilePath.value().extension() != ".txtpb") {
                 ::error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
-                return false;
-            }
-            if (_userP4Info.has_value()) {
-                ::error(
-                    "Both --user-p4info and --generate-p4info are specified. Please specify only "
-                    "one.");
                 return false;
             }
             return true;
@@ -105,6 +93,14 @@ RtSmithOptions::RtSmithOptions()
 }
 
 std::optional<std::filesystem::path> RtSmithOptions::getOutputDir() const { return outputDir_; }
+
+bool RtSmithOptions::validateOptions() const {
+    if (_userP4Info.has_value() && _p4InfoFilePath.has_value()) {
+        ::error("Both --user-p4info and --generate-p4info are specified. Please specify only one.");
+        return false;
+    }
+    return true;
+}
 
 bool RtSmithOptions::printToStdout() const { return printToStdout_; }
 
