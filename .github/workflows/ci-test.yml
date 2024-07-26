@@ -33,19 +33,19 @@ jobs:
 
     - name: Pull P4C and link P4RuntimeSmith.
       run: |
-        git clone --recurse-submodules -b fruffy/flay -j2 https://github.com/fruffy/p4c/ $GITHUB_WORKSPACE/p4c
+        git clone --recurse-submodules -b fruffy/flay -j2 https://github.com/fruffy/p4c/ $GITHUB_WORKSPACE/../p4c
+        ln -sf $GITHUB_WORKSPACE $GITHUB_WORKSPACE/../p4c/backends/p4tools/modules/
         git clone  https://github.com/fruffy/flay/ $GITHUB_WORKSPACE/../p4c/backends/p4tools/modules/flay
-        ln -sf $GITHUB_WORKSPACE $GITHUB_WORKSPACE/p4c/backends/p4tools/modules/
 
     - name: Build (Ubuntu 22.04)
       run: |
         tools/ci-build.sh
-      working-directory: p4c
+      working-directory: ../p4c
 
     - name: Test
       run: |
         ctest -R rtsmith- --output-on-failure --schedule-random
-      working-directory: p4c/build
+      working-directory: ../p4c/build
 
 
   # Build and test P4RuntimeSmith on MacOS 14
