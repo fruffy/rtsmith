@@ -8,11 +8,14 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Declare common P4RuntimeSmith variables.
 set(RTSMITH_DIR ${P4C_BINARY_DIR}/rtsmith)
 set(RTSMITH_DRIVER "${CMAKE_CURRENT_BINARY_DIR}/p4rtsmith")
+if (TARGET flay)
+  set (FLAY_CHECKER_DRIVER ${CMAKE_CURRENT_BINARY_DIR}/tools/rtsmith_flay_checker)
+endif()
 
 # ############### Protobuf generation
 set(P4RTSMITH_CONTROL_PLANE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/core/control_plane)
 set(P4RTSMITH_BFRUNTIME_DIR ${P4RTSMITH_CONTROL_PLANE_DIR}/bfruntime)
-set(BFRUNTIME_RT_PROTO ${P4RTSMITH_BFRUNTIME_DIR}/bfruntime.proto)
+set(P4RTSMITH_BFRUNTIME_RT_PROTO ${P4RTSMITH_BFRUNTIME_DIR}/bfruntime.proto)
 
 
 # Source files for rtsmith.
@@ -36,7 +39,12 @@ set(RTSMITH_GTEST_SOURCES
 add_subdirectory(core)
 
 # RTSmith libraries.
-set(RTSMITH_LIBS p4rtsmith-control-plane-runtime p4tools-common controlplane)
+# TODO: Fix this if-else hack after we move building of bfruntime.proto to p4tools.
+if (TARGET flay)
+  set(RTSMITH_LIBS flay-p4runtime p4tools-common controlplane)
+else()
+  set(RTSMITH_LIBS p4rtsmith-control-plane-runtime p4tools-common controlplane)
+endif()
 
 file(GLOB rtsmith_targets RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/targets
      ${CMAKE_CURRENT_SOURCE_DIR}/targets/*
@@ -69,12 +77,12 @@ endforeach()
 # Fill the template
 configure_file(register.h.in register.h)
 
-add_library(librtsmith STATIC ${RTSMITH_SOURCES})
-target_link_libraries(librtsmith ${RTSMITH_LIBS})
+add_library(rtsmith STATIC ${RTSMITH_SOURCES})
+target_link_libraries(rtsmith ${RTSMITH_LIBS})
 
 add_p4tools_executable(p4rtsmith main.cpp)
 
-target_link_libraries(p4rtsmith librtsmith ${RTSMITH_LIBS})
+target_link_libraries(p4rtsmith rtsmith ${RTSMITH_LIBS})
 
 # Add some convenience links for invoking p4rtsmith.
 add_custom_target(
@@ -88,11 +96,12 @@ add_custom_target(
 
 add_dependencies(p4rtsmith linkrtsmith)
 
+add_subdirectory(tools)
 
 if(ENABLE_GTESTS)
   add_executable(rtsmith-gtest ${RTSMITH_GTEST_SOURCES})
   target_link_libraries(
-    rtsmith-gtest PRIVATE librtsmith PRIVATE gtest ${RTSMITH_LIBS} ${P4C_LIBRARIES} ${P4C_LIB_DEPS}
+    rtsmith-gtest PRIVATE rtsmith PRIVATE gtest ${RTSMITH_LIBS} ${P4C_LIBRARIES} ${P4C_LIB_DEPS}
   )
 
   if(ENABLE_TESTING)

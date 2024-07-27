@@ -8,7 +8,7 @@ add_custom_target(
 # Unity builds do not work for Protobuf...
 set(CMAKE_UNITY_BUILD_PREV ${CMAKE_UNITY_BUILD})
 set(CMAKE_UNITY_BUILD OFF)
-add_library(p4rtsmith-control-plane-runtime OBJECT ${BFRUNTIME_RT_PROTO} ${BFRUNTIME_TESTS_PROTO})
+add_library(p4rtsmith-control-plane-runtime OBJECT ${P4RTSMITH_BFRUNTIME_RT_PROTO} ${BFRUNTIME_TESTS_PROTO})
 target_include_directories(p4rtsmith-control-plane-runtime PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(p4rtsmith-control-plane-runtime PRIVATE controlplane)
 add_dependencies(p4rtsmith-control-plane-runtime p4rtsmith_runtime_dir)

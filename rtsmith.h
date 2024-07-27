@@ -10,6 +10,18 @@ namespace P4Tools::RTSmith {
 struct RtSmithResult {
     InitialConfig config;
     UpdateSeries updateSeries;
+
+    RtSmithResult(InitialConfig &&config, UpdateSeries &&updateSeries)
+        : config(std::move(config)), updateSeries(std::move(updateSeries)) {}
+
+    // RtSmithResult(const P4Tools::RTSmith::RtSmithResult&) = delete;
+
+    RtSmithResult(RtSmithResult &other) : RtSmithResult(std::move(other)) {}
+
+    RtSmithResult(RtSmithResult &&other) {
+        config = std::move(other.config);
+        updateSeries = std::move(other.updateSeries);
+    }
 };
 
 /// This is main implementation of the P4RuntimeSmith tool.
@@ -23,11 +35,9 @@ class RtSmith : public AbstractP4cTool<RtSmithOptions> {
     virtual ~RtSmith() = default;
 
     static std::optional<RtSmithResult> generateConfig(const std::string &program,
-                                                       const CompilerOptions &compilerOptions,
                                                        const RtSmithOptions &rtSmithOptions);
 
-    static std::optional<RtSmithResult> generateConfig(const CompilerOptions &compilerOptions,
-                                                       const RtSmithOptions &rtSmithOptions);
+    static std::optional<RtSmithResult> generateConfig(const RtSmithOptions &rtSmithOptions);
 };
 
 }  // namespace P4Tools::RTSmith
