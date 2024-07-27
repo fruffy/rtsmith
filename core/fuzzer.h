@@ -6,8 +6,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wpedantic"
-// TODO: Fix this after we move bfruntime to p4tools
-#include "backends/p4tools/modules/flay/core/control_plane/bfruntime/bfruntime.pb.h"
+#include "backends/p4tools/common/control_plane/bfruntime/bfruntime.pb.h"
 #include "p4/v1/p4runtime.pb.h"
 #pragma GCC diagnostic pop
 

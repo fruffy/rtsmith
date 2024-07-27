@@ -12,12 +12,6 @@ if (TARGET flay)
   set (FLAY_CHECKER_DRIVER ${CMAKE_CURRENT_BINARY_DIR}/tools/rtsmith_flay_checker)
 endif()
 
-# ############### Protobuf generation
-set(P4RTSMITH_CONTROL_PLANE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/core/control_plane)
-set(P4RTSMITH_BFRUNTIME_DIR ${P4RTSMITH_CONTROL_PLANE_DIR}/bfruntime)
-set(P4RTSMITH_BFRUNTIME_RT_PROTO ${P4RTSMITH_BFRUNTIME_DIR}/bfruntime.proto)
-
-
 # Source files for rtsmith.
 set(RTSMITH_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/options.cpp
@@ -35,16 +29,9 @@ set(RTSMITH_GTEST_SOURCES
   test/core/rtsmith_api_test.cpp
 )
 
-# The core of the tool.
-add_subdirectory(core)
-
 # RTSmith libraries.
-# TODO: Fix this if-else hack after we move building of bfruntime.proto to p4tools.
-if (TARGET flay)
-  set(RTSMITH_LIBS flay-p4runtime p4tools-common controlplane)
-else()
-  set(RTSMITH_LIBS p4rtsmith-control-plane-runtime p4tools-common controlplane)
-endif()
+
+set(RTSMITH_LIBS p4tools-runtime-proto p4tools-common controlplane)
 
 file(GLOB rtsmith_targets RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/targets
      ${CMAKE_CURRENT_SOURCE_DIR}/targets/*

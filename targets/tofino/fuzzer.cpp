@@ -18,7 +18,7 @@ const TofinoTnaProgramInfo &TofinoTnaFuzzer::getProgramInfo() const {
 bfrt_proto::TableEntry TofinoTnaFuzzer::produceTableEntry(
     const p4::config::v1::Table &table,
     const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
-    // TODO: Special processing for things like selector, profile in Tofino.
+    /// TODO: Special processing for things like selector, profile in Tofino.
     return BFRuntimeFuzzer::produceTableEntry(table, actions);
 }
 
@@ -27,24 +27,24 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
 
     auto p4Info = getProgramInfo().getP4RuntimeApi().p4Info;
 
-    // TODO: for Tofino, we also need to look at externs instances for
-    // ActionSelector, ActionProfile and so on.
+    /// TODO: for Tofino, we also need to look at externs instances for
+    /// ActionSelector, ActionProfile and so on.
     const auto tables = p4Info->tables();
     const auto actions = p4Info->actions();
 
     auto tableCnt = tables.size();
 
     for (auto tableId = 0; tableId < tableCnt; tableId++) {
-        // NOTE: temporary use a coin to decide if generating entries for the table
+        /// NOTE: temporary use a coin to decide if generating entries for the table
         if (Utils::getRandInt(0, 1) == 0) {
             continue;
         }
         auto table = tables.Get(tableId);
-        // TODO: remove this `min`. It is for ease of debugging now.
+        /// TODO: remove this `min`. It is for ease of debugging now.
         auto maxEntryGenCnt = std::min(table.size(), (int64_t)2);
         for (auto i = 0; i < maxEntryGenCnt; i++) {
             auto update = request->add_updates();
-            // TODO: add support for other types.
+            /// TODO: add support for other types.
             update->set_type(bfrt_proto::Update_Type::Update_Type_INSERT);
             update->mutable_entity()->mutable_table_entry()->CopyFrom(
                 produceTableEntry(table, actions));

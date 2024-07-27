@@ -42,7 +42,7 @@ p4::v1::FieldMatch_LPM P4RuntimeFuzzer::produceFieldMatch_LPM(int bitwidth) {
 p4::v1::FieldMatch_Ternary P4RuntimeFuzzer::produceFieldMatch_Ternary(int bitwidth) {
     p4::v1::FieldMatch_Ternary protoTernary;
     protoTernary.set_value(produceBytes(bitwidth));
-    // TODO: use random mask
+    /// TODO: use random mask
     protoTernary.set_mask(produceBytes(bitwidth, /*value=*/0));
     return protoTernary;
 }
@@ -170,7 +170,7 @@ bfrt_proto::KeyField_LPM BFRuntimeFuzzer::produceKeyField_LPM(int bitwidth) {
 bfrt_proto::KeyField_Ternary BFRuntimeFuzzer::produceKeyField_Ternary(int bitwidth) {
     bfrt_proto::KeyField_Ternary protoTernary;
     protoTernary.set_value(produceBytes(bitwidth));
-    // TODO: use 0 for mask for now because setting mask to random value may not make sense.
+    /// TODO: use 0 for mask for now because setting mask to random value may not make sense.
     protoTernary.set_mask(produceBytes(bitwidth, 0));
     return protoTernary;
 }
