@@ -40,7 +40,7 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
     auto p4RuntimeApi = programInfo->getP4RuntimeApi();
     // printInfo("Inferred API:\n%1%", p4RuntimeApi.p4Info->DebugString());
 
-    if (!rtSmithOptions.p4InfoFilePath().has_value()) {
+    if (rtSmithOptions.p4InfoFilePath().has_value()) {
         auto *outputFile = openFile(rtSmithOptions.p4InfoFilePath().value(), true);
         if (outputFile == nullptr) {
             return std::nullopt;
