@@ -95,8 +95,8 @@ class FlayCheckerOptions : public RtSmithOptions {
 
 int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions) {
     printInfo("Generating RtSmith configuration for program...");
-    MOVE_OR_RETURN(auto configResult, RTSmith::RtSmith::generateConfig(rtSmithOptions),
-                   EXIT_FAILURE);
+    ASSIGN_OR_RETURN(auto &configResult, RTSmith::RtSmith::generateConfig(rtSmithOptions),
+                     EXIT_FAILURE);
 
     printInfo("RtSmith configuration complete.");
     printInfo("Starting Flay optimization...");
