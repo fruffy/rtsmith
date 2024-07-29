@@ -41,7 +41,7 @@ namespace P4Tools::RTSmith {
 // NOLINTNEXTLINE
 #define MOVE_OR_RETURN_IMPL(temporary, targetVariable, inputFunction, returnValue) \
     auto temporary = inputFunction;                                                \
-    if (!temporary) return returnValue;                                          \
+    if (!temporary) return returnValue;                                            \
     targetVariable = std::move(temporary);  // NOLINT
 
 #define MOVE_OR_RETURN(targetVariable, inputFunction, returnValue)                      \

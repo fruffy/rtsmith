@@ -144,8 +144,8 @@ std::optional<RtSmithResult> generateConfigImpl(
                                      ::error("Expected a file input."));
         // Run the compiler to get an IR and invoke the tool.
         ASSIGN_OR_RETURN(compilerResult,
-                       P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME),
-                       std::nullopt);
+                         P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME),
+                         std::nullopt);
     }
 
     return runRtSmith(compilerResult.value(), rtSmithOptions);
