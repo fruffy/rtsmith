@@ -144,11 +144,11 @@ std::optional<RtSmithResult> generateConfigImpl(
                                      ::error("Expected a file input."));
         // Run the compiler to get an IR and invoke the tool.
         ASSIGN_OR_RETURN(compilerResult,
-                         P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME),
-                         std::nullopt);
+                       P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME),
+                       std::nullopt);
     }
 
-    return std::move(runRtSmith(compilerResult.value(), rtSmithOptions));
+    return runRtSmith(compilerResult.value(), rtSmithOptions);
 }
 
 std::optional<RtSmithResult> RtSmith::generateConfig(const std::string &program,
@@ -166,7 +166,7 @@ std::optional<RtSmithResult> RtSmith::generateConfig(const std::string &program,
 
 std::optional<RtSmithResult> RtSmith::generateConfig(const RtSmithOptions &rtSmithOptions) {
     try {
-        return std::move(generateConfigImpl(std::nullopt, rtSmithOptions));
+        return generateConfigImpl(std::nullopt, rtSmithOptions);
     } catch (const std::exception &e) {
         std::cerr << "Internal error: " << e.what() << "\n";
         return std::nullopt;

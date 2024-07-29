@@ -34,12 +34,6 @@ class RuntimeFuzzer {
     explicit RuntimeFuzzer(const FuzzerType fuzzerType, const ProgramInfo &programInfo)
         : fuzzerType(fuzzerType), programInfo(programInfo) {}
 
-    RuntimeFuzzer(const RuntimeFuzzer &) = default;
-    RuntimeFuzzer(RuntimeFuzzer &&) = delete;
-    RuntimeFuzzer &operator=(const RuntimeFuzzer &) = default;
-    RuntimeFuzzer &operator=(RuntimeFuzzer &&) = delete;
-    virtual ~RuntimeFuzzer() = default;
-
     [[nodiscard]] FuzzerType getFuzzerType() const { return fuzzerType; }
 
     /// @brief Produce an `InitialConfig`, which is a vector of updates.
@@ -55,12 +49,6 @@ class P4RuntimeFuzzer : public RuntimeFuzzer {
  public:
     explicit P4RuntimeFuzzer(const ProgramInfo &programInfo)
         : RuntimeFuzzer(FuzzerType::P4Runtime, programInfo) {}
-
-    P4RuntimeFuzzer(const P4RuntimeFuzzer &) = default;
-    P4RuntimeFuzzer(P4RuntimeFuzzer &&) = delete;
-    P4RuntimeFuzzer &operator=(const P4RuntimeFuzzer &) = default;
-    P4RuntimeFuzzer &operator=(P4RuntimeFuzzer &&) = delete;
-    virtual ~P4RuntimeFuzzer() = default;
 
     /// @brief Produce a FieldMatch_Exact with bitwidth
     /// @param bitwidth
@@ -119,12 +107,6 @@ class BFRuntimeFuzzer : public RuntimeFuzzer {
  public:
     explicit BFRuntimeFuzzer(const ProgramInfo &programInfo)
         : RuntimeFuzzer(FuzzerType::BFRuntime, programInfo) {}
-
-    BFRuntimeFuzzer(const BFRuntimeFuzzer &) = default;
-    BFRuntimeFuzzer(BFRuntimeFuzzer &&) = delete;
-    BFRuntimeFuzzer &operator=(const BFRuntimeFuzzer &) = default;
-    BFRuntimeFuzzer &operator=(BFRuntimeFuzzer &&) = delete;
-    virtual ~BFRuntimeFuzzer() = default;
 
     /// @brief Produce a `produceKeyField_Exact` with bitwidth.
     /// @param bitwidth

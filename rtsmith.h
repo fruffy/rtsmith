@@ -13,15 +13,6 @@ struct RtSmithResult {
 
     RtSmithResult(InitialConfig &&config, UpdateSeries &&updateSeries)
         : config(std::move(config)), updateSeries(std::move(updateSeries)) {}
-
-    // RtSmithResult(const P4Tools::RTSmith::RtSmithResult&) = delete;
-
-    RtSmithResult(RtSmithResult &other) : RtSmithResult(std::move(other)) {}
-
-    RtSmithResult(RtSmithResult &&other) {
-        config = std::move(other.config);
-        updateSeries = std::move(other.updateSeries);
-    }
 };
 
 /// This is main implementation of the P4RuntimeSmith tool.

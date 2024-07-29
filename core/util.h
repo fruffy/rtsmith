@@ -36,6 +36,18 @@ namespace P4Tools::RTSmith {
     ASSIGN_OR_RETURN_IMPL(STATUS_MACROS_CONCAT_NAME(temporary, __LINE__), targetVariable, \
                           inputFunction, returnValue)
 
+/// Move the value of @param inputFunction to @param targetVariable if the contained value is not
+/// false.
+// NOLINTNEXTLINE
+#define MOVE_OR_RETURN_IMPL(temporary, targetVariable, inputFunction, returnValue) \
+    auto temporary = inputFunction;                                                \
+    if (!temporary) return returnValue;                                          \
+    targetVariable = std::move(temporary);  // NOLINT
+
+#define MOVE_OR_RETURN(targetVariable, inputFunction, returnValue)                      \
+    MOVE_OR_RETURN_IMPL(STATUS_MACROS_CONCAT_NAME(temporary, __LINE__), targetVariable, \
+                        inputFunction, returnValue)
+
 #define ASSIGN_OR_RETURN_WITH_MESSAGE_IMPL(temporary, targetVariable, inputFunction, returnValue, \
                                            errorFunction)                                         \
     auto temporary = inputFunction;                                                               \
