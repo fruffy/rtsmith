@@ -12,17 +12,12 @@
 
 namespace P4Tools::RTSmith {
 
-enum class FuzzerType { P4Runtime, BFRuntime };
-
 using ProtobufMessagePtr = std::unique_ptr<google::protobuf::Message>;
 using InitialConfig = std::vector<ProtobufMessagePtr>;
 using UpdateSeries = std::vector<std::pair<uint64_t, ProtobufMessagePtr>>;
 
 class RuntimeFuzzer {
  private:
-    /// fuzzer type to distinguish between P4Runtime and BFRuntime fuzzers.
-    FuzzerType fuzzerType;
-
     /// The program info of the target.
     std::reference_wrapper<const ProgramInfo> programInfo;
 
@@ -31,10 +26,18 @@ class RuntimeFuzzer {
     [[nodiscard]] virtual const ProgramInfo &getProgramInfo() const { return programInfo; }
 
  public:
-    explicit RuntimeFuzzer(const FuzzerType fuzzerType, const ProgramInfo &programInfo)
-        : fuzzerType(fuzzerType), programInfo(programInfo) {}
+    explicit RuntimeFuzzer(const ProgramInfo &programInfo) : programInfo(programInfo) {}
 
-    [[nodiscard]] FuzzerType getFuzzerType() const { return fuzzerType; }
+    /// @brief Produce bytes in form of std::string given bitwidth.
+    /// @param bitwidth
+    /// @return A random bytes of length bitwidth in form of std::string.
+    static std::string produceBytes(int bitwidth);
+
+    /// @brief Produce bytes in form of std::string given bitwidth.
+    /// @param bitwidth
+    /// @param value
+    /// @return A bytes of value of length bitwidth in form of std::string.
+    static std::string produceBytes(int bitwidth, big_int value);
 
     /// @brief Produce an `InitialConfig`, which is a vector of updates.
     /// @return A InitialConfig
@@ -47,8 +50,7 @@ class RuntimeFuzzer {
 
 class P4RuntimeFuzzer : public RuntimeFuzzer {
  public:
-    explicit P4RuntimeFuzzer(const ProgramInfo &programInfo)
-        : RuntimeFuzzer(FuzzerType::P4Runtime, programInfo) {}
+    explicit P4RuntimeFuzzer(const ProgramInfo &programInfo) : RuntimeFuzzer(programInfo) {}
 
     /// @brief Produce a FieldMatch_Exact with bitwidth
     /// @param bitwidth
@@ -99,58 +101,6 @@ class P4RuntimeFuzzer : public RuntimeFuzzer {
     /// @param actions
     /// @return A `TableEntry`
     virtual p4::v1::TableEntry produceTableEntry(
-        const p4::config::v1::Table &table,
-        const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
-};
-
-class BFRuntimeFuzzer : public RuntimeFuzzer {
- public:
-    explicit BFRuntimeFuzzer(const ProgramInfo &programInfo)
-        : RuntimeFuzzer(FuzzerType::BFRuntime, programInfo) {}
-
-    /// @brief Produce a `produceKeyField_Exact` with bitwidth.
-    /// @param bitwidth
-    /// @return A `produceKeyField_Exact`.
-    virtual bfrt_proto::KeyField_Exact produceKeyField_Exact(int bitwidth);
-
-    /// @brief Produce a `produceKeyField_LPM` with bitwidth.
-    /// @param bitwidth
-    /// @return A `produceKeyField_LPM`.
-    virtual bfrt_proto::KeyField_LPM produceKeyField_LPM(int bitwidth);
-
-    /// @brief Produce a `produceKeyField_Ternary` with bitwidth.
-    /// @param bitwidth
-    /// @return A `produceKeyField_Ternary`.
-    virtual bfrt_proto::KeyField_Ternary produceKeyField_Ternary(int bitwidth);
-
-    /// @brief Produce a `KeyField_Optional` with bitwidth.
-    /// @param bitwidth
-    /// @return A `KeyField_Optional`.
-    virtual bfrt_proto::KeyField_Optional produceKeyField_Optional(int bitwidth);
-
-    /// @brief Produce a `DataField` for an action in the table entry.
-    /// @param param
-    /// @return A `DataField`.
-    virtual bfrt_proto::DataField produceDataField(const p4::config::v1::Action_Param &param);
-
-    /// @brief Produce a `TableData` for an action in the table entry.
-    /// @param action_refs action reference options where we will randomly pick one from.
-    /// @param actions actions that containing `action_refs` for finding the action.
-    /// @return A `TableData`.
-    virtual bfrt_proto::TableData produceTableData(
-        const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
-        const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
-
-    /// @brief Produce a random `KeyField`.
-    /// @param match The match field info.
-    /// @return A `KeyField`
-    virtual bfrt_proto::KeyField produceKeyField(const p4::config::v1::MatchField &match);
-
-    /// @brief Produce a `TableEntry` for `table` with a randomly selected action.
-    /// @param table
-    /// @param actions
-    /// @return A `TableEntry`.
-    virtual bfrt_proto::TableEntry produceTableEntry(
         const p4::config::v1::Table &table,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
 };

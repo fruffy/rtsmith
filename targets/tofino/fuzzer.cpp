@@ -9,17 +9,111 @@
 namespace P4Tools::RTSmith::Tna {
 
 TofinoTnaFuzzer::TofinoTnaFuzzer(const TofinoTnaProgramInfo &programInfo)
-    : BFRuntimeFuzzer(programInfo) {}
+    : RuntimeFuzzer(programInfo) {}
 
 const TofinoTnaProgramInfo &TofinoTnaFuzzer::getProgramInfo() const {
-    return *BFRuntimeFuzzer::getProgramInfo().checkedTo<TofinoTnaProgramInfo>();
+    return *RuntimeFuzzer::getProgramInfo().checkedTo<TofinoTnaProgramInfo>();
+}
+
+bfrt_proto::KeyField_Exact TofinoTnaFuzzer::produceKeyField_Exact(int bitwidth) {
+    bfrt_proto::KeyField_Exact protoExact;
+    protoExact.set_value(produceBytes(bitwidth));
+    return protoExact;
+}
+
+bfrt_proto::KeyField_LPM TofinoTnaFuzzer::produceKeyField_LPM(int bitwidth) {
+    bfrt_proto::KeyField_LPM protoLPM;
+    protoLPM.set_value(produceBytes(bitwidth));
+    protoLPM.set_prefix_len(Utils::getRandInt(0, bitwidth));
+    return protoLPM;
+}
+
+bfrt_proto::KeyField_Ternary TofinoTnaFuzzer::produceKeyField_Ternary(int bitwidth) {
+    bfrt_proto::KeyField_Ternary protoTernary;
+    protoTernary.set_value(produceBytes(bitwidth));
+    /// TODO: use 0 for mask for now because setting mask to random value may not make sense.
+    protoTernary.set_mask(produceBytes(bitwidth, 0));
+    return protoTernary;
+}
+
+bfrt_proto::KeyField_Optional TofinoTnaFuzzer::produceKeyField_Optional(int bitwidth) {
+    bfrt_proto::KeyField_Optional protoOptional;
+    protoOptional.set_value(produceBytes(bitwidth));
+    return protoOptional;
+}
+
+bfrt_proto::DataField TofinoTnaFuzzer::produceDataField(const p4::config::v1::Action_Param &param) {
+    bfrt_proto::DataField protoDataField;
+    protoDataField.set_field_id(param.id());
+    protoDataField.set_stream(produceBytes(param.bitwidth()));
+    return protoDataField;
+}
+
+bfrt_proto::TableData TofinoTnaFuzzer::produceTableData(
+    const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
+    const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
+    bfrt_proto::TableData protoTableData;
+
+    auto action_index = Utils::getRandInt(action_refs.size() - 1);
+    auto action_ref_id = action_refs[action_index].id();
+
+    auto action =
+        P4::ControlPlaneAPI::findP4InfoObject(actions.begin(), actions.end(), action_ref_id);
+    protoTableData.set_action_id(action->preamble().id());
+    for (auto &param : action->params()) {
+        *protoTableData.add_fields() = produceDataField(param);
+    }
+
+    return protoTableData;
+}
+
+bfrt_proto::KeyField TofinoTnaFuzzer::produceKeyField(const p4::config::v1::MatchField &match) {
+    bfrt_proto::KeyField protoKeyField;
+    protoKeyField.set_field_id(match.id());
+    auto matchType = match.match_type();
+    auto bitwidth = match.bitwidth();
+
+    switch (matchType) {
+        case p4::config::v1::MatchField::EXACT:
+            protoKeyField.mutable_exact()->CopyFrom(produceKeyField_Exact(bitwidth));
+            break;
+        case p4::config::v1::MatchField::LPM:
+            protoKeyField.mutable_lpm()->CopyFrom(produceKeyField_LPM(bitwidth));
+            break;
+        case p4::config::v1::MatchField::TERNARY:
+            protoKeyField.mutable_ternary()->CopyFrom(produceKeyField_Ternary(bitwidth));
+            break;
+        case p4::config::v1::MatchField::OPTIONAL:
+            protoKeyField.mutable_optional()->CopyFrom(produceKeyField_Optional(bitwidth));
+            break;
+        default:
+            P4C_UNIMPLEMENTED("Match type %1% not supported for TofinoTnaFuzzer yet",
+                              p4::config::v1::MatchField::MatchType_Name(matchType));
+    }
+    return protoKeyField;
 }
 
 bfrt_proto::TableEntry TofinoTnaFuzzer::produceTableEntry(
     const p4::config::v1::Table &table,
     const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
-    /// TODO: Special processing for things like selector, profile in Tofino.
-    return BFRuntimeFuzzer::produceTableEntry(table, actions);
+    bfrt_proto::TableEntry protoEntry;
+
+    // set table id
+    const auto &pre_t = table.preamble();
+    protoEntry.set_table_id(pre_t.id());
+
+    // add matches
+    const auto &matchFields = table.match_fields();
+    for (auto i = 0; i < matchFields.size(); i++) {
+        auto match = matchFields[i];
+        protoEntry.mutable_key()->add_fields()->CopyFrom(produceKeyField(matchFields[i]));
+    }
+
+    // add action
+    const auto &action_refs = table.action_refs();
+    protoEntry.mutable_data()->CopyFrom(produceTableData(action_refs, actions));
+
+    return protoEntry;
 }
 
 InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
