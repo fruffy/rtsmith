@@ -25,7 +25,8 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
 
     for (auto tableId = 0; tableId < tableCnt; tableId++) {
         /// NOTE: temporary use a coin to decide if generating entries for the table
-        if (Utils::getRandInt(0, 1) == 0) {
+        /// if the number of tables is greater than 3.
+        if (tableCnt >= 3 && Utils::getRandInt(0, 1) == 0) {
             continue;
         }
         auto table = tables.Get(tableId);

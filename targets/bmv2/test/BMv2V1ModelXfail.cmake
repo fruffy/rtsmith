@@ -18,7 +18,6 @@ p4tools_add_xfail_reason(
   arith3-bmv2.p4
   arith4-bmv2.p4
   arith5-bmv2.p4
-  basic2-bmv2.p4
   basic_routing-bmv2.p4
   bvec-hdr-bmv2.p4
   checksum-l4-bmv2.p4
@@ -30,7 +29,6 @@ p4tools_add_xfail_reason(
   custom-type-restricted-fields.p4
   def-use.p4
   drop-bmv2.p4
-  flag_lost-bmv2.p4
   flowlet_switching-bmv2.p4
   gauntlet_action_return-bmv2.p4
   gauntlet_exit_combination_1-bmv2.p4
@@ -85,7 +83,6 @@ p4tools_add_xfail_reason(
   issue1544-bmv2.p4
   issue1560-bmv2.p4
   issue1595.p4
-  issue1630-bmv2.p4
   issue1653-complex-bmv2.p4
   issue1713-bmv2.p4
   issue1739-bmv2.p4
@@ -151,9 +148,6 @@ p4tools_add_xfail_reason(
   multicast-bmv2.p4
   named_meter_1-bmv2.p4
   named_meter_bmv2.p4
-  nested_if_else.p4
-  nested_if_lvalue_dependencies.p4
-  nested_if_statement.p4
   nonstandard_table_names-bmv2.p4
   p416-type-use3.p4
   parser-locals2.p4
