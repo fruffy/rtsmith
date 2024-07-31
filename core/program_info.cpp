@@ -15,4 +15,6 @@ const IR::P4Program *ProgramInfo::getProgram() const { return &compilerResult.ge
 
 const P4::P4RuntimeAPI &ProgramInfo::getP4RuntimeApi() const { return p4runtimeApi; }
 
+const ::p4::config::v1::P4Info *ProgramInfo::getP4Info() const { return p4runtimeApi.p4Info; }
+
 }  // namespace P4Tools::RTSmith

@@ -37,6 +37,9 @@ class ProgramInfo : public ICastable {
 
     /// @returns the P4RuntimeAPI associated with this program.
     [[nodiscard]] const P4::P4RuntimeAPI &getP4RuntimeApi() const;
+
+    /// @returns the P4Info associated with this program.
+    [[nodiscard]] const ::p4::config::v1::P4Info *getP4Info() const;
 };
 
 }  // namespace P4Tools::RTSmith

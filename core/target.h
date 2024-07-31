@@ -22,7 +22,7 @@ class RtSmithTarget : public CompilerTarget {
 
     /// @returns the fuzzer that will produce an initial configuration and a series of random write
     /// requests..
-    [[nodiscard]] static P4RuntimeFuzzer &getFuzzer(const ProgramInfo &programInfo);
+    [[nodiscard]] static RuntimeFuzzer &getFuzzer(const ProgramInfo &programInfo);
 
  protected:
     /// @see @produceProgramInfo.
@@ -34,7 +34,7 @@ class RtSmithTarget : public CompilerTarget {
         const CompilerResult &compilerResult, const IR::Declaration_Instance *mainDecl) const = 0;
 
     /// @see @getStepper.
-    [[nodiscard]] virtual P4RuntimeFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const = 0;
+    [[nodiscard]] virtual RuntimeFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const = 0;
 
     explicit RtSmithTarget(const std::string &deviceName, const std::string &archName);
 

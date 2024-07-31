@@ -5,6 +5,7 @@
 #include "backends/p4tools/modules/flay/core/lib/return_macros.h"
 #include "backends/p4tools/modules/flay/flay.h"
 #include "backends/p4tools/modules/flay/register.h"
+#include "backends/p4tools/modules/p4rtsmith/core/util.h"
 #include "backends/p4tools/modules/p4rtsmith/options.h"
 #include "backends/p4tools/modules/p4rtsmith/register.h"
 #include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
@@ -94,8 +95,9 @@ class FlayCheckerOptions : public RtSmithOptions {
 
 int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions) {
     printInfo("Generating RtSmith configuration for program...");
-    ASSIGN_OR_RETURN(auto configResult, RTSmith::RtSmith::generateConfig(rtSmithOptions),
-                     EXIT_FAILURE);
+    if (!RTSmith::RtSmith::generateConfig(rtSmithOptions)) {
+        return EXIT_FAILURE;
+    }
 
     printInfo("RtSmith configuration complete.");
     printInfo("Starting Flay optimization...");

@@ -18,6 +18,9 @@ class RtSmithOptions : public AbstractP4cToolOptions {
 
     const char *getIncludePath();
 
+    /// @returns if the options are valid.
+    [[nodiscard]] bool validateOptions() const override;
+
     /// @returns true when the --print-to-stdout option has been set.
     [[nodiscard]] bool printToStdout() const;
 
@@ -27,8 +30,11 @@ class RtSmithOptions : public AbstractP4cToolOptions {
     /// @returns the path set with --generate-config.
     [[nodiscard]] std::optional<std::string> configName() const;
 
+    /// @returns the path to the user p4 info file set by the --user-p4info option.
+    [[nodiscard]] std::optional<std::filesystem::path> userP4Info() const;
+
     /// @returns the path set with --generate-p4info.
-    [[nodiscard]] std::filesystem::path p4InfoFilePath() const;
+    [[nodiscard]] std::optional<std::filesystem::path> p4InfoFilePath() const;
 
     /// @returns the control plane API to use.
     [[nodiscard]] std::string_view controlPlaneApi() const;
@@ -43,8 +49,11 @@ class RtSmithOptions : public AbstractP4cToolOptions {
     /// Whether to write the generated config to a file or to stdout.
     bool _printToStdout = false;
 
+    // Use a user-supplied P4Info file instead of generating one.
+    std::optional<std::filesystem::path> _userP4Info = std::nullopt;
+
     // Write the P4Runtime control plane API description to the specified file.
-    std::filesystem::path _p4InfoFilePath;
+    std::optional<std::filesystem::path> _p4InfoFilePath;
 
     // The control plane API to use. Defaults to P4Runtime.
     std::string _controlPlaneApi = "P4RUNTIME";

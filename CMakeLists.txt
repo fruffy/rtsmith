@@ -12,7 +12,6 @@ if (TARGET flay)
   set (FLAY_CHECKER_DRIVER ${CMAKE_CURRENT_BINARY_DIR}/tools/rtsmith_flay_checker)
 endif()
 
-
 # Source files for rtsmith.
 set(RTSMITH_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/options.cpp
@@ -31,7 +30,8 @@ set(RTSMITH_GTEST_SOURCES
 )
 
 # RTSmith libraries.
-set(RTSMITH_LIBS p4tools-common controlplane)
+
+set(RTSMITH_LIBS p4tools-runtime-proto p4tools-common controlplane)
 
 file(GLOB rtsmith_targets RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/targets
      ${CMAKE_CURRENT_SOURCE_DIR}/targets/*

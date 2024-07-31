@@ -6,15 +6,17 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wpedantic"
+#include "backends/p4tools/common/control_plane/bfruntime/bfruntime.pb.h"
 #include "p4/v1/p4runtime.pb.h"
 #pragma GCC diagnostic pop
 
 namespace P4Tools::RTSmith {
 
-using InitialP4RuntimeConfig = std::vector<p4::v1::WriteRequest>;
-using P4RuntimeUpdateSeries = std::vector<std::pair<uint64_t, p4::v1::WriteRequest>>;
+using ProtobufMessagePtr = std::unique_ptr<google::protobuf::Message>;
+using InitialConfig = std::vector<ProtobufMessagePtr>;
+using UpdateSeries = std::vector<std::pair<uint64_t, ProtobufMessagePtr>>;
 
-class P4RuntimeFuzzer {
+class RuntimeFuzzer {
  private:
     /// The program info of the target.
     std::reference_wrapper<const ProgramInfo> programInfo;
@@ -24,37 +26,83 @@ class P4RuntimeFuzzer {
     [[nodiscard]] virtual const ProgramInfo &getProgramInfo() const { return programInfo; }
 
  public:
-    explicit P4RuntimeFuzzer(const ProgramInfo &programInfo) : programInfo(programInfo) {}
+    explicit RuntimeFuzzer(const ProgramInfo &programInfo) : programInfo(programInfo) {}
 
-    P4RuntimeFuzzer(const P4RuntimeFuzzer &) = default;
-    P4RuntimeFuzzer(P4RuntimeFuzzer &&) = delete;
-    P4RuntimeFuzzer &operator=(const P4RuntimeFuzzer &) = default;
-    P4RuntimeFuzzer &operator=(P4RuntimeFuzzer &&) = delete;
-    virtual ~P4RuntimeFuzzer() = default;
+    /// @brief Produce bytes in form of std::string given bitwidth.
+    /// @param bitwidth
+    /// @return A random bytes of length bitwidth in form of std::string.
+    static std::string produceBytes(int bitwidth);
 
-    virtual std::optional<p4::v1::FieldMatch> produceTernaryMatch(int fieldId, int bitwidth);
+    /// @brief Produce bytes in form of std::string given bitwidth.
+    /// @param bitwidth
+    /// @param value
+    /// @return A bytes of value of length bitwidth in form of std::string.
+    static std::string produceBytes(int bitwidth, big_int value);
 
-    virtual std::optional<p4::v1::FieldMatch> produceExactMatch(int fieldId, int bitwidth);
+    /// @brief Produce an `InitialConfig`, which is a vector of updates.
+    /// @return A InitialConfig
+    virtual InitialConfig produceInitialConfig() = 0;
 
-    virtual p4::v1::Action_Param produceActionParam(p4::config::v1::Action_Param &param,
-                                                    int parameterId);
+    /// @brief Produce an `UpdateSeries`, which is a vector of indexed updates.
+    /// @return A InitialConfig
+    virtual UpdateSeries produceUpdateTimeSeries() = 0;
+};
 
+class P4RuntimeFuzzer : public RuntimeFuzzer {
+ public:
+    explicit P4RuntimeFuzzer(const ProgramInfo &programInfo) : RuntimeFuzzer(programInfo) {}
+
+    /// @brief Produce a FieldMatch_Exact with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_Exact
+    virtual p4::v1::FieldMatch_Exact produceFieldMatch_Exact(int bitwidth);
+
+    /// @brief Produce a FieldMatch_LPM with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_LPM
+    virtual p4::v1::FieldMatch_LPM produceFieldMatch_LPM(int bitwidth);
+
+    /// @brief Produce a FieldMatch_Ternary with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_Ternary
+    virtual p4::v1::FieldMatch_Ternary produceFieldMatch_Ternary(int bitwidth);
+
+    /// @brief Produce a FieldMatch_Optional with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_Optional
+    virtual p4::v1::FieldMatch_Optional produceFieldMatch_Optional(int bitwidth);
+
+    /// @brief Produce a param for an action in the table entry
+    /// @param param
+    /// @return An action param
+    virtual p4::v1::Action_Param produceActionParam(const p4::config::v1::Action_Param &param);
+
+    /// @brief Produce a random action selected for a table entry
+    /// @param action_refs action reference options where we will randomly pick one from.
+    /// @param actions actions that containing `action_refs` for finding the action.
+    /// @return An `Action`
     virtual p4::v1::Action produceTableAction(
         const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
 
+    /// @brief Produce priority for an entry given match fields
+    /// @param matchFields
+    /// @return A 32-bit integer
     virtual uint32_t producePriority(
         const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields);
 
-    virtual std::optional<p4::v1::FieldMatch> produceMatchField(p4::config::v1::MatchField &match,
-                                                                int fieldId);
+    /// @brief Produce match field given match type
+    /// @param match
+    /// @return A `FieldMatch`
+    virtual p4::v1::FieldMatch produceMatchField(p4::config::v1::MatchField &match);
+
+    /// @brief Produce a `TableEntry` with id, match fields, priority and action
+    /// @param table
+    /// @param actions
+    /// @return A `TableEntry`
     virtual p4::v1::TableEntry produceTableEntry(
         const p4::config::v1::Table &table,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
-
-    virtual InitialP4RuntimeConfig produceInitialConfig() = 0;
-
-    virtual P4RuntimeUpdateSeries produceUpdateTimeSeries() = 0;
 };
 
 }  // namespace P4Tools::RTSmith

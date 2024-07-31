@@ -40,8 +40,8 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
     auto p4RuntimeApi = programInfo->getP4RuntimeApi();
     // printInfo("Inferred API:\n%1%", p4RuntimeApi.p4Info->DebugString());
 
-    if (!rtSmithOptions.p4InfoFilePath().empty()) {
-        auto *outputFile = openFile(rtSmithOptions.p4InfoFilePath(), true);
+    if (rtSmithOptions.p4InfoFilePath().has_value()) {
+        auto *outputFile = openFile(rtSmithOptions.p4InfoFilePath().value(), true);
         if (outputFile == nullptr) {
             return std::nullopt;
         }
@@ -56,12 +56,12 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
     if (rtSmithOptions.printToStdout()) {
         printInfo("Generated initial configuration:");
         for (const auto &writeRequest : initialConfig) {
-            printInfo("%1%", writeRequest.DebugString());
+            printInfo("%1%", writeRequest->DebugString());
         }
 
         printInfo("Time series updates:");
         for (const auto &[time, writeRequest] : timeSeriesUpdates) {
-            printInfo("Time %1%:\n%2%", writeRequest.DebugString());
+            printInfo("Time %1%:\n%2%", writeRequest->DebugString());
         }
     }
 
@@ -93,7 +93,7 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
             std::string output;
             google::protobuf::TextFormat::Printer textPrinter;
             textPrinter.SetExpandAny(true);
-            if (!textPrinter.PrintToString(writeRequest, &output)) {
+            if (!textPrinter.PrintToString(*writeRequest.get(), &output)) {
                 ::error(ErrorType::ERR_IO, "Failed to serialize protobuf message to text");
                 return std::nullopt;
             }
@@ -109,7 +109,7 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
         }
     }
 
-    return {{initialConfig, timeSeriesUpdates}};
+    return {{std::move(initialConfig), std::move(timeSeriesUpdates)}};
 }
 
 }  // namespace

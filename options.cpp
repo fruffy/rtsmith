@@ -38,11 +38,23 @@ RtSmithOptions::RtSmithOptions()
         },
         "The base name of the config files. Optional.");
     registerOption(
+        "--user-p4info", "filePath",
+        [this](const char *arg) {
+            _userP4Info = arg;
+            if (!std::filesystem::exists(_userP4Info.value())) {
+                ::error("%1% does not exist. Please provide a valid file path.",
+                        _userP4Info.value().c_str());
+                return false;
+            }
+            return true;
+        },
+        "Use user-provided P4Runtime control plane API description (P4Info).");
+    registerOption(
         "--generate-p4info", "filePath",
         [this](const char *arg) {
             _p4InfoFilePath = arg;
-            if (_p4InfoFilePath.extension() != ".txtpb") {
-                ::error("%1% must have a .txtpb extension.", _p4InfoFilePath.c_str());
+            if (_p4InfoFilePath.value().extension() != ".txtpb") {
+                ::error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
                 return false;
             }
             return true;
@@ -69,11 +81,23 @@ RtSmithOptions::RtSmithOptions()
 
 std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }
 
+bool RtSmithOptions::validateOptions() const {
+    if (_userP4Info.has_value() && _p4InfoFilePath.has_value()) {
+        ::error("Both --user-p4info and --generate-p4info are specified. Please specify only one.");
+        return false;
+    }
+    return true;
+}
+
 bool RtSmithOptions::printToStdout() const { return _printToStdout; }
 
 std::optional<std::string> RtSmithOptions::configName() const { return _configName; }
 
-std::filesystem::path RtSmithOptions::p4InfoFilePath() const { return _p4InfoFilePath; }
+std::optional<std::filesystem::path> RtSmithOptions::userP4Info() const { return _userP4Info; }
+
+std::optional<std::filesystem::path> RtSmithOptions::p4InfoFilePath() const {
+    return _p4InfoFilePath;
+}
 
 std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneApi; }
 

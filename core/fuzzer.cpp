@@ -6,66 +6,54 @@
 
 namespace P4Tools::RTSmith {
 
-/// @brief Produce a match field with match type TERNARY
-/// @param fieldId
-/// @param bitwidth
-/// @return A field match or null
-std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceTernaryMatch(int fieldId, int bitwidth) {
-    p4::v1::FieldMatch protoMatch;
-
+std::string RuntimeFuzzer::produceBytes(int bitwidth) {
     auto value = Utils::getRandConstantForWidth(bitwidth)->value;
     std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
-    std::optional<std::string> maskStr = P4::ControlPlaneAPI::stringReprConstant(0, bitwidth);
-    if (valueStr == std::nullopt || maskStr == std::nullopt) return std::nullopt;
-
-    protoMatch.set_field_id(fieldId);
-    auto protoTernary = protoMatch.mutable_ternary();
-    protoTernary->set_value(*valueStr);
-    protoTernary->set_mask(*maskStr);
-
-    return protoMatch;
+    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value < 0?");
+    return valueStr.value();
 }
 
-/// @brief Produce a match field with match type EXACT
-/// @param fieldId
-/// @param bitwidth
-/// @return A field match or null
-std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceExactMatch(int fieldId, int bitwidth) {
-    p4::v1::FieldMatch protoMatch;
-
-    auto value = Utils::getRandConstantForWidth(bitwidth)->value;
+std::string RuntimeFuzzer::produceBytes(int bitwidth, big_int value) {
     std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
-    if (valueStr == std::nullopt) return std::nullopt;
-
-    protoMatch.set_field_id(fieldId);
-    auto protoExact = protoMatch.mutable_exact();
-    protoExact->set_value(*valueStr);
-
-    return protoMatch;
+    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value%1% < 0?", value.str());
+    return valueStr.value();
 }
 
-/// @brief Produce a param for an action in the table entry
-/// @param param
-/// @param parameterId
-/// @return An action param
-p4::v1::Action_Param P4RuntimeFuzzer::produceActionParam(p4::config::v1::Action_Param &param,
-                                                         int parameterId) {
+p4::v1::FieldMatch_Exact P4RuntimeFuzzer::produceFieldMatch_Exact(int bitwidth) {
+    p4::v1::FieldMatch_Exact protoExact;
+    protoExact.set_value(produceBytes(bitwidth));
+    return protoExact;
+}
+
+p4::v1::FieldMatch_LPM P4RuntimeFuzzer::produceFieldMatch_LPM(int bitwidth) {
+    p4::v1::FieldMatch_LPM protoLPM;
+    protoLPM.set_value(produceBytes(bitwidth));
+    protoLPM.set_prefix_len(Utils::getRandInt(0, bitwidth));
+    return protoLPM;
+}
+
+p4::v1::FieldMatch_Ternary P4RuntimeFuzzer::produceFieldMatch_Ternary(int bitwidth) {
+    p4::v1::FieldMatch_Ternary protoTernary;
+    protoTernary.set_value(produceBytes(bitwidth));
+    /// TODO: use random mask
+    protoTernary.set_mask(produceBytes(bitwidth, /*value=*/0));
+    return protoTernary;
+}
+
+p4::v1::FieldMatch_Optional P4RuntimeFuzzer::produceFieldMatch_Optional(int bitwidth) {
+    p4::v1::FieldMatch_Optional protoOptional;
+    protoOptional.set_value(produceBytes(bitwidth));
+    return protoOptional;
+}
+
+p4::v1::Action_Param P4RuntimeFuzzer::produceActionParam(
+    const p4::config::v1::Action_Param &param) {
     p4::v1::Action_Param protoParam;
-
-    auto paramBitWidth = param.bitwidth();
-    auto value = Utils::getRandConstantForWidth(paramBitWidth)->value;
-    std::optional<std::string> valueStr =
-        P4::ControlPlaneAPI::stringReprConstant(value, paramBitWidth);
-    protoParam.set_param_id(parameterId);
-    protoParam.set_value(*valueStr);
-
+    protoParam.set_param_id(param.id());
+    protoParam.set_value(produceBytes(param.bitwidth()));
     return protoParam;
 }
 
-/// @brief Produce a random action selected for a table entry
-/// @param action_refs
-/// @param actions
-/// @return A table action
 p4::v1::Action P4RuntimeFuzzer::produceTableAction(
     const google::protobuf::RepeatedPtrField<p4::config::v1::ActionRef> &action_refs,
     const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
@@ -80,18 +68,13 @@ p4::v1::Action P4RuntimeFuzzer::produceTableAction(
     auto params = action->params();
 
     protoAction.set_action_id(action_id);
-    for (auto i = 0; i < params.size(); i++) {
-        auto param = params[i];
-        auto protoParam = produceActionParam(param, ++i);
-        *protoAction.add_params() = protoParam;
+    for (auto &param : action->params()) {
+        protoAction.add_params()->CopyFrom(produceActionParam(param));
     }
 
     return protoAction;
 }
 
-/// @brief Produce priority for an entry given match fields
-/// @param matchFields
-/// @return A 32-bit integer
 uint32_t P4RuntimeFuzzer::producePriority(
     const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields) {
     for (auto i = 0; i < matchFields.size(); i++) {
@@ -109,34 +92,33 @@ uint32_t P4RuntimeFuzzer::producePriority(
     return 0;
 }
 
-/// @brief Produce match field given match type
-/// @param match
-/// @param fieldId
-/// @return FieldMatch or Null
-std::optional<p4::v1::FieldMatch> P4RuntimeFuzzer::produceMatchField(
-    p4::config::v1::MatchField &match, int fieldId) {
+p4::v1::FieldMatch P4RuntimeFuzzer::produceMatchField(p4::config::v1::MatchField &match) {
+    p4::v1::FieldMatch protoMatch;
+    protoMatch.set_field_id(match.id());
+
     auto matchType = match.match_type();
     auto bitwidth = match.bitwidth();
 
-    if (matchType == p4::config::v1::MatchField::EXACT) {
-        return produceExactMatch(fieldId, bitwidth);
-    } else if (matchType == p4::config::v1::MatchField::LPM) {
-        // TODO: addLpm(tableEntry, fieldId++, k, keyWidth, typeMap);
-    } else if (matchType == p4::config::v1::MatchField::TERNARY) {
-        return produceTernaryMatch(fieldId, bitwidth);
-    } else if (matchType == p4::config::v1::MatchField::RANGE) {
-        // TODO: addRange(tableEntry, fieldId++, k, keyWidth, typeMap);
-    } else if (matchType == p4::config::v1::MatchField::OPTIONAL) {
-        // TODO: addOptional(tableEntry, fieldId++, k, keyWidth, typeMap);
+    switch (matchType) {
+        case p4::config::v1::MatchField::EXACT:
+            protoMatch.mutable_exact()->CopyFrom(produceFieldMatch_Exact(bitwidth));
+            break;
+        case p4::config::v1::MatchField::LPM:
+            protoMatch.mutable_lpm()->CopyFrom(produceFieldMatch_LPM(bitwidth));
+            break;
+        case p4::config::v1::MatchField::TERNARY:
+            protoMatch.mutable_ternary()->CopyFrom(produceFieldMatch_Ternary(bitwidth));
+            break;
+        case p4::config::v1::MatchField::OPTIONAL:
+            protoMatch.mutable_optional()->CopyFrom(produceFieldMatch_Optional(bitwidth));
+            break;
+        default:
+            P4C_UNIMPLEMENTED("Match type %1% not supported for P4RuntimeFuzzer yet",
+                              p4::config::v1::MatchField::MatchType_Name(matchType));
     }
-
-    return std::nullopt;
+    return protoMatch;
 }
 
-/// @brief Produce a table entry with id, match fields, priority and action
-/// @param table
-/// @param actions
-/// @return A table entry
 p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const p4::config::v1::Table &table,
     const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions) {
@@ -150,9 +132,7 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const auto &matchFields = table.match_fields();
     for (auto i = 0; i < matchFields.size(); i++) {
         auto match = matchFields[i];
-        auto fieldId = match.id();
-        auto protoMatch = produceMatchField(match, fieldId);
-        *protoEntry.add_match() = *protoMatch;
+        protoEntry.add_match()->CopyFrom(produceMatchField(match));
     }
 
     // set priority
@@ -166,9 +146,5 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
 
     return protoEntry;
 }
-
-InitialP4RuntimeConfig P4RuntimeFuzzer::produceInitialConfig() { return {}; }
-
-P4RuntimeUpdateSeries P4RuntimeFuzzer::produceUpdateTimeSeries() { return {}; }
 
 }  // namespace P4Tools::RTSmith
