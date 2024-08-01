@@ -7,7 +7,7 @@
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
 #include "test/gtest/helpers.h"
 
-namespace Test {
+namespace P4Tools::Test {
 
 namespace {
 
@@ -106,4 +106,4 @@ TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApi) {
 
 }  // anonymous namespace
 
-}  // namespace Test
+}  // namespace P4Tools::Test
