@@ -37,15 +37,13 @@ bfrt_proto::KeyField_Ternary TofinoTnaFuzzer::produceKeyField_Ternary(int bitwid
 }
 
 bfrt_proto::KeyField_Range TofinoTnaFuzzer::produceKeyField_Range(int bitwidth) {
-    bfrt_proto::KeyField_Range protoTernary;
-    auto value1 = produceBytes(bitwidth);
-    auto value2 = produceBytes(bitwidth);
-    if (value1 > value2) {
-        std::swap(value1, value2);
-    }
-    protoTernary.set_low(value1);
-    protoTernary.set_high(value2);
-    return protoTernary;
+    bfrt_proto::KeyField_Range protoRange;
+    const auto &highValue = Utils::getRandConstantForWidth(bitwidth)->value;
+    auto low = produceBytes(bitwidth, /*min=*/0, /*max=*/highValue);
+    auto high = checkBigIntToString(highValue, bitwidth);
+    protoRange.set_low(low);
+    protoRange.set_high(high);
+    return protoRange;
 }
 
 bfrt_proto::KeyField_Optional TofinoTnaFuzzer::produceKeyField_Optional(int bitwidth) {

@@ -29,13 +29,11 @@ p4::v1::FieldMatch_Ternary P4RuntimeFuzzer::produceFieldMatch_Ternary(int bitwid
 
 p4::v1::FieldMatch_Range P4RuntimeFuzzer::produceFieldMatch_Range(int bitwidth) {
     p4::v1::FieldMatch_Range protoRange;
-    auto value1 = produceBytes(bitwidth);
-    auto value2 = produceBytes(bitwidth);
-    if (value1 > value2) {
-        std::swap(value1, value2);
-    }
-    protoRange.set_low(value1);
-    protoRange.set_high(value2);
+    const auto &highValue = Utils::getRandConstantForWidth(bitwidth)->value;
+    auto low = produceBytes(bitwidth, /*min=*/0, /*max=*/highValue);
+    auto high = checkBigIntToString(highValue, bitwidth);
+    protoRange.set_low(low);
+    protoRange.set_high(high);
     return protoRange;
 }
 
@@ -155,17 +153,24 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
 
 /// Some Helper functions below
 
-std::string RuntimeFuzzer::produceBytes(int bitwidth) {
-    auto value = Utils::getRandConstantForWidth(bitwidth)->value;
+std::string RuntimeFuzzer::checkBigIntToString(const big_int &value, int bitwidth) {
     std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
-    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value < 0?");
+    BUG_CHECK(valueStr.has_value(), "Failed to check %1% to string, maybe value < 0?", value.str());
     return valueStr.value();
 }
 
-std::string RuntimeFuzzer::produceBytes(int bitwidth, big_int value) {
-    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
-    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value%1% < 0?", value.str());
-    return valueStr.value();
+std::string RuntimeFuzzer::produceBytes(int bitwidth) {
+    auto value = Utils::getRandConstantForWidth(bitwidth)->value;
+    return checkBigIntToString(value, bitwidth);
+}
+
+std::string RuntimeFuzzer::produceBytes(int bitwidth, const big_int &value) {
+    return checkBigIntToString(value, bitwidth);
+}
+
+std::string RuntimeFuzzer::produceBytes(int bitwidth, const big_int &min, const big_int &max) {
+    auto value = Utils::getRandBigInt(min, max);
+    return checkBigIntToString(value, bitwidth);
 }
 
 bool RuntimeFuzzer::tableHasFieldType(const p4::config::v1::Table &table,

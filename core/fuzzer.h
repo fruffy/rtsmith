@@ -38,6 +38,12 @@ class RuntimeFuzzer {
 
     /// Some Helper functions below
 
+    /// @brief Check `value` to a string of length `bitwidth`.
+    /// @param value
+    /// @param bitwidth
+    /// @return the result string.
+    static std::string checkBigIntToString(const big_int &value, int bitwidth);
+
     /// @brief Produce bytes in form of std::string given bitwidth.
     /// @param bitwidth
     /// @return A random bytes of length bitwidth in form of std::string.
@@ -47,7 +53,14 @@ class RuntimeFuzzer {
     /// @param bitwidth
     /// @param value
     /// @return A bytes of value of length bitwidth in form of std::string.
-    static std::string produceBytes(int bitwidth, big_int value);
+    static std::string produceBytes(int bitwidth, const big_int &value);
+
+    /// @brief Produce bytes within min and max in form of std::string given bitwidth.
+    /// @param bitwidth
+    /// @param min
+    /// @param max
+    /// @return A bytes of value of length bitwidth within min and max in form of std::string.
+    static std::string produceBytes(int bitwidth, const big_int &min, const big_int &max);
 
     static bool tableHasFieldType(const p4::config::v1::Table &table,
                                   const p4::config::v1::MatchField::MatchType type);
