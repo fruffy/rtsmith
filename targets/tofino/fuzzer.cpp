@@ -135,13 +135,19 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
         }
         auto table = tables.Get(tableId);
         /// TODO: remove this `min`. It is for ease of debugging now.
-        auto maxEntryGenCnt = std::min(table.size(), (int64_t)2);
+        auto maxEntryGenCnt = std::min(table.size(), (int64_t)4);
+        std::set<std::string> matchFields;
         for (auto i = 0; i < maxEntryGenCnt; i++) {
             auto update = request->add_updates();
             /// TODO: add support for other types.
             update->set_type(bfrt_proto::Update_Type::Update_Type_INSERT);
-            update->mutable_entity()->mutable_table_entry()->CopyFrom(
-                produceTableEntry(table, actions));
+            auto entry = produceTableEntry(table, actions);
+            std::string stringKey = entry.key().SerializeAsString();
+            if (matchFields.find(stringKey) == matchFields.end()) {
+                /// Only insert unique entries
+                matchFields.insert(std::move(stringKey));
+                update->mutable_entity()->mutable_table_entry()->CopyFrom(entry);
+            }
         }
     }
 
