@@ -134,6 +134,10 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
             continue;
         }
         auto table = tables.Get(tableId);
+        if (table.match_fields_size() == 0) {
+            // Skip tables without match fields
+            continue;
+        }
         /// TODO: remove this `min`. It is for ease of debugging now.
         auto maxEntryGenCnt = std::min(table.size(), (int64_t)4);
         std::set<std::string> matchFields;
