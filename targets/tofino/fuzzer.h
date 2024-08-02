@@ -14,20 +14,25 @@ class TofinoTnaFuzzer : public RuntimeFuzzer {
  public:
     explicit TofinoTnaFuzzer(const TofinoTnaProgramInfo &programInfo);
 
-    /// @brief Produce a `produceKeyField_Exact` with bitwidth.
+    /// @brief Produce a `KeyField_Exact` with bitwidth.
     /// @param bitwidth
-    /// @return A `produceKeyField_Exact`.
+    /// @return A `KeyField_Exact`.
     virtual bfrt_proto::KeyField_Exact produceKeyField_Exact(int bitwidth);
 
-    /// @brief Produce a `produceKeyField_LPM` with bitwidth.
+    /// @brief Produce a `KeyField_LPM` with bitwidth.
     /// @param bitwidth
-    /// @return A `produceKeyField_LPM`.
+    /// @return A `KeyField_LPM`.
     virtual bfrt_proto::KeyField_LPM produceKeyField_LPM(int bitwidth);
 
-    /// @brief Produce a `produceKeyField_Ternary` with bitwidth.
+    /// @brief Produce a `KeyField_Ternary` with bitwidth.
     /// @param bitwidth
-    /// @return A `produceKeyField_Ternary`.
+    /// @return A `KeyField_Ternary`.
     virtual bfrt_proto::KeyField_Ternary produceKeyField_Ternary(int bitwidth);
+
+    /// @brief Produce a `KeyField_Range` with bitwidth.
+    /// @param bitwidth
+    /// @return A `KeyField_Range`.
+    virtual bfrt_proto::KeyField_Range produceKeyField_Range(int bitwidth);
 
     /// @brief Produce a `KeyField_Optional` with bitwidth.
     /// @param bitwidth

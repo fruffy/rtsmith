@@ -67,6 +67,11 @@ class P4RuntimeFuzzer : public RuntimeFuzzer {
     /// @return A FieldMatch_Ternary
     virtual p4::v1::FieldMatch_Ternary produceFieldMatch_Ternary(int bitwidth);
 
+    /// @brief Produce a FieldMatch_Range with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_Range
+    virtual p4::v1::FieldMatch_Range produceFieldMatch_Range(int bitwidth);
+
     /// @brief Produce a FieldMatch_Optional with bitwidth
     /// @param bitwidth
     /// @return A FieldMatch_Optional

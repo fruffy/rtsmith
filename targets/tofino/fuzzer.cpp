@@ -36,6 +36,18 @@ bfrt_proto::KeyField_Ternary TofinoTnaFuzzer::produceKeyField_Ternary(int bitwid
     return protoTernary;
 }
 
+bfrt_proto::KeyField_Range TofinoTnaFuzzer::produceKeyField_Range(int bitwidth) {
+    bfrt_proto::KeyField_Range protoTernary;
+    auto value1 = produceBytes(bitwidth);
+    auto value2 = produceBytes(bitwidth);
+    if (value1 > value2) {
+        std::swap(value1, value2);
+    }
+    protoTernary.set_low(value1);
+    protoTernary.set_high(value2);
+    return protoTernary;
+}
+
 bfrt_proto::KeyField_Optional TofinoTnaFuzzer::produceKeyField_Optional(int bitwidth) {
     bfrt_proto::KeyField_Optional protoOptional;
     protoOptional.set_value(produceBytes(bitwidth));
@@ -82,6 +94,9 @@ bfrt_proto::KeyField TofinoTnaFuzzer::produceKeyField(const p4::config::v1::Matc
             break;
         case p4::config::v1::MatchField::TERNARY:
             protoKeyField.mutable_ternary()->CopyFrom(produceKeyField_Ternary(bitwidth));
+            break;
+        case p4::config::v1::MatchField::RANGE:
+            protoKeyField.mutable_range()->CopyFrom(produceKeyField_Range(bitwidth));
             break;
         case p4::config::v1::MatchField::OPTIONAL:
             protoKeyField.mutable_optional()->CopyFrom(produceKeyField_Optional(bitwidth));

@@ -40,6 +40,18 @@ p4::v1::FieldMatch_Ternary P4RuntimeFuzzer::produceFieldMatch_Ternary(int bitwid
     return protoTernary;
 }
 
+p4::v1::FieldMatch_Range P4RuntimeFuzzer::produceFieldMatch_Range(int bitwidth) {
+    p4::v1::FieldMatch_Range protoRange;
+    auto value1 = produceBytes(bitwidth);
+    auto value2 = produceBytes(bitwidth);
+    if (value1 > value2) {
+        std::swap(value1, value2);
+    }
+    protoRange.set_low(value1);
+    protoRange.set_high(value2);
+    return protoRange;
+}
+
 p4::v1::FieldMatch_Optional P4RuntimeFuzzer::produceFieldMatch_Optional(int bitwidth) {
     p4::v1::FieldMatch_Optional protoOptional;
     protoOptional.set_value(produceBytes(bitwidth));
@@ -108,6 +120,9 @@ p4::v1::FieldMatch P4RuntimeFuzzer::produceMatchField(p4::config::v1::MatchField
             break;
         case p4::config::v1::MatchField::TERNARY:
             protoMatch.mutable_ternary()->CopyFrom(produceFieldMatch_Ternary(bitwidth));
+            break;
+        case p4::config::v1::MatchField::RANGE:
+            protoMatch.mutable_range()->CopyFrom(produceFieldMatch_Range(bitwidth));
             break;
         case p4::config::v1::MatchField::OPTIONAL:
             protoMatch.mutable_optional()->CopyFrom(produceFieldMatch_Optional(bitwidth));
