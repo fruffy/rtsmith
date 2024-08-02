@@ -6,19 +6,6 @@
 
 namespace P4Tools::RTSmith {
 
-std::string RuntimeFuzzer::produceBytes(int bitwidth) {
-    auto value = Utils::getRandConstantForWidth(bitwidth)->value;
-    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
-    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value < 0?");
-    return valueStr.value();
-}
-
-std::string RuntimeFuzzer::produceBytes(int bitwidth, big_int value) {
-    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
-    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value%1% < 0?", value.str());
-    return valueStr.value();
-}
-
 p4::v1::FieldMatch_Exact P4RuntimeFuzzer::produceFieldMatch_Exact(int bitwidth) {
     p4::v1::FieldMatch_Exact protoExact;
     protoExact.set_value(produceBytes(bitwidth));
@@ -38,6 +25,16 @@ p4::v1::FieldMatch_Ternary P4RuntimeFuzzer::produceFieldMatch_Ternary(int bitwid
     /// TODO: use random mask
     protoTernary.set_mask(produceBytes(bitwidth, /*value=*/0));
     return protoTernary;
+}
+
+p4::v1::FieldMatch_Range P4RuntimeFuzzer::produceFieldMatch_Range(int bitwidth) {
+    p4::v1::FieldMatch_Range protoRange;
+    const auto &highValue = Utils::getRandConstantForWidth(bitwidth)->value;
+    auto low = produceBytes(bitwidth, /*min=*/0, /*max=*/highValue);
+    auto high = checkBigIntToString(highValue, bitwidth);
+    protoRange.set_low(low);
+    protoRange.set_high(high);
+    return protoRange;
 }
 
 p4::v1::FieldMatch_Optional P4RuntimeFuzzer::produceFieldMatch_Optional(int bitwidth) {
@@ -109,6 +106,9 @@ p4::v1::FieldMatch P4RuntimeFuzzer::produceMatchField(p4::config::v1::MatchField
         case p4::config::v1::MatchField::TERNARY:
             protoMatch.mutable_ternary()->CopyFrom(produceFieldMatch_Ternary(bitwidth));
             break;
+        case p4::config::v1::MatchField::RANGE:
+            protoMatch.mutable_range()->CopyFrom(produceFieldMatch_Range(bitwidth));
+            break;
         case p4::config::v1::MatchField::OPTIONAL:
             protoMatch.mutable_optional()->CopyFrom(produceFieldMatch_Optional(bitwidth));
             break;
@@ -145,6 +145,38 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     *protoEntry.mutable_action()->mutable_action() = protoAction;
 
     return protoEntry;
+}
+
+/// Some Helper functions below
+
+std::string RuntimeFuzzer::checkBigIntToString(const big_int &value, int bitwidth) {
+    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
+    BUG_CHECK(valueStr.has_value(), "Failed to check %1% to string, maybe value < 0?", value.str());
+    return valueStr.value();
+}
+
+std::string RuntimeFuzzer::produceBytes(int bitwidth) {
+    auto value = Utils::getRandConstantForWidth(bitwidth)->value;
+    return checkBigIntToString(value, bitwidth);
+}
+
+std::string RuntimeFuzzer::produceBytes(int bitwidth, const big_int &value) {
+    return checkBigIntToString(value, bitwidth);
+}
+
+std::string RuntimeFuzzer::produceBytes(int bitwidth, const big_int &min, const big_int &max) {
+    auto value = Utils::getRandBigInt(min, max);
+    return checkBigIntToString(value, bitwidth);
+}
+
+bool RuntimeFuzzer::tableHasFieldType(const p4::config::v1::Table &table,
+                                      const p4::config::v1::MatchField::MatchType type) {
+    for (const auto &match : table.match_fields()) {
+        if (match.match_type() == type) {
+            return true;
+        }
+    }
+    return false;
 }
 
 }  // namespace P4Tools::RTSmith

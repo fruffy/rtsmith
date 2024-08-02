@@ -36,6 +36,16 @@ bfrt_proto::KeyField_Ternary TofinoTnaFuzzer::produceKeyField_Ternary(int bitwid
     return protoTernary;
 }
 
+bfrt_proto::KeyField_Range TofinoTnaFuzzer::produceKeyField_Range(int bitwidth) {
+    bfrt_proto::KeyField_Range protoRange;
+    const auto &highValue = Utils::getRandConstantForWidth(bitwidth)->value;
+    auto low = produceBytes(bitwidth, /*min=*/0, /*max=*/highValue);
+    auto high = checkBigIntToString(highValue, bitwidth);
+    protoRange.set_low(low);
+    protoRange.set_high(high);
+    return protoRange;
+}
+
 bfrt_proto::KeyField_Optional TofinoTnaFuzzer::produceKeyField_Optional(int bitwidth) {
     bfrt_proto::KeyField_Optional protoOptional;
     protoOptional.set_value(produceBytes(bitwidth));
@@ -82,6 +92,9 @@ bfrt_proto::KeyField TofinoTnaFuzzer::produceKeyField(const p4::config::v1::Matc
             break;
         case p4::config::v1::MatchField::TERNARY:
             protoKeyField.mutable_ternary()->CopyFrom(produceKeyField_Ternary(bitwidth));
+            break;
+        case p4::config::v1::MatchField::RANGE:
+            protoKeyField.mutable_range()->CopyFrom(produceKeyField_Range(bitwidth));
             break;
         case p4::config::v1::MatchField::OPTIONAL:
             protoKeyField.mutable_optional()->CopyFrom(produceKeyField_Optional(bitwidth));
@@ -134,14 +147,23 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
             continue;
         }
         auto table = tables.Get(tableId);
+        if (table.match_fields_size() == 0 || table.is_const_table()) {
+            continue;
+        }
         /// TODO: remove this `min`. It is for ease of debugging now.
-        auto maxEntryGenCnt = std::min(table.size(), (int64_t)2);
+        auto maxEntryGenCnt = std::min(table.size(), (int64_t)4);
+        std::set<std::string> matchFields;
         for (auto i = 0; i < maxEntryGenCnt; i++) {
-            auto update = request->add_updates();
-            /// TODO: add support for other types.
-            update->set_type(bfrt_proto::Update_Type::Update_Type_INSERT);
-            update->mutable_entity()->mutable_table_entry()->CopyFrom(
-                produceTableEntry(table, actions));
+            auto entry = produceTableEntry(table, actions);
+            std::string stringKey = entry.key().SerializeAsString();
+            if (matchFields.find(stringKey) == matchFields.end()) {
+                /// Only insert unique entries
+                auto update = request->add_updates();
+                /// TODO: add support for other types.
+                update->set_type(bfrt_proto::Update_Type::Update_Type_INSERT);
+                matchFields.insert(std::move(stringKey));
+                update->mutable_entity()->mutable_table_entry()->CopyFrom(entry);
+            }
         }
     }
 

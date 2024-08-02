@@ -28,6 +28,22 @@ class RuntimeFuzzer {
  public:
     explicit RuntimeFuzzer(const ProgramInfo &programInfo) : programInfo(programInfo) {}
 
+    /// @brief Produce an `InitialConfig`, which is a vector of updates.
+    /// @return A InitialConfig
+    virtual InitialConfig produceInitialConfig() = 0;
+
+    /// @brief Produce an `UpdateSeries`, which is a vector of indexed updates.
+    /// @return A InitialConfig
+    virtual UpdateSeries produceUpdateTimeSeries() = 0;
+
+    /// Some Helper functions below
+
+    /// @brief Check `value` to a string of length `bitwidth`.
+    /// @param value
+    /// @param bitwidth
+    /// @return the result string.
+    static std::string checkBigIntToString(const big_int &value, int bitwidth);
+
     /// @brief Produce bytes in form of std::string given bitwidth.
     /// @param bitwidth
     /// @return A random bytes of length bitwidth in form of std::string.
@@ -37,15 +53,17 @@ class RuntimeFuzzer {
     /// @param bitwidth
     /// @param value
     /// @return A bytes of value of length bitwidth in form of std::string.
-    static std::string produceBytes(int bitwidth, big_int value);
+    static std::string produceBytes(int bitwidth, const big_int &value);
 
-    /// @brief Produce an `InitialConfig`, which is a vector of updates.
-    /// @return A InitialConfig
-    virtual InitialConfig produceInitialConfig() = 0;
+    /// @brief Produce bytes within min and max in form of std::string given bitwidth.
+    /// @param bitwidth
+    /// @param min
+    /// @param max
+    /// @return A bytes of value of length bitwidth within min and max in form of std::string.
+    static std::string produceBytes(int bitwidth, const big_int &min, const big_int &max);
 
-    /// @brief Produce an `UpdateSeries`, which is a vector of indexed updates.
-    /// @return A InitialConfig
-    virtual UpdateSeries produceUpdateTimeSeries() = 0;
+    static bool tableHasFieldType(const p4::config::v1::Table &table,
+                                  const p4::config::v1::MatchField::MatchType type);
 };
 
 class P4RuntimeFuzzer : public RuntimeFuzzer {
@@ -66,6 +84,11 @@ class P4RuntimeFuzzer : public RuntimeFuzzer {
     /// @param bitwidth
     /// @return A FieldMatch_Ternary
     virtual p4::v1::FieldMatch_Ternary produceFieldMatch_Ternary(int bitwidth);
+
+    /// @brief Produce a FieldMatch_Range with bitwidth
+    /// @param bitwidth
+    /// @return A FieldMatch_Range
+    virtual p4::v1::FieldMatch_Range produceFieldMatch_Range(int bitwidth);
 
     /// @brief Produce a FieldMatch_Optional with bitwidth
     /// @param bitwidth

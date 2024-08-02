@@ -29,13 +29,25 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
             continue;
         }
         auto table = tables.Get(tableId);
+        if (table.match_fields_size() == 0 || table.is_const_table()) {
+            continue;
+        }
         /// TODO: remove this `min`. It is for ease of debugging now.
-        auto maxEntryGenCnt = std::min(table.size(), (int64_t)2);
+        auto maxEntryGenCnt = std::min(table.size(), (int64_t)4);
+        std::set<std::string> matchFields;
         for (auto i = 0; i < maxEntryGenCnt; i++) {
-            auto update = request->add_updates();
-            update->set_type(p4::v1::Update_Type::Update_Type_INSERT);
-            update->mutable_entity()->mutable_table_entry()->CopyFrom(
-                produceTableEntry(table, actions));
+            auto entry = produceTableEntry(table, actions);
+            std::string matchFieldString;
+            for (const auto &match : entry.match()) {
+                match.AppendPartialToString(&matchFieldString);
+            }
+            if (matchFields.find(matchFieldString) == matchFields.end()) {
+                /// Only insert unique entries
+                auto update = request->add_updates();
+                update->set_type(p4::v1::Update_Type::Update_Type_INSERT);
+                matchFields.insert(std::move(matchFieldString));
+                update->mutable_entity()->mutable_table_entry()->CopyFrom(entry);
+            }
         }
     }
 
