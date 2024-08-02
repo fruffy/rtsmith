@@ -132,10 +132,6 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const auto &matchFields = table.match_fields();
     for (auto i = 0; i < matchFields.size(); i++) {
         auto match = matchFields[i];
-        /// TODO: add this back once Flay supports OPTIONAL.
-        if (match.match_type() == p4::config::v1::MatchField::OPTIONAL) {
-            continue;
-        }
         protoEntry.add_match()->CopyFrom(produceMatchField(match));
     }
 

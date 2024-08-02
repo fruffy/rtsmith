@@ -32,10 +32,6 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
         if (table.match_fields_size() == 0 || table.is_const_table()) {
             continue;
         }
-        /// TODO: Remove this when Flay supports RANGE.
-        if (tableHasFieldType(table, p4::config::v1::MatchField::RANGE)) {
-            continue;
-        }
         /// TODO: remove this `min`. It is for ease of debugging now.
         auto maxEntryGenCnt = std::min(table.size(), (int64_t)4);
         std::set<std::string> matchFields;

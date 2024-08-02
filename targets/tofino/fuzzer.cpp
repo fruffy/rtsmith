@@ -119,10 +119,6 @@ bfrt_proto::TableEntry TofinoTnaFuzzer::produceTableEntry(
     const auto &matchFields = table.match_fields();
     for (auto i = 0; i < matchFields.size(); i++) {
         auto match = matchFields[i];
-        /// TODO: add this back once Flay supports OPTIONAL.
-        if (match.match_type() == p4::config::v1::MatchField::OPTIONAL) {
-            continue;
-        }
         protoEntry.mutable_key()->add_fields()->CopyFrom(produceKeyField(matchFields[i]));
     }
 
@@ -152,10 +148,6 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
         }
         auto table = tables.Get(tableId);
         if (table.match_fields_size() == 0 || table.is_const_table()) {
-            continue;
-        }
-        /// TODO: Remove this when Flay supports RANGE.
-        if (tableHasFieldType(table, p4::config::v1::MatchField::RANGE)) {
             continue;
         }
         /// TODO: remove this `min`. It is for ease of debugging now.
