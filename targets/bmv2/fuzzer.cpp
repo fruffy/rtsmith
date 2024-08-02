@@ -28,7 +28,6 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
         if (Utils::getRandInt(0, 1) == 0) {
             continue;
         }
-        printf("didn't skip by coin\n");
         auto table = tables.Get(tableId);
         if (table.match_fields_size() == 0 || table.is_const_table()) {
             continue;
@@ -37,7 +36,6 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
         if (tableHasFieldType(table, p4::config::v1::MatchField::RANGE)) {
             continue;
         }
-        printf("trying generating\n");
         /// TODO: remove this `min`. It is for ease of debugging now.
         auto maxEntryGenCnt = std::min(table.size(), (int64_t)4);
         std::set<std::string> matchFields;
@@ -53,7 +51,6 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
                 update->set_type(p4::v1::Update_Type::Update_Type_INSERT);
                 matchFields.insert(std::move(matchFieldString));
                 update->mutable_entity()->mutable_table_entry()->CopyFrom(entry);
-                printf("added %s\n", entry.DebugString().c_str());
             }
         }
     }
