@@ -28,6 +28,16 @@ class RuntimeFuzzer {
  public:
     explicit RuntimeFuzzer(const ProgramInfo &programInfo) : programInfo(programInfo) {}
 
+    /// @brief Produce an `InitialConfig`, which is a vector of updates.
+    /// @return A InitialConfig
+    virtual InitialConfig produceInitialConfig() = 0;
+
+    /// @brief Produce an `UpdateSeries`, which is a vector of indexed updates.
+    /// @return A InitialConfig
+    virtual UpdateSeries produceUpdateTimeSeries() = 0;
+
+    /// Some Helper functions below
+
     /// @brief Produce bytes in form of std::string given bitwidth.
     /// @param bitwidth
     /// @return A random bytes of length bitwidth in form of std::string.
@@ -39,13 +49,8 @@ class RuntimeFuzzer {
     /// @return A bytes of value of length bitwidth in form of std::string.
     static std::string produceBytes(int bitwidth, big_int value);
 
-    /// @brief Produce an `InitialConfig`, which is a vector of updates.
-    /// @return A InitialConfig
-    virtual InitialConfig produceInitialConfig() = 0;
-
-    /// @brief Produce an `UpdateSeries`, which is a vector of indexed updates.
-    /// @return A InitialConfig
-    virtual UpdateSeries produceUpdateTimeSeries() = 0;
+    static bool tableHasFieldType(const p4::config::v1::Table &table,
+                                  const p4::config::v1::MatchField::MatchType type);
 };
 
 class P4RuntimeFuzzer : public RuntimeFuzzer {

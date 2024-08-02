@@ -6,19 +6,6 @@
 
 namespace P4Tools::RTSmith {
 
-std::string RuntimeFuzzer::produceBytes(int bitwidth) {
-    auto value = Utils::getRandConstantForWidth(bitwidth)->value;
-    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
-    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value < 0?");
-    return valueStr.value();
-}
-
-std::string RuntimeFuzzer::produceBytes(int bitwidth, big_int value) {
-    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
-    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value%1% < 0?", value.str());
-    return valueStr.value();
-}
-
 p4::v1::FieldMatch_Exact P4RuntimeFuzzer::produceFieldMatch_Exact(int bitwidth) {
     p4::v1::FieldMatch_Exact protoExact;
     protoExact.set_value(produceBytes(bitwidth));
@@ -147,6 +134,10 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const auto &matchFields = table.match_fields();
     for (auto i = 0; i < matchFields.size(); i++) {
         auto match = matchFields[i];
+        /// TODO: add this back once Flay supports OPTIONAL.
+        if (match.match_type() == p4::config::v1::MatchField::OPTIONAL) {
+            continue;
+        }
         protoEntry.add_match()->CopyFrom(produceMatchField(match));
     }
 
@@ -160,6 +151,31 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     *protoEntry.mutable_action()->mutable_action() = protoAction;
 
     return protoEntry;
+}
+
+/// Some Helper functions below
+
+std::string RuntimeFuzzer::produceBytes(int bitwidth) {
+    auto value = Utils::getRandConstantForWidth(bitwidth)->value;
+    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
+    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value < 0?");
+    return valueStr.value();
+}
+
+std::string RuntimeFuzzer::produceBytes(int bitwidth, big_int value) {
+    std::optional<std::string> valueStr = P4::ControlPlaneAPI::stringReprConstant(value, bitwidth);
+    BUG_CHECK(valueStr.has_value(), "Failed to produce bytes, maybe value%1% < 0?", value.str());
+    return valueStr.value();
+}
+
+bool RuntimeFuzzer::tableHasFieldType(const p4::config::v1::Table &table,
+                                      const p4::config::v1::MatchField::MatchType type) {
+    for (const auto &match : table.match_fields()) {
+        if (match.match_type() == type) {
+            return true;
+        }
+    }
+    return false;
 }
 
 }  // namespace P4Tools::RTSmith
