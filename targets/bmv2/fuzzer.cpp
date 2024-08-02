@@ -29,8 +29,7 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
             continue;
         }
         auto table = tables.Get(tableId);
-        if (table.match_fields_size() == 0) {
-            // Skip tables without match fields
+        if (table.match_fields_size() == 0 || table.is_const_table()) {
             continue;
         }
         /// TODO: remove this `min`. It is for ease of debugging now.
