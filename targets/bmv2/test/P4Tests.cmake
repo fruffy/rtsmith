@@ -29,7 +29,7 @@ if (TARGET flay)
     # These tests time out and require fixing.
   )
 
-  set (EXTRA_OPTS "")
+  set (EXTRA_OPTS "--seed 1")
 
   p4tools_add_tests(
     TESTS
