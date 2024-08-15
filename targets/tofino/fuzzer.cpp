@@ -6,7 +6,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "control-plane/p4infoApi.h"
 
-namespace P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RTSmith::Tna {
 
 TofinoTnaFuzzer::TofinoTnaFuzzer(const TofinoTnaProgramInfo &programInfo)
     : RuntimeFuzzer(programInfo) {}
@@ -174,4 +174,4 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
 
 UpdateSeries TofinoTnaFuzzer::produceUpdateTimeSeries() { return {}; }
 
-}  // namespace P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RTSmith::Tna

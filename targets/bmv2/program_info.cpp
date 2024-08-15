@@ -9,10 +9,10 @@
 #include "p4/v1/p4runtime.pb.h"
 #pragma GCC diagnostic pop
 
-namespace P4Tools::RTSmith::V1Model {
+namespace P4::P4Tools::RTSmith::V1Model {
 
 Bmv2V1ModelProgramInfo::Bmv2V1ModelProgramInfo(const CompilerResult &compilerResult)
     : ProgramInfo(compilerResult, P4::P4RuntimeSerializer::get()->generateP4Runtime(
                                       &compilerResult.getProgram(), cstring("v1model"))) {}
 
-}  // namespace P4Tools::RTSmith::V1Model
+}  // namespace P4::P4Tools::RTSmith::V1Model

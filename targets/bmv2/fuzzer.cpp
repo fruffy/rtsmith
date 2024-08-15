@@ -4,7 +4,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "control-plane/p4infoApi.h"
 
-namespace P4Tools::RTSmith::V1Model {
+namespace P4::P4Tools::RTSmith::V1Model {
 
 Bmv2V1ModelFuzzer::Bmv2V1ModelFuzzer(const Bmv2V1ModelProgramInfo &programInfo)
     : P4RuntimeFuzzer(programInfo) {}
@@ -58,4 +58,4 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
 
 UpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() { return {}; }
 
-}  // namespace P4Tools::RTSmith::V1Model
+}  // namespace P4::P4Tools::RTSmith::V1Model

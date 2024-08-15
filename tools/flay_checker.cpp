@@ -2,7 +2,6 @@
 
 #include "backends/p4tools/common/compiler/context.h"
 #include "backends/p4tools/common/lib/logging.h"
-#include "backends/p4tools/modules/flay/core/lib/return_macros.h"
 #include "backends/p4tools/modules/flay/flay.h"
 #include "backends/p4tools/modules/flay/register.h"
 #include "backends/p4tools/modules/p4rtsmith/core/util.h"
@@ -14,7 +13,7 @@
 #include "lib/error.h"
 #include "lib/options.h"
 
-namespace P4Tools {
+namespace P4::P4Tools::RTSmith {
 
 namespace {
 
@@ -29,7 +28,7 @@ class FlayCheckerOptions : public RtSmithOptions {
             [this](const char *arg) {
                 file = arg;
                 if (!std::filesystem::exists(file)) {
-                    ::error("The input P4 program '%s' does not exist.", file.c_str());
+                    ::P4::error("The input P4 program '%s' does not exist.", file.c_str());
                     return false;
                 }
                 return true;
@@ -64,12 +63,12 @@ class FlayCheckerOptions : public RtSmithOptions {
         }
         if (unprocessedOptions != nullptr && !unprocessedOptions->empty()) {
             for (const auto &option : *unprocessedOptions) {
-                ::error("Unprocessed input: %s", option);
+                ::P4::error("Unprocessed input: %s", option);
             }
             return EXIT_FAILURE;
         }
         if (file.empty()) {
-            ::error("No input file specified.");
+            ::P4::error("No input file specified.");
             return EXIT_FAILURE;
         }
         if (_outputDir.empty()) {
@@ -102,9 +101,9 @@ int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions)
     printInfo("RtSmith configuration complete.");
     printInfo("Starting Flay optimization...");
     {
-        auto *flayContext = new CompileContext<FlayOptions>();
+        auto *flayContext = new CompileContext<Flay::FlayOptions>();
         AutoCompileContext autoContext(flayContext);
-        FlayOptions &flayOptions = flayContext->options();
+        Flay::FlayOptions &flayOptions = flayContext->options();
         flayOptions.target = options.target;
         flayOptions.arch = options.arch;
         flayOptions.file = options.file;
@@ -117,25 +116,28 @@ int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions)
     return EXIT_SUCCESS;
 }
 
-}  // namespace P4Tools
+}  // namespace P4::P4Tools::RTSmith
 
 int main(int argc, char *argv[]) {
-    P4Tools::Flay::registerFlayTargets();
-    P4Tools::RTSmith::registerRtSmithTargets();
+    P4::P4Tools::Flay::registerFlayTargets();
+    P4::P4Tools::RTSmith::registerRtSmithTargets();
 
     // Set up the options.
-    auto *compileContext = new P4Tools::CompileContext<P4Tools::FlayCheckerOptions>();
-    AutoCompileContext autoContext(new P4CContextWithOptions<P4Tools::FlayCheckerOptions>());
+    auto *compileContext =
+        new P4::P4Tools::CompileContext<P4::P4Tools::RTSmith::FlayCheckerOptions>();
+    P4::AutoCompileContext autoContext(
+        new P4::P4CContextWithOptions<P4::P4Tools::RTSmith::FlayCheckerOptions>());
     // Process command-line options.
     if (compileContext->options().processOptions(argc, argv) != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
-    auto *rtSmithContext = new P4Tools::CompileContext<P4Tools::RtSmithOptions>(*compileContext);
-    AutoCompileContext autoContext2(rtSmithContext);
+    auto *rtSmithContext =
+        new P4::P4Tools::CompileContext<P4::P4Tools::RTSmith::RtSmithOptions>(*compileContext);
+    P4::AutoCompileContext autoContext2(rtSmithContext);
     // Run the reference checker.
-    auto result = P4Tools::run(compileContext->options(), rtSmithContext->options());
+    auto result = P4::P4Tools::RTSmith::run(compileContext->options(), rtSmithContext->options());
     if (result == EXIT_FAILURE) {
         return EXIT_FAILURE;
     }
-    return ::errorCount() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return ::P4::errorCount() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

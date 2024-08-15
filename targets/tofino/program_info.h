@@ -6,7 +6,7 @@
 #include "ir/ir.h"
 #include "ir/node.h"
 
-namespace P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RTSmith::Tna {
 
 class TofinoTnaProgramInfo : public ProgramInfo {
  public:
@@ -16,6 +16,6 @@ class TofinoTnaProgramInfo : public ProgramInfo {
     DECLARE_TYPEINFO(TofinoTnaProgramInfo);
 };
 
-}  // namespace P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RTSmith::Tna
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_PROGRAM_INFO_H_ */

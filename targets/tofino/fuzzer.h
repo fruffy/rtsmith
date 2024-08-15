@@ -4,7 +4,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "backends/p4tools/modules/p4rtsmith/targets/tofino/program_info.h"
 
-namespace P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RTSmith::Tna {
 
 class TofinoTnaFuzzer : public RuntimeFuzzer {
  private:
@@ -70,6 +70,6 @@ class TofinoTnaFuzzer : public RuntimeFuzzer {
     UpdateSeries produceUpdateTimeSeries() override;
 };
 
-}  // namespace P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RTSmith::Tna
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_FUZZER_H_ */

@@ -4,7 +4,7 @@
 #include <map>
 #include <optional>
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 /// If @param inputFunction evaluates to false, returns @param ret.
 // NOLINTNEXTLINE
@@ -66,6 +66,6 @@ inline std::optional<V> safeAt(const std::map<K, V, Comp, Alloc> &m, T key) {
     return std::nullopt;
 }
 
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_UTIL_H_ */

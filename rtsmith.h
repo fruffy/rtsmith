@@ -5,7 +5,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "backends/p4tools/modules/p4rtsmith/options.h"
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 struct RtSmithResult {
     InitialConfig config;
@@ -31,6 +31,6 @@ class RtSmith : public AbstractP4cTool<RtSmithOptions> {
     static std::optional<RtSmithResult> generateConfig(const RtSmithOptions &rtSmithOptions);
 };
 
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_RTSMITH_H_ */

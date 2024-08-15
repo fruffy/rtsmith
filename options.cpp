@@ -5,7 +5,7 @@
 #include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
 
-namespace P4Tools {
+namespace P4::P4Tools::RTSmith {
 
 RtSmithOptions &RtSmithOptions::get() {
     return P4Tools::CompileContext<RtSmithOptions>::get().options();
@@ -42,8 +42,8 @@ RtSmithOptions::RtSmithOptions()
         [this](const char *arg) {
             _userP4Info = arg;
             if (!std::filesystem::exists(_userP4Info.value())) {
-                ::error("%1% does not exist. Please provide a valid file path.",
-                        _userP4Info.value().c_str());
+                ::P4::error("%1% does not exist. Please provide a valid file path.",
+                            _userP4Info.value().c_str());
                 return false;
             }
             return true;
@@ -54,7 +54,7 @@ RtSmithOptions::RtSmithOptions()
         [this](const char *arg) {
             _p4InfoFilePath = arg;
             if (_p4InfoFilePath.value().extension() != ".txtpb") {
-                ::error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
+                ::P4::error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
                 return false;
             }
             return true;
@@ -68,7 +68,7 @@ RtSmithOptions::RtSmithOptions()
                       ::toupper);
             if (K_SUPPORTED_CONTROL_PLANES.find(_controlPlaneApi) ==
                 K_SUPPORTED_CONTROL_PLANES.end()) {
-                ::error(
+                ::P4::error(
                     "Test back end %1% not implemented for this target. Supported back ends are "
                     "%2%.",
                     _controlPlaneApi, Utils::containerToString(K_SUPPORTED_CONTROL_PLANES));
@@ -83,7 +83,8 @@ std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }
 
 bool RtSmithOptions::validateOptions() const {
     if (_userP4Info.has_value() && _p4InfoFilePath.has_value()) {
-        ::error("Both --user-p4info and --generate-p4info are specified. Please specify only one.");
+        ::P4::error(
+            "Both --user-p4info and --generate-p4info are specified. Please specify only one.");
         return false;
     }
     return true;
@@ -101,4 +102,4 @@ std::optional<std::filesystem::path> RtSmithOptions::p4InfoFilePath() const {
 
 std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneApi; }
 
-}  // namespace P4Tools
+}  // namespace P4::P4Tools::RTSmith

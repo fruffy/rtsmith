@@ -9,10 +9,10 @@
 #include "p4/v1/p4runtime.pb.h"
 #pragma GCC diagnostic pop
 
-namespace P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RTSmith::Tna {
 
 TofinoTnaProgramInfo::TofinoTnaProgramInfo(const CompilerResult &compilerResult,
                                            const P4::P4RuntimeAPI &p4runtimeApi)
     : ProgramInfo(compilerResult, p4runtimeApi) {}
 
-}  // namespace P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RTSmith::Tna

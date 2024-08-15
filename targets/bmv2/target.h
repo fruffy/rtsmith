@@ -6,7 +6,7 @@
 #include "backends/p4tools/modules/p4rtsmith/targets/bmv2/fuzzer.h"
 #include "ir/ir.h"
 
-namespace P4Tools::RTSmith::V1Model {
+namespace P4::P4Tools::RTSmith::V1Model {
 
 class Bmv2V1ModelRtSmithTarget : public RtSmithTarget {
  private:
@@ -26,6 +26,6 @@ class Bmv2V1ModelRtSmithTarget : public RtSmithTarget {
     [[nodiscard]] MidEnd mkMidEnd(const CompilerOptions &options) const override;
 };
 
-}  // namespace P4Tools::RTSmith::V1Model
+}  // namespace P4::P4Tools::RTSmith::V1Model
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_BMV2_TARGET_H_ */
