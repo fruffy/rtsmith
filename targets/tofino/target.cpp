@@ -14,7 +14,7 @@
 #include "p4/config/v1/p4info.pb.h"
 #pragma GCC diagnostic pop
 
-namespace P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RTSmith::Tna {
 
 /* =============================================================================================
  *  TofinoTnaRtSmithTarget implementation
@@ -39,7 +39,7 @@ MidEnd TofinoTnaRtSmithTarget::mkMidEnd(const CompilerOptions &options) const {
 const ProgramInfo *TofinoTnaRtSmithTarget::produceProgramInfoImpl(
     const CompilerResult &compilerResult, const IR::Declaration_Instance * /*mainDecl*/) const {
     std::optional<P4::P4RuntimeAPI> p4runtimeApi;
-    auto p4UserInfo = P4Tools::RtSmithOptions::get().userP4Info();
+    auto p4UserInfo = RtSmithOptions::get().userP4Info();
     if (p4UserInfo.has_value()) {
         ASSIGN_OR_RETURN(
             auto p4Info,
@@ -50,7 +50,7 @@ const ProgramInfo *TofinoTnaRtSmithTarget::produceProgramInfoImpl(
         /// After the front end, get the P4Runtime API for the V1model architecture.
         p4runtimeApi = P4::P4RuntimeSerializer::get()->generateP4Runtime(
             &compilerResult.getProgram(), cstring("tofino"));
-        if (::errorCount() > 0) {
+        if (::P4::errorCount() > 0) {
             return nullptr;
         }
     }
@@ -61,4 +61,4 @@ TofinoTnaFuzzer &TofinoTnaRtSmithTarget::getFuzzerImpl(const ProgramInfo &progra
     return *new TofinoTnaFuzzer(*programInfo.checkedTo<TofinoTnaProgramInfo>());
 }
 
-}  // namespace P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RTSmith::Tna

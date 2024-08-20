@@ -3,11 +3,11 @@
 
 @include_statements_var@
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 inline void registerRtSmithTargets() {
 @rtsmith_targets_var@}
 
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith
 
 #endif  /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_REGISTER_H_ */

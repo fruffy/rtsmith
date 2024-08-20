@@ -4,7 +4,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "backends/p4tools/modules/p4rtsmith/targets/bmv2/program_info.h"
 
-namespace P4Tools::RTSmith::V1Model {
+namespace P4::P4Tools::RTSmith::V1Model {
 
 class Bmv2V1ModelFuzzer : public P4RuntimeFuzzer {
  private:
@@ -19,6 +19,6 @@ class Bmv2V1ModelFuzzer : public P4RuntimeFuzzer {
     UpdateSeries produceUpdateTimeSeries() override;
 };
 
-}  // namespace P4Tools::RTSmith::V1Model
+}  // namespace P4::P4Tools::RTSmith::V1Model
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_BMV2_FUZZER_H_ */

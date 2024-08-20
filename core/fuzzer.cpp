@@ -4,7 +4,7 @@
 #include "control-plane/bytestrings.h"
 #include "control-plane/p4infoApi.h"
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 p4::v1::FieldMatch_Exact P4RuntimeFuzzer::produceFieldMatch_Exact(int bitwidth) {
     p4::v1::FieldMatch_Exact protoExact;
@@ -179,4 +179,4 @@ bool RuntimeFuzzer::tableHasFieldType(const p4::config::v1::Table &table,
     return false;
 }
 
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith

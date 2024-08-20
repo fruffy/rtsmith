@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RTSmith::Tna {
 
 enum Vtofino_gress_t { TOFINO_INGRESS, TOFINO_EGRESS };
 
@@ -42,6 +42,6 @@ class TnaConstants {
     static constexpr int DROP_PORT = 511;
 };
 
-}  // namespace P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RTSmith::Tna
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_CONSTANTS_H_ */

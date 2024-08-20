@@ -8,7 +8,7 @@
 #include "ir/ir.h"
 #include "lib/castable.h"
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 /// Stores target-specific information about a P4 program.
 class ProgramInfo : public ICastable {
@@ -42,6 +42,6 @@ class ProgramInfo : public ICastable {
     [[nodiscard]] const ::p4::config::v1::P4Info *getP4Info() const;
 };
 
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_PROGRAM_INFO_H_ */

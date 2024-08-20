@@ -6,7 +6,7 @@
 #include "backends/p4tools/modules/p4rtsmith/targets/tofino/fuzzer.h"
 #include "ir/ir.h"
 
-namespace P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RTSmith::Tna {
 
 class TofinoTnaRtSmithTarget : public RtSmithTarget {
  private:
@@ -26,6 +26,6 @@ class TofinoTnaRtSmithTarget : public RtSmithTarget {
     [[nodiscard]] MidEnd mkMidEnd(const CompilerOptions &options) const override;
 };
 
-}  // namespace P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RTSmith::Tna
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_TARGET_H_ */

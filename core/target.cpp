@@ -14,7 +14,7 @@
 #include "lib/enumerator.h"
 #include "lib/exceptions.h"
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 RtSmithTarget::RtSmithTarget(const std::string &deviceName, const std::string &archName)
     : CompilerTarget(TOOL_NAME, deviceName, archName) {}
@@ -52,4 +52,4 @@ const ProgramInfo *RtSmithTarget::produceProgramInfo(const CompilerResult &compi
 ICompileContext *RtSmithTarget::makeContext() const {
     return new P4Tools::CompileContext<RtSmithOptions>();
 }
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith

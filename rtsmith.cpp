@@ -15,7 +15,7 @@
 #include "lib/error.h"
 #include "lib/nullstream.h"
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 void RtSmith::registerTarget() {
     // Register all available compiler targets.
@@ -29,11 +29,11 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
                                         const RtSmithOptions &rtSmithOptions) {
     const auto *programInfo = RtSmithTarget::produceProgramInfo(rtSmithResult);
     if (programInfo == nullptr) {
-        ::error("Program not supported by target device and architecture.");
+        ::P4::error("Program not supported by target device and architecture.");
         return std::nullopt;
     }
-    if (::errorCount() > 0) {
-        ::error("P4RuntimeSmith: Encountered errors during preprocessing. Exiting");
+    if (::P4::errorCount() > 0) {
+        ::P4::error("P4RuntimeSmith: Encountered errors during preprocessing. Exiting");
         return std::nullopt;
     }
 
@@ -69,7 +69,7 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
     if (!dirPath.empty()) {
         if (!std::filesystem::exists(dirPath)) {
             if (!std::filesystem::create_directory(dirPath)) {
-                ::error("P4RuntimeSmith: Failed to create output directory. Exiting");
+                ::P4::error("P4RuntimeSmith: Failed to create output directory. Exiting");
                 return std::nullopt;
             }
         }
@@ -85,7 +85,7 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
 
         auto *outputFile = openFile(initialConfigPath, true);
         if (outputFile == nullptr) {
-            ::error("P4RuntimeSmith: Config file path doesn't exist. Exiting");
+            ::P4::error("P4RuntimeSmith: Config file path doesn't exist. Exiting");
             return std::nullopt;
         }
 
@@ -94,13 +94,14 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
             google::protobuf::TextFormat::Printer textPrinter;
             textPrinter.SetExpandAny(true);
             if (!textPrinter.PrintToString(*writeRequest.get(), &output)) {
-                ::error(ErrorType::ERR_IO, "Failed to serialize protobuf message to text");
+                ::P4::error(ErrorType::ERR_IO, "Failed to serialize protobuf message to text");
                 return std::nullopt;
             }
 
             *outputFile << output;
             if (!outputFile->good()) {
-                ::error(ErrorType::ERR_IO, "Failed to write text protobuf message to the output");
+                ::P4::error(ErrorType::ERR_IO,
+                            "Failed to write text protobuf message to the output");
                 return std::nullopt;
             }
             printInfo("Wrote initial configuration to %1%", initialConfigPath);
@@ -121,7 +122,7 @@ int RtSmith::mainImpl(const CompilerResult &compilerResult) {
 
     const auto &rtSmithOptions = RtSmithOptions::get();
     auto result = runRtSmith(compilerResult, rtSmithOptions);
-    return (result.has_value() && ::errorCount() == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return (result.has_value() && ::P4::errorCount() == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 std::optional<RtSmithResult> generateConfigImpl(
@@ -141,7 +142,7 @@ std::optional<RtSmithResult> generateConfigImpl(
             std::nullopt);
     } else {
         RETURN_IF_FALSE_WITH_MESSAGE(!rtSmithOptions.file.empty(), std::nullopt,
-                                     ::error("Expected a file input."));
+                                     ::P4::error("Expected a file input."));
         // Run the compiler to get an IR and invoke the tool.
         ASSIGN_OR_RETURN(compilerResult,
                          P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME),
@@ -176,4 +177,4 @@ std::optional<RtSmithResult> RtSmith::generateConfig(const RtSmithOptions &rtSmi
     return std::nullopt;
 }
 
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith

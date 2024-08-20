@@ -8,7 +8,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
 #include "ir/ir.h"
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 class RtSmithTarget : public CompilerTarget {
  public:
@@ -43,6 +43,6 @@ class RtSmithTarget : public CompilerTarget {
  private:
 };
 
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_TARGET_H_ */

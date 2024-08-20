@@ -10,7 +10,7 @@
 #include "p4/v1/p4runtime.pb.h"
 #pragma GCC diagnostic pop
 
-namespace P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith {
 
 using ProtobufMessagePtr = std::unique_ptr<google::protobuf::Message>;
 using InitialConfig = std::vector<ProtobufMessagePtr>;
@@ -128,6 +128,6 @@ class P4RuntimeFuzzer : public RuntimeFuzzer {
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
 };
 
-}  // namespace P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith
 
 #endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_FUZZER_H_ */
