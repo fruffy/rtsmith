@@ -1,7 +1,9 @@
 #include <cstdlib>
+#include <random>
 
 #include "backends/p4tools/common/compiler/context.h"
 #include "backends/p4tools/common/lib/logging.h"
+#include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/modules/flay/flay.h"
 #include "backends/p4tools/modules/flay/register.h"
 #include "backends/p4tools/modules/p4rtsmith/core/util.h"
@@ -135,9 +137,21 @@ int main(int argc, char *argv[]) {
         new P4::P4Tools::CompileContext<P4::P4Tools::RTSmith::RtSmithOptions>(*compileContext);
     P4::AutoCompileContext autoContext2(rtSmithContext);
     // Run the reference checker.
+    auto rtSmithOptions = rtSmithContext->options();
+    if (rtSmithOptions.seed.has_value()) {
+        P4::P4Tools::printInfo("Using provided seed");
+    } else {
+        P4::P4Tools::printInfo("Generating seed...");
+        // No seed provided, we generate our own.
+        std::random_device r;
+        rtSmithOptions.seed = r();
+        P4::P4Tools::Utils::setRandomSeed(*rtSmithOptions.seed);
+    }
+
     auto result = P4::P4Tools::RTSmith::run(compileContext->options(), rtSmithContext->options());
     if (result == EXIT_FAILURE) {
         return EXIT_FAILURE;
     }
+    P4::P4Tools::printPerformanceReport();
     return ::P4::errorCount() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

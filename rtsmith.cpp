@@ -2,11 +2,13 @@
 
 #include <google/protobuf/text_format.h>
 
+#include <cstddef>
 #include <cstdlib>
 #include <filesystem>
 
 #include "backends/p4tools/common/compiler/compiler_result.h"
 #include "backends/p4tools/common/lib/logging.h"
+#include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/modules/p4rtsmith/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/util.h"
 #include "backends/p4tools/modules/p4rtsmith/register.h"
@@ -93,7 +95,7 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
             std::string output;
             google::protobuf::TextFormat::Printer textPrinter;
             textPrinter.SetExpandAny(true);
-            if (!textPrinter.PrintToString(*writeRequest.get(), &output)) {
+            if (!textPrinter.PrintToString(*writeRequest, &output)) {
                 ::P4::error(ErrorType::ERR_IO, "Failed to serialize protobuf message to text");
                 return std::nullopt;
             }
@@ -107,6 +109,33 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
             printInfo("Wrote initial configuration to %1%", initialConfigPath);
 
             outputFile->flush();
+        }
+        for (size_t idx = 0; idx < timeSeriesUpdates.size(); ++idx) {
+            const auto &[microseconds, writeRequest] = timeSeriesUpdates.at(idx);
+            std::string output;
+            google::protobuf::TextFormat::Printer textPrinter;
+            textPrinter.SetExpandAny(true);
+            if (!textPrinter.PrintToString(*writeRequest, &output)) {
+                ::P4::error(ErrorType::ERR_IO, "Failed to serialize protobuf message to text");
+                return std::nullopt;
+            }
+            auto updatePath = initialConfigPath;
+            updatePath.replace_filename("update_" + std::to_string(idx + 1));
+            updatePath.replace_extension(".txtpb");
+            auto *updateFile = openFile(updatePath, true);
+            if (updateFile == nullptr) {
+                ::P4::error("P4RuntimeSmith: Update file path doesn't exist. Exiting");
+                return std::nullopt;
+            }
+            *updateFile << output;
+            printInfo("Wrote update to %1%", updatePath);
+            if (!updateFile->good()) {
+                ::P4::error(ErrorType::ERR_IO,
+                            "Failed to write text protobuf message to the output");
+                return std::nullopt;
+            }
+
+            updateFile->flush();
         }
     }
 

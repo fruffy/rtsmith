@@ -25,6 +25,9 @@ class RuntimeFuzzer {
     /// @returns the program info associated with the current target.
     [[nodiscard]] virtual const ProgramInfo &getProgramInfo() const { return programInfo; }
 
+    /// A map of control plane objects and their current state.
+    std::map<std::string, std::set<std::string>> currentState;
+
  public:
     explicit RuntimeFuzzer(const ProgramInfo &programInfo) : programInfo(programInfo) {}
 
@@ -126,6 +129,12 @@ class P4RuntimeFuzzer : public RuntimeFuzzer {
     virtual p4::v1::TableEntry produceTableEntry(
         const p4::config::v1::Table &table,
         const google::protobuf::RepeatedPtrField<p4::config::v1::Action> &actions);
+
+    /// @brief Produce a `WriteRequest` with a vector of `TableEntry`.
+    /// @param isInitialConfig describes whether the write request is generated in the context of an
+    /// initial configuration (no updates or deletes are used there).
+    /// @return A `WriteRequest`
+    std::unique_ptr<p4::v1::WriteRequest> produceWriteRequest(bool isInitialConfig);
 };
 
 }  // namespace P4::P4Tools::RTSmith
