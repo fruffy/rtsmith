@@ -1,6 +1,9 @@
 #include "backends/p4tools/modules/p4rtsmith/options.h"
 
+#include <random>
+
 #include "backends/p4tools/common/compiler/context.h"
+#include "backends/p4tools/common/lib/logging.h"
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
@@ -77,6 +80,21 @@ RtSmithOptions::RtSmithOptions()
             return true;
         },
         "Specifies the control plane API to use. Defaults to P4Rtuntime.");
+    registerOption(
+        "--random-seed", nullptr,
+        [this](const char *) {
+            if (seed.has_value()) {
+                error("Seed has already been set to %1%.", *seed);
+                return false;
+            }
+            // No seed provided, we generate our own.
+            std::random_device r;
+            seed = r();
+            Utils::setRandomSeed(*seed);
+            printInfo("Using randomly generated seed %1%", *seed);
+            return true;
+        },
+        "Use a random seed.");
 }
 
 std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }

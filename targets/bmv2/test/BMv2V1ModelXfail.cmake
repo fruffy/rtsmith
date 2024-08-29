@@ -63,3 +63,11 @@ p4tools_add_xfail_reason(
   issue281.p4
   fabric.p4
 )
+
+p4tools_add_xfail_reason(
+  "rtsmith-checker-bmv2-v1model"
+  "Compiler Bug: Unexpected width 0"
+  # These fail because the key is an enum, which has a 0 width value.
+  issue1062-1-bmv2.p4
+  issue2283_1-bmv2.p4
+)

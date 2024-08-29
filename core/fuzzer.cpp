@@ -22,8 +22,7 @@ p4::v1::FieldMatch_LPM P4RuntimeFuzzer::produceFieldMatch_LPM(int bitwidth) {
 p4::v1::FieldMatch_Ternary P4RuntimeFuzzer::produceFieldMatch_Ternary(int bitwidth) {
     p4::v1::FieldMatch_Ternary protoTernary;
     protoTernary.set_value(produceBytes(bitwidth));
-    /// TODO: use random mask
-    protoTernary.set_mask(produceBytes(bitwidth, /*value=*/0));
+    protoTernary.set_mask(produceBytes(bitwidth));
     return protoTernary;
 }
 
@@ -59,13 +58,13 @@ p4::v1::Action P4RuntimeFuzzer::produceTableAction(
     auto action_index = Utils::getRandInt(action_refs.size() - 1);
     auto action_ref_id = action_refs[action_index].id();
 
-    auto action =
+    const auto *action =
         P4::ControlPlaneAPI::findP4InfoObject(actions.begin(), actions.end(), action_ref_id);
     auto action_id = action->preamble().id();
     auto params = action->params();
 
     protoAction.set_action_id(action_id);
-    for (auto &param : action->params()) {
+    for (const auto &param : action->params()) {
         protoAction.add_params()->CopyFrom(produceActionParam(param));
     }
 
@@ -74,8 +73,7 @@ p4::v1::Action P4RuntimeFuzzer::produceTableAction(
 
 uint32_t P4RuntimeFuzzer::producePriority(
     const google::protobuf::RepeatedPtrField<p4::config::v1::MatchField> &matchFields) {
-    for (auto i = 0; i < matchFields.size(); i++) {
-        auto match = matchFields[i];
+    for (const auto &match : matchFields) {
         auto matchType = match.match_type();
         if (matchType == p4::config::v1::MatchField::TERNARY ||
             matchType == p4::config::v1::MatchField::RANGE ||
@@ -130,8 +128,7 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
 
     // add matches
     const auto &matchFields = table.match_fields();
-    for (auto i = 0; i < matchFields.size(); i++) {
-        auto match = matchFields[i];
+    for (auto match : matchFields) {
         protoEntry.add_match()->CopyFrom(produceMatchField(match));
     }
 
@@ -143,8 +140,73 @@ p4::v1::TableEntry P4RuntimeFuzzer::produceTableEntry(
     const auto &action_refs = table.action_refs();
     auto protoAction = produceTableAction(action_refs, actions);
     *protoEntry.mutable_action()->mutable_action() = protoAction;
-
     return protoEntry;
+}
+
+std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool isInitialConfig) {
+    const auto *p4Info = getProgramInfo().getP4RuntimeApi().p4Info;
+
+    const auto tables = p4Info->tables();
+    const auto actions = p4Info->actions();
+
+    auto tableCnt = tables.size();
+    auto request = std::make_unique<p4::v1::WriteRequest>();
+    for (auto tableId = 0; tableId < tableCnt; tableId++) {
+        const auto &table = tables.Get(tableId);
+        // NOTE: Temporary use a coin to decide if generating entries for the table.
+        // Make this configurable.
+        if (table.match_fields_size() == 0 || table.is_const_table() ||
+            Utils::getRandInt(0, 4) == 0) {
+            continue;
+        }
+        // TODO: Make this a configurable variable and increase.
+        auto maxEntryGenCnt = Utils::getRandInt(1, 5);
+        // The maximum attempts we are trying to generate an entry.
+        int attempts = 0;
+        // Try to keep track of the entries we have generated so far.
+        int count = 0;
+        // Retrieve the current table configuration.
+        auto &currentTableConfiguration = currentState[table.preamble().name()];
+        while (count < maxEntryGenCnt) {
+            // TODO: Make this a configurable variable.
+            if (attempts > 100) {
+                warning("Failed to generate %d entries for table %s", maxEntryGenCnt,
+                        table.preamble().name());
+                break;
+            }
+            auto entry = produceTableEntry(table, actions);
+            // TODO: This is inefficient, but currently works.
+            std::stringstream matchFieldStream;
+            for (const auto &match : entry.match()) {
+                matchFieldStream << match.DebugString();
+            }
+            auto matchFieldString = matchFieldStream.str();
+            // Only insert unique entries that actually insert.
+            if (currentTableConfiguration.find(matchFieldString) ==
+                currentTableConfiguration.end()) {
+                auto *update = request->add_updates();
+                update->set_type(p4::v1::Update_Type::Update_Type_INSERT);
+                update->mutable_entity()->mutable_table_entry()->CopyFrom(entry);
+                count++;
+                currentTableConfiguration.insert(matchFieldString);
+            } else if (!isInitialConfig) {
+                // In case of an initial config we may update or delete entries.
+                auto *update = request->add_updates();
+                // Whether we update or delete the entry is determined randomly.
+                // TODO: Make this configurable and add a weight.
+                if (Utils::getRandInt(1) == 0) {
+                    update->set_type(p4::v1::Update_Type::Update_Type_MODIFY);
+                } else {
+                    update->set_type(p4::v1::Update_Type::Update_Type_DELETE);
+                    currentTableConfiguration.erase(matchFieldString);
+                }
+                update->mutable_entity()->mutable_table_entry()->CopyFrom(entry);
+                count++;
+            }
+            attempts++;
+        }
+    }
+    return request;
 }
 
 /// Some Helper functions below
