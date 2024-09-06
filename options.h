@@ -57,6 +57,9 @@ class RtSmithOptions : public AbstractP4cToolOptions {
 
     // The control plane API to use. Defaults to P4Runtime.
     std::string _controlPlaneApi = "P4RUNTIME";
+
+    // The type of the configuration to generate.
+    std::string _configType = "";
 };
 
 }  // namespace P4::P4Tools::RTSmith
