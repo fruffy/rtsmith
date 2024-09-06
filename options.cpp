@@ -113,6 +113,7 @@ RtSmithOptions::RtSmithOptions()
             }
             _configType = std::string(arg);
             printInfo("Using configuration type %1%.", _configType);
+            return true;
         },
         "Specifies the configuration type to generation the desired configuration.");
 }
