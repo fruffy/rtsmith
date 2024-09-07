@@ -97,7 +97,7 @@ RtSmithOptions::RtSmithOptions()
         },
         "Use a random seed.");
     registerOption(
-        "--classbench", configName,
+        "--classbench", "configName",
         [this](const char *arg) {
             // Check if the configuration type is specified.
             if (arg == nullptr) {
