@@ -66,14 +66,26 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
             return std::nullopt;
         }
 
-        // TODO(zzmic): Replace the following with the real, actual configurations.
-        std::string_view library_name = config["library"]["name"].value_or(std::string_view(""));
-        std::string_view library_author =
-            config["library"]["authors"][0].value_or(std::string_view(""));
-        int64_t depends_on_cpp_version = config["dependencies"]["cpp"].value_or(0);
-        printInfo("Library name: %1%", library_name);
-        printInfo("Library author: %1%", library_author);
-        printInfo("Depends on C++ version: %1%", depends_on_cpp_version);
+        const int numEntriesPerTable = config["tables"]["num_entries_per_table"].value_or(0);
+        printInfo("Number of entries per table: %1%", numEntriesPerTable);
+        std::vector<std::string> tablesToSkip;
+        if (const auto *stringRepresentations = config["tables"]["tables_to_skip"].as_array()) {
+            for (const auto &element : *stringRepresentations) {
+                if (const auto *str = element.as_string()) {
+                    tablesToSkip.push_back(str->get());
+                }
+            }
+            for (const auto &string : tablesToSkip) {
+                printInfo("Table to skip: %1%", string);
+            }
+        } else {
+            printInfo("No tables to skip.");
+        }
+
+        bool isSetNumEntriesPerTableSuccessful = fuzzer.setNumEntriesPerTable(numEntriesPerTable);
+        bool isSetTablesToSkipSuccessful = fuzzer.setTablesToSkip(tablesToSkip);
+        printInfo("Set number of entries per table: %1%", isSetNumEntriesPerTableSuccessful);
+        printInfo("Set tables to skip: %1%", isSetTablesToSkipSuccessful);
     }
 
     auto initialConfig = fuzzer.produceInitialConfig();
