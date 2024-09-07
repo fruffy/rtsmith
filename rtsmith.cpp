@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <filesystem>
 
+#include <toml++/toml.hpp>
+
 #include "backends/p4tools/common/compiler/compiler_result.h"
 #include "backends/p4tools/common/lib/logging.h"
 #include "backends/p4tools/common/lib/util.h"
@@ -51,6 +53,28 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
     }
 
     auto &fuzzer = RtSmithTarget::getFuzzer(*programInfo);
+
+    // If a fuzzer configuration file is provided, read it and use it to configure the fuzzer.
+    if (rtSmithOptions.fuzzerConfigPath().has_value()) {
+        toml::parse_result config;
+        try {
+            // Note that the parameter fed into the `parse_file` function should be of (or could be
+            // converted to) type `std::string_view`.
+            config = toml::parse_file(rtSmithOptions.fuzzerConfigPath().value().c_str());
+        } catch (const toml::parse_error &e) {
+            ::P4::error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
+            return std::nullopt;
+        }
+
+        // TODO(zzmic): Replace the following with the real, actual configurations.
+        std::string_view library_name = config["library"]["name"].value_or(std::string_view(""));
+        std::string_view library_author =
+            config["library"]["authors"][0].value_or(std::string_view(""));
+        int64_t depends_on_cpp_version = config["dependencies"]["cpp"].value_or(0);
+        printInfo("Library name: %1%", library_name);
+        printInfo("Library author: %1%", library_author);
+        printInfo("Depends on C++ version: %1%", depends_on_cpp_version);
+    }
 
     auto initialConfig = fuzzer.produceInitialConfig();
     auto timeSeriesUpdates = fuzzer.produceUpdateTimeSeries();

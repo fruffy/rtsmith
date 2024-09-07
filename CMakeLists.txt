@@ -71,6 +71,16 @@ add_p4tools_executable(p4rtsmith main.cpp)
 
 target_link_libraries(p4rtsmith rtsmith ${RTSMITH_LIBS})
 
+# Integrate toml++ into the build.
+include(FetchContent)
+FetchContent_Declare(
+  tomlplusplus
+  GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+  GIT_TAG        v3.4.0
+)
+FetchContent_MakeAvailable(tomlplusplus)
+target_link_libraries(rtsmith tomlplusplus::tomlplusplus)
+
 # Add some convenience links for invoking p4rtsmith.
 add_custom_target(
   linkrtsmith
