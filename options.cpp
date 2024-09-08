@@ -99,21 +99,16 @@ RtSmithOptions::RtSmithOptions()
     registerOption(
         "--classbench", "configName",
         [this](const char *arg) {
-            // Check if the configuration type is specified.
-            if (arg == nullptr) {
-                ::P4::error("No configuration type specified. Please specify one.");
-                return false;
-            }
             // Check if the configuration type is valid.
-            if (std::string(arg) != "<config-type-placeholder-1>" &&
-                std::string(arg) != "<config-type-placeholder-2>" &&
-                std::string(arg) != "<config-type-placeholder-3>") {
+            if (std::find(_availConfigTypes.begin(), _availConfigTypes.end(), std::string(arg)) !=
+                _availConfigTypes.end()) {
+                _configType = std::string(arg);
+                printInfo("Using configuration type %1%.", _configType);
+                return true;
+            } else {
                 ::P4::error("Invalid configuration type %1% for --classbench.", arg);
                 return false;
             }
-            _configType = std::string(arg);
-            printInfo("Using configuration type %1%.", _configType);
-            return true;
         },
         "Specifies the configuration type to generation the desired configuration.");
 }
