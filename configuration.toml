@@ -1,3 +1,4 @@
 [tables]
-num_entries_per_table = 1
+max_entries_per_table = 100
+max_tables = 100
 tables_to_skip = ["table1", "table2"]

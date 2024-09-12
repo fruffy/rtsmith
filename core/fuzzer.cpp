@@ -241,17 +241,4 @@ bool RuntimeFuzzer::tableHasFieldType(const p4::config::v1::Table &table,
     return false;
 }
 
-bool RuntimeFuzzer::setNumEntriesPerTable(int numEntries) {
-    if (numEntries <= 0) {
-        return false;
-    }
-    numEntriesPerTable = numEntries;
-    return true;
-}
-
-bool RuntimeFuzzer::setTablesToSkip(const std::vector<std::string> &tables) {
-    tablesToSkip = tables;
-    return true;
-}
-
 }  // namespace P4::P4Tools::RTSmith

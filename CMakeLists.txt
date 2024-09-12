@@ -19,6 +19,7 @@ set(RTSMITH_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/core/program_info.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/core/target.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/core/fuzzer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/config.cpp
 )
 
 # GTest source files for P4RuntimeSmith.

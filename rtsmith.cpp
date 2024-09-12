@@ -6,8 +6,6 @@
 #include <cstdlib>
 #include <filesystem>
 
-#include <toml++/toml.hpp>
-
 #include "backends/p4tools/common/compiler/compiler_result.h"
 #include "backends/p4tools/common/lib/logging.h"
 #include "backends/p4tools/common/lib/util.h"
@@ -53,40 +51,6 @@ std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
     }
 
     auto &fuzzer = RtSmithTarget::getFuzzer(*programInfo);
-
-    // If a fuzzer configuration file is provided, read it and use it to configure the fuzzer.
-    if (rtSmithOptions.fuzzerConfigPath().has_value()) {
-        toml::parse_result config;
-        try {
-            // Note that the parameter fed into the `parse_file` function should be of (or could be
-            // converted to) type `std::string_view`.
-            config = toml::parse_file(rtSmithOptions.fuzzerConfigPath().value().c_str());
-        } catch (const toml::parse_error &e) {
-            ::P4::error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
-            return std::nullopt;
-        }
-
-        const int numEntriesPerTable = config["tables"]["num_entries_per_table"].value_or(0);
-        printInfo("Number of entries per table: %1%", numEntriesPerTable);
-        std::vector<std::string> tablesToSkip;
-        if (const auto *stringRepresentations = config["tables"]["tables_to_skip"].as_array()) {
-            for (const auto &element : *stringRepresentations) {
-                if (const auto *str = element.as_string()) {
-                    tablesToSkip.push_back(str->get());
-                }
-            }
-            for (const auto &string : tablesToSkip) {
-                printInfo("Table to skip: %1%", string);
-            }
-        } else {
-            printInfo("No tables to skip.");
-        }
-
-        bool isSetNumEntriesPerTableSuccessful = fuzzer.setNumEntriesPerTable(numEntriesPerTable);
-        bool isSetTablesToSkipSuccessful = fuzzer.setTablesToSkip(tablesToSkip);
-        printInfo("Set number of entries per table: %1%", isSetNumEntriesPerTableSuccessful);
-        printInfo("Set tables to skip: %1%", isSetTablesToSkipSuccessful);
-    }
 
     auto initialConfig = fuzzer.produceInitialConfig();
     auto timeSeriesUpdates = fuzzer.produceUpdateTimeSeries();

@@ -21,13 +21,6 @@ class RuntimeFuzzer {
     /// The program info of the target.
     std::reference_wrapper<const ProgramInfo> programInfo;
 
-    /// Number of entries to generate.
-    /// TODO(zzmic): Decide what default value to set. Currently set to 0 and not used.
-    int numEntriesPerTable = 0;
-
-    /// String representations of tables to skip.
-    std::vector<std::string> tablesToSkip;
-
  protected:
     /// @returns the program info associated with the current target.
     [[nodiscard]] virtual const ProgramInfo &getProgramInfo() const { return programInfo; }
@@ -74,16 +67,6 @@ class RuntimeFuzzer {
 
     static bool tableHasFieldType(const p4::config::v1::Table &table,
                                   const p4::config::v1::MatchField::MatchType type);
-
-    /// @brief Set the number of entries to generate.
-    /// @param numEntries
-    /// @return true if the number of entries is set successfully.
-    bool setNumEntriesPerTable(int numEntries);
-
-    /// @brief Set the (string representation of) tables to skip.
-    /// @param tables
-    /// @return true if the (string representation of) tables to skip are set successfully.
-    bool setTablesToSkip(const std::vector<std::string> &tables);
 };
 
 class P4RuntimeFuzzer : public RuntimeFuzzer {
