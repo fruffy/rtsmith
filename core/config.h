@@ -1,16 +1,9 @@
 #ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_CONFIG_H_
 #define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_CONFIG_H_
 
-#include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wpedantic"
-#include "backends/p4tools/common/control_plane/bfruntime/bfruntime.pb.h"
-#include "p4/v1/p4runtime.pb.h"
-#pragma GCC diagnostic pop
-
 #include <toml++/toml.hpp>
+
+#include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
 
 namespace P4::P4Tools::RTSmith {
 

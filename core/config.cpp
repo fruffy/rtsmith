@@ -1,9 +1,5 @@
 #include "backends/p4tools/modules/p4rtsmith/core/config.h"
 
-#include "backends/p4tools/common/lib/util.h"
-#include "control-plane/bytestrings.h"
-#include "control-plane/p4infoApi.h"
-
 namespace P4::P4Tools::RTSmith {
 
 void FuzzerConfig::setMaxEntriesPerTable(const int numEntries) {
