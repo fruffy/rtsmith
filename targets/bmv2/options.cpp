@@ -1,4 +1,4 @@
-#include "backends/p4tools/modules/p4rtsmith/options.h"
+#include "backends/p4tools/modules/p4rtsmith/targets/bmv2/options.h"
 
 #include <iostream>  // TODO(zzmic): Remove this eventually.
 #include <random>
@@ -8,19 +8,16 @@
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
-#include "lib/error.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RTSmith::V1Model {
 
-RtSmithOptions &RtSmithOptions::get() {
-    return P4Tools::CompileContext<RtSmithOptions>::get().options();
+Bmv2V1ModelRtSmithOptions &Bmv2V1ModelRtSmithOptions::get() {
+    return P4Tools::CompileContext<Bmv2V1ModelRtSmithOptions>::get().options();
 }
 
 const std::set<std::string> K_SUPPORTED_CONTROL_PLANES = {"P4RUNTIME", "BFRUNTIME"};
 
-RtSmithOptions::RtSmithOptions()
-    : AbstractP4cToolOptions(RTSmith::TOOL_NAME,
-                             "Remove control-plane dead code from a P4 program.") {
+Bmv2V1ModelRtSmithOptions::Bmv2V1ModelRtSmithOptions() : RtSmithOptions() {
     registerOption(
         "--print-to-stdout", nullptr,
         [this](const char *) {
@@ -47,8 +44,8 @@ RtSmithOptions::RtSmithOptions()
         [this](const char *arg) {
             _userP4Info = arg;
             if (!std::filesystem::exists(_userP4Info.value())) {
-                error("%1% does not exist. Please provide a valid file path.",
-                      _userP4Info.value().c_str());
+                ::P4::error("%1% does not exist. Please provide a valid file path.",
+                            _userP4Info.value().c_str());
                 return false;
             }
             return true;
@@ -59,7 +56,7 @@ RtSmithOptions::RtSmithOptions()
         [this](const char *arg) {
             _p4InfoFilePath = arg;
             if (_p4InfoFilePath.value().extension() != ".txtpb") {
-                error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
+                ::P4::error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
                 return false;
             }
             return true;
@@ -73,7 +70,7 @@ RtSmithOptions::RtSmithOptions()
                       ::toupper);
             if (K_SUPPORTED_CONTROL_PLANES.find(_controlPlaneApi) ==
                 K_SUPPORTED_CONTROL_PLANES.end()) {
-                error(
+                ::P4::error(
                     "Test back end %1% not implemented for this target. Supported back ends are "
                     "%2%.",
                     _controlPlaneApi, Utils::containerToString(K_SUPPORTED_CONTROL_PLANES));
@@ -107,51 +104,24 @@ RtSmithOptions::RtSmithOptions()
             }
             // Override the default fuzzer configurations with the configurations from the TOML
             // file.
-            _fuzzerConfig.override_fuzzer_configs(_fuzzerConfigPath.value().c_str());
+            _bmv2V1ModelFuzzerConfig.override_fuzzer_configs(_fuzzerConfigPath.value().c_str());
 
             // TODO(zzmic): Delete the following debugging prints eventually.
-            std::cout << "Fuzzer configurations have been set in _fuzzerConfig."
+            std::cout << "Fuzzer configurations have been set in _bmv2V1ModelFuzzerConfig."
                       << "\n";
-            std::cout << "Overriden maxEntriesPerTable: " << _fuzzerConfig.getMaxEntriesPerTable()
-                      << "\n";
-            std::cout << "Overriden maxTables: " << _fuzzerConfig.getMaxTables() << "\n";
+            std::cout << "Overriden maxEntriesPerTable: "
+                      << _bmv2V1ModelFuzzerConfig.getMaxEntriesPerTable() << "\n";
+            std::cout << "Overriden maxTables: " << _bmv2V1ModelFuzzerConfig.getMaxTables() << "\n";
             std::cout << "Overriden tablesToSkip:\n";
-            for (const auto &table : _fuzzerConfig.getTablesToSkip()) {
+            for (const auto &table : _bmv2V1ModelFuzzerConfig.getTablesToSkip()) {
                 std::cout << table << "\n";
             }
+            std::cout << "Overriden matchKindOpt: " << _bmv2V1ModelFuzzerConfig.getMatchKindOpt()
+                      << "\n";
 
             return true;
         },
         "Set the fuzzer configurations using the TOML file specified by the file path");
 }
 
-std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }
-
-bool RtSmithOptions::validateOptions() const {
-    if (_userP4Info.has_value() && _p4InfoFilePath.has_value()) {
-        error("Both --user-p4info and --generate-p4info are specified. Please specify only one.");
-        return false;
-    }
-    if (!seed.has_value()) {
-        warning("No seed is set. Will always choose 0 for random values.");
-    }
-    return true;
-}
-
-bool RtSmithOptions::printToStdout() const { return _printToStdout; }
-
-std::optional<std::string> RtSmithOptions::configName() const { return _configName; }
-
-std::optional<std::filesystem::path> RtSmithOptions::userP4Info() const { return _userP4Info; }
-
-std::optional<std::filesystem::path> RtSmithOptions::p4InfoFilePath() const {
-    return _p4InfoFilePath;
-}
-
-std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneApi; }
-
-std::optional<std::filesystem::path> RtSmithOptions::fuzzerConfigPath() const {
-    return _fuzzerConfigPath;
-}
-
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RTSmith::V1Model

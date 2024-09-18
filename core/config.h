@@ -20,7 +20,8 @@ class FuzzerConfig {
     // TODO(zzmic): Verify whether this is needed.
     std::vector<std::string> tablesToSkip;
 
-    // Helpers to modify/override the fuzzer configurations.
+ protected:
+    /// Setters to modify/override the fuzzer configurations.
     void setMaxEntriesPerTable(const int numEntries);
     void setMaxTables(const int numTables);
     void setTablesToSkip(const std::vector<std::string> &tables);
@@ -29,11 +30,14 @@ class FuzzerConfig {
     // Default constructor.
     FuzzerConfig() = default;
 
+    // Default destructor.
+    virtual ~FuzzerConfig() = default;
+
     /// @brief Override the default fuzzer configurations through the TOML file.
-    // @param path The path to the TOML file.
+    /// @param path The path to the TOML file.
     void override_fuzzer_configs(const char *path);
 
-    // Getters to access the fuzzer configurations.
+    /// Getters to access the fuzzer configurations.
     [[nodiscard]] int getMaxEntriesPerTable() const { return maxEntriesPerTable; }
     [[nodiscard]] int getMaxTables() const { return maxTables; }
     [[nodiscard]] const std::vector<std::string> &getTablesToSkip() const { return tablesToSkip; }

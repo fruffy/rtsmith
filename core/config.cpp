@@ -31,23 +31,35 @@ void FuzzerConfig::override_fuzzer_configs(const char *path) {
         ::P4::error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
     }
 
-    // Retrieve the configurations from the TOML file.
-    // TODO(zzmic): Figure out whether exception raising is needed if the keys are not found.
-    const int maxEntriesPerTable = tomlConfig["tables"]["max_entries_per_table"].value_or(0);
-    const int maxTables = tomlConfig["tables"]["max_tables"].value_or(0);
-    std::vector<std::string> tablesToSkip;
-    if (const auto *stringRepresentations = tomlConfig["tables"]["tables_to_skip"].as_array()) {
-        for (const auto &element : *stringRepresentations) {
-            if (const auto *str = element.as_string()) {
-                tablesToSkip.push_back(str->get());
-            }
-        }
+    // Retrieve the configurations from the TOML file and override the default configurations.
+    // TODO(zzmic): Figure out whether this is a desirable engineering practice.
+    try {
+        const int maxEntriesPerTable = tomlConfig["tables"]["max_entries_per_table"].value_or(0);
+        setMaxEntriesPerTable(maxEntriesPerTable);
+    } catch (const std::runtime_error &e) {
+        /* Ignore. */
     }
 
-    // Override the default configurations.
-    setMaxEntriesPerTable(maxEntriesPerTable);
-    setMaxTables(maxTables);
-    setTablesToSkip(tablesToSkip);
+    try {
+        const int maxTables = tomlConfig["tables"]["max_tables"].value_or(0);
+        setMaxTables(maxTables);
+    } catch (const std::runtime_error &e) {
+        /* Ignore. */
+    }
+
+    try {
+        std::vector<std::string> tablesToSkip;
+        if (const auto *stringRepresentations = tomlConfig["tables"]["tables_to_skip"].as_array()) {
+            for (const auto &element : *stringRepresentations) {
+                if (const auto *str = element.as_string()) {
+                    tablesToSkip.push_back(str->get());
+                }
+            }
+        }
+        setTablesToSkip(tablesToSkip);
+    } catch (const std::runtime_error &e) {
+        /* Ignore. */
+    }
 }
 
 }  // namespace P4::P4Tools::RTSmith
