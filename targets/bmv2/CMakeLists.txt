@@ -11,8 +11,9 @@ set(RTSMITH_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/fuzzer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/program_info.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/target.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/config.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/options.cpp
+    # Commented out because they are not used for now.
+    # ${CMAKE_CURRENT_SOURCE_DIR}/config.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/options.cpp
     PARENT_SCOPE
 )
 
