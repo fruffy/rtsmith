@@ -4,7 +4,6 @@
 #include "backends/p4tools/common/p4ctool.h"
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "backends/p4tools/modules/p4rtsmith/options.h"
-#include "backends/p4tools/modules/p4rtsmith/targets/bmv2/options.h"
 
 namespace P4::P4Tools::RTSmith {
 

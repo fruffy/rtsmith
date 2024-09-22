@@ -7,7 +7,6 @@
 #include "backends/p4tools/common/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
 #include "backends/p4tools/modules/p4rtsmith/options.h"
-#include "backends/p4tools/modules/p4rtsmith/targets/bmv2/options.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
 #include "ir/declaration.h"
 #include "ir/ir.h"
