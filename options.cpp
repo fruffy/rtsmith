@@ -7,6 +7,7 @@
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/common/options.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
+#include "lib/error.h"
 
 namespace P4::P4Tools::RTSmith {
 
@@ -104,6 +105,9 @@ bool RtSmithOptions::validateOptions() const {
         ::P4::error(
             "Both --user-p4info and --generate-p4info are specified. Please specify only one.");
         return false;
+    }
+    if (!seed.has_value()) {
+        warning("No seed is set. Will always choose 0 for random values.");
     }
     return true;
 }
