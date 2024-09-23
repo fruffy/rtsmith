@@ -112,8 +112,12 @@ int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions)
         flayOptions.setConfigurationUpdatePattern(rtSmithOptions.outputDir() / "*update_*.txtpb");
         ASSIGN_OR_RETURN(auto flayServiceStatistics, Flay::Flay::optimizeProgram(flayOptions),
                          EXIT_FAILURE);
+        printInfo("Flay optimization complete.");
+        printInfo("Statistics:");
+        for (const auto &[analysisName, statistic] : flayServiceStatistics) {
+            printInfo("#####\n%1%:\n%2%#####", analysisName, statistic->toFormattedString());
+        }
     }
-    printInfo("Flay optimization complete.");
 
     return EXIT_SUCCESS;
 }
