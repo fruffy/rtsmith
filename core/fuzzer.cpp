@@ -1,5 +1,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 
+#include <ostream>  // TODO(zzmic): Remove this after removing the debug print statements.
+
 #include "backends/p4tools/common/lib/util.h"
 #include "control-plane/bytestrings.h"
 #include "control-plane/p4infoApi.h"
@@ -159,16 +161,18 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
             Utils::getRandInt(0, 4) == 0) {
             continue;
         }
-        // TODO: Make this a configurable variable and increase.
-        auto maxEntryGenCnt = Utils::getRandInt(1, 5);
+
+        // The maximum number of entries we are trying to generate for a table.
+        auto maxEntryGenCnt = getProgramInfo().getFuzzerConfig().getMaxEntryGenCnt();
+        std::cout << "maxEntryGenCnt: " << maxEntryGenCnt << std::endl;
         // The maximum attempts we are trying to generate an entry.
-        int attempts = 0;
+        int attempts = getProgramInfo().getFuzzerConfig().getAttempts();
+        std::cout << "attempts: " << attempts << std::endl;
         // Try to keep track of the entries we have generated so far.
         int count = 0;
         // Retrieve the current table configuration.
         auto &currentTableConfiguration = currentState[table.preamble().name()];
         while (count < maxEntryGenCnt) {
-            // TODO: Make this a configurable variable.
             if (attempts > 100) {
                 warning("Failed to generate %d entries for table %s", maxEntryGenCnt,
                         table.preamble().name());
@@ -192,9 +196,10 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
             } else if (!isInitialConfig) {
                 // In case of an initial config we may update or delete entries.
                 auto *update = request->add_updates();
-                // Whether we update or delete the entry is determined randomly.
-                // TODO: Make this configurable and add a weight.
-                if (Utils::getRandInt(1) == 0) {
+                // Whether we update or delete the entry.
+                auto updateOrNot = getProgramInfo().getFuzzerConfig().getIsUpdateEntry();
+                std::cout << "updateOrNot: " << updateOrNot << std::endl;
+                if (updateOrNot) {
                     update->set_type(p4::v1::Update_Type::Update_Type_MODIFY);
                 } else {
                     update->set_type(p4::v1::Update_Type::Update_Type_DELETE);

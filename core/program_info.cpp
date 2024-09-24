@@ -17,4 +17,6 @@ const P4::P4RuntimeAPI &ProgramInfo::getP4RuntimeApi() const { return p4runtimeA
 
 const ::p4::config::v1::P4Info *ProgramInfo::getP4Info() const { return p4runtimeApi.p4Info; }
 
+const FuzzerConfig &ProgramInfo::getFuzzerConfig() const { return _fuzzerConfig; }
+
 }  // namespace P4::P4Tools::RTSmith

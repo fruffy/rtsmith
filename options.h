@@ -60,12 +60,6 @@ class RtSmithOptions : public AbstractP4cToolOptions {
 
     // The type of the configuration to generate.
     std::string _configType = "";
-
-    // Available configuration types.
-    // TODO(zzmic): Replace placeholders with actual configuration types.
-    std::vector<std::string> _availConfigTypes = {"<config-type-placeholder-1>",
-                                                  "<config-type-placeholder-2>",
-                                                  "<config-type-placeholder-3>"};
 };
 
 }  // namespace P4::P4Tools::RTSmith

@@ -19,6 +19,7 @@ set(RTSMITH_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/core/program_info.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/core/target.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/core/fuzzer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/config.cpp
 )
 
 # GTest source files for P4RuntimeSmith.
@@ -70,6 +71,16 @@ target_link_libraries(rtsmith ${RTSMITH_LIBS})
 add_p4tools_executable(p4rtsmith main.cpp)
 
 target_link_libraries(p4rtsmith rtsmith ${RTSMITH_LIBS})
+
+# Integrate toml++ into the build.
+include(FetchContent)
+FetchContent_Declare(
+  tomlplusplus
+  GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+  GIT_TAG        v3.4.0
+)
+FetchContent_MakeAvailable(tomlplusplus)
+target_link_libraries(rtsmith tomlplusplus::tomlplusplus)
 
 # Add some convenience links for invoking p4rtsmith.
 add_custom_target(

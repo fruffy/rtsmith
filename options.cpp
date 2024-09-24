@@ -96,21 +96,6 @@ RtSmithOptions::RtSmithOptions()
             return true;
         },
         "Use a random seed.");
-    registerOption(
-        "--classbench", "configName",
-        [this](const char *arg) {
-            // Check if the configuration type is valid.
-            if (std::find(_availConfigTypes.begin(), _availConfigTypes.end(), std::string(arg)) !=
-                _availConfigTypes.end()) {
-                _configType = std::string(arg);
-                printInfo("Using configuration type %1%.", _configType);
-                return true;
-            } else {
-                ::P4::error("Invalid configuration type %1% for --classbench.", arg);
-                return false;
-            }
-        },
-        "Specifies the configuration type to generation the desired configuration.");
 }
 
 std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }
