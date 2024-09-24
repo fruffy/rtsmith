@@ -23,10 +23,12 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
 UpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() {
     UpdateSeries updateSeries;
     size_t updateCount = getProgramInfo().getFuzzerConfig().getUpdateCount();
+    // TODO(zzmic): Remove this eventually.
     std::cout << "updateCount: " << updateCount << std::endl;
 
     for (size_t idx = 0; idx < updateCount; ++idx) {
         auto microseconds = getProgramInfo().getFuzzerConfig().getMicroseconds();
+        // TODO(zzmic): Remove this eventually.
         std::cout << "microseconds: " << microseconds << std::endl;
         updateSeries.emplace_back(microseconds, produceWriteRequest(false));
     }

@@ -164,9 +164,11 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
 
         // The maximum number of entries we are trying to generate for a table.
         auto maxEntryGenCnt = getProgramInfo().getFuzzerConfig().getMaxEntryGenCnt();
+        // TODO(zzmic): Remove this eventually.
         std::cout << "maxEntryGenCnt: " << maxEntryGenCnt << std::endl;
         // The maximum attempts we are trying to generate an entry.
         int attempts = getProgramInfo().getFuzzerConfig().getAttempts();
+        // TODO(zzmic): Remove this eventually.
         std::cout << "attempts: " << attempts << std::endl;
         // Try to keep track of the entries we have generated so far.
         int count = 0;
@@ -198,6 +200,7 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
                 auto *update = request->add_updates();
                 // Whether we update or delete the entry.
                 auto updateOrNot = getProgramInfo().getFuzzerConfig().getIsUpdateEntry();
+                // TODO(zzmic): Remove this eventually.
                 std::cout << "updateOrNot: " << updateOrNot << std::endl;
                 if (updateOrNot) {
                     update->set_type(p4::v1::Update_Type::Update_Type_MODIFY);
