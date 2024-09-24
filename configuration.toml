@@ -1,7 +1,8 @@
 [tables]
-max_entries_per_table = 100
+max_entry_generation_count = 10
+max_attempts = 5
 max_tables = 100
 tables_to_skip = ["table1", "table2"]
-
-[match_kind]
-opt = "exact"
+is_update_entry = true
+update_count = 10
+microseconds = 500

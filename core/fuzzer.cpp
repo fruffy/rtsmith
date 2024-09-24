@@ -159,16 +159,16 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
             Utils::getRandInt(0, 4) == 0) {
             continue;
         }
-        // TODO: Make this a configurable variable and increase.
-        auto maxEntryGenCnt = Utils::getRandInt(1, 5);
+        auto maxEntryGenCnt = rtSmithOptions.getFuzzerConfig().getMaxEntryGenCnt();
+        std::cout << "maxEntryGenCnt: " << maxEntryGenCnt << "\n";
         // The maximum attempts we are trying to generate an entry.
-        int attempts = 0;
+        int attempts = rtSmithOptions.getFuzzerConfig().getAttempts();
+        std::cout << "attempts: " << attempts << "\n";
         // Try to keep track of the entries we have generated so far.
         int count = 0;
         // Retrieve the current table configuration.
         auto &currentTableConfiguration = currentState[table.preamble().name()];
         while (count < maxEntryGenCnt) {
-            // TODO: Make this a configurable variable.
             if (attempts > 100) {
                 warning("Failed to generate %d entries for table %s", maxEntryGenCnt,
                         table.preamble().name());
@@ -193,8 +193,9 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
                 // In case of an initial config we may update or delete entries.
                 auto *update = request->add_updates();
                 // Whether we update or delete the entry is determined randomly.
-                // TODO: Make this configurable and add a weight.
-                if (Utils::getRandInt(1) == 0) {
+                auto isUpdateEntry = rtSmithOptions.getFuzzerConfig().getIsUpdateEntry();
+                std::cout << "isUpdateEntry: " << isUpdateEntry << "\n";
+                if (isUpdateEntry) {
                     update->set_type(p4::v1::Update_Type::Update_Type_MODIFY);
                 } else {
                     update->set_type(p4::v1::Update_Type::Update_Type_DELETE);

@@ -112,13 +112,16 @@ RtSmithOptions::RtSmithOptions()
             // TODO(zzmic): Delete the following debugging prints eventually.
             std::cout << "Fuzzer configurations have been set in _fuzzerConfig."
                       << "\n";
-            std::cout << "Overriden maxEntriesPerTable: " << _fuzzerConfig.getMaxEntriesPerTable()
-                      << "\n";
+            std::cout << "Overriden attempts: " << _fuzzerConfig.getAttempts() << "\n";
+            std::cout << "Overriden maxEntryGenCnt: " << _fuzzerConfig.getMaxEntryGenCnt() << "\n";
             std::cout << "Overriden maxTables: " << _fuzzerConfig.getMaxTables() << "\n";
             std::cout << "Overriden tablesToSkip:\n";
             for (const auto &table : _fuzzerConfig.getTablesToSkip()) {
                 std::cout << table << "\n";
             }
+            std::cout << "Overriden isUpdateEntry: " << _fuzzerConfig.getIsUpdateEntry() << "\n";
+            std::cout << "Overriden updateCount: " << _fuzzerConfig.getUpdateCount() << "\n";
+            std::cout << "Overriden microseconds: " << _fuzzerConfig.getMicroseconds() << "\n";
 
             return true;
         },
@@ -153,5 +156,7 @@ std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneA
 std::optional<std::filesystem::path> RtSmithOptions::fuzzerConfigPath() const {
     return _fuzzerConfigPath;
 }
+
+const FuzzerConfig &RtSmithOptions::getFuzzerConfig() const { return _fuzzerConfig; }
 
 }  // namespace P4::P4Tools::RTSmith

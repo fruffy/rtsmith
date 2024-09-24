@@ -1,5 +1,7 @@
 #include "backends/p4tools/modules/p4rtsmith/targets/bmv2/fuzzer.h"
 
+#include <ostream>  // TODO(zzmic): Remove this after removing the debug print statements.
+
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 
@@ -20,11 +22,9 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
 
 UpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() {
     UpdateSeries updateSeries;
-    // TODO: Make this configurable.
-    size_t updateCount = Utils::getRandInt(10);
+    size_t updateCount = rtSmithOptions.getFuzzerConfig().getUpdateCount();
     for (size_t idx = 0; idx < updateCount; ++idx) {
-        // TODO: Make this configurable.
-        auto microseconds = Utils::getRandInt(1000);
+        auto microseconds = rtSmithOptions.getFuzzerConfig().getMicroseconds();
         updateSeries.emplace_back(microseconds, produceWriteRequest(false));
     }
 
