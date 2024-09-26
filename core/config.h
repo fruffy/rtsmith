@@ -11,7 +11,7 @@ class FuzzerConfig {
     /// The maximum number of entries we are trying to generate for a table.
     int maxEntryGenCnt = 5;
     // The maximum attempts we are trying to generate an entry.
-    int attempts = 50;
+    int attempts = 0;
     /// The maximum number of tables.
     int maxTables = 5;
     /// The string representations of tables to skip.
