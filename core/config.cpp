@@ -32,16 +32,14 @@ void FuzzerConfig::setIsUpdateEntry(const bool updateEntry) { isUpdateEntry = up
 
 void FuzzerConfig::setUpdateCount(const size_t count) {
     if (count <= 0) {
-        throw std::invalid_argument(
-            "P4RuntimeSmith: The number of updates must be a positive integer.");
+        ::P4::error("P4RuntimeSmith: The number of updates must be a positive integer.");
     }
     updateCount = count;
 }
 
 void FuzzerConfig::setMicroseconds(const uint64_t micros) {
     if (micros <= 0) {
-        throw std::invalid_argument(
-            "P4RuntimeSmith: The number of microseconds must be a positive integer.");
+        ::P4::error("P4RuntimeSmith: The number of microseconds must be a positive integer.");
     }
     microseconds = micros;
 }
