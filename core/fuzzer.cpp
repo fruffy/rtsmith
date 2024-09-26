@@ -1,7 +1,5 @@
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 
-#include <ostream>  // TODO(zzmic): Remove this after removing the debug print statements.
-
 #include "backends/p4tools/common/lib/util.h"
 #include "control-plane/bytestrings.h"
 #include "control-plane/p4infoApi.h"
