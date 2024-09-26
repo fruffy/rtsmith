@@ -57,7 +57,6 @@ void FuzzerConfig::override_fuzzer_configs(const char *path) {
     }
 
     // Retrieve the configurations from the TOML file and override the default configurations.
-    // TODO(zzmic): Figure out whether this is a desirable engineering practice.
     try {
         const int maxEntryGenCnt = tomlConfig["tables"]["max_entry_generation_count"].value_or(5);
         setMaxEntryGenCnt(maxEntryGenCnt);

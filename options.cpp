@@ -1,6 +1,5 @@
 #include "backends/p4tools/modules/p4rtsmith/options.h"
 
-#include <iostream>  // TODO(zzmic): Remove this eventually.
 #include <random>
 
 #include "backends/p4tools/common/compiler/context.h"
@@ -108,21 +107,6 @@ RtSmithOptions::RtSmithOptions()
             // Override the default fuzzer configurations with the configurations from the TOML
             // file.
             _fuzzerConfig.override_fuzzer_configs(_fuzzerConfigPath.value().c_str());
-
-            // TODO(zzmic): Delete the following debugging prints eventually.
-            std::cout << "Fuzzer configurations have been set in _fuzzerConfig."
-                      << "\n";
-            std::cout << "Overriden attempts: " << _fuzzerConfig.getAttempts() << "\n";
-            std::cout << "Overriden maxEntryGenCnt: " << _fuzzerConfig.getMaxEntryGenCnt() << "\n";
-            std::cout << "Overriden maxTables: " << _fuzzerConfig.getMaxTables() << "\n";
-            std::cout << "Overriden tablesToSkip:\n";
-            for (const auto &table : _fuzzerConfig.getTablesToSkip()) {
-                std::cout << table << "\n";
-            }
-            std::cout << "Overriden isUpdateEntry: " << _fuzzerConfig.getIsUpdateEntry() << "\n";
-            std::cout << "Overriden updateCount: " << _fuzzerConfig.getUpdateCount() << "\n";
-            std::cout << "Overriden microseconds: " << _fuzzerConfig.getMicroseconds() << "\n";
-
             return true;
         },
         "Set the fuzzer configurations using the TOML file specified by the file path");

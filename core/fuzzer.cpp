@@ -160,10 +160,8 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
             continue;
         }
         auto maxEntryGenCnt = rtSmithOptions.getFuzzerConfig().getMaxEntryGenCnt();
-        std::cout << "maxEntryGenCnt: " << maxEntryGenCnt << "\n";
         // The maximum attempts we are trying to generate an entry.
         int attempts = rtSmithOptions.getFuzzerConfig().getAttempts();
-        std::cout << "attempts: " << attempts << "\n";
         // Try to keep track of the entries we have generated so far.
         int count = 0;
         // Retrieve the current table configuration.
@@ -194,7 +192,6 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
                 auto *update = request->add_updates();
                 // Whether we update or delete the entry is determined randomly.
                 auto isUpdateEntry = rtSmithOptions.getFuzzerConfig().getIsUpdateEntry();
-                std::cout << "isUpdateEntry: " << isUpdateEntry << "\n";
                 if (isUpdateEntry) {
                     update->set_type(p4::v1::Update_Type::Update_Type_MODIFY);
                 } else {

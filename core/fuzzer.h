@@ -1,8 +1,6 @@
 #ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_FUZZER_H_
 #define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_FUZZER_H_
 
-#include <ostream>  // TODO(zzmic): Remove this after removing the debug print statements.
-
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
 #include "backends/p4tools/modules/p4rtsmith/options.h"
 
