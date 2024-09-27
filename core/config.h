@@ -23,9 +23,9 @@ class FuzzerConfig {
     /// The maximum number of updates.
     size_t maxUpdateCount = 10;
     /// The maximum time (in microseconds) for the update.
-    uint64_t maxUpdateTimeInMicroseconds = 1000;
+    uint64_t maxUpdateTimeInMicroseconds = 100000;
     /// The minimum time (in microseconds) for the update.
-    uint64_t minUpdateTimeInMicroseconds = 10;
+    uint64_t minUpdateTimeInMicroseconds = 50000;
 
  protected:
     /// Setters to modify/override the fuzzer configurations.
