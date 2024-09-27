@@ -190,7 +190,7 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
             } else if (!isInitialConfig) {
                 // In case of an initial config we may update or delete entries.
                 auto *update = request->add_updates();
-                // Whether we update or delete the entry.
+                // Whether we update or delete the entry is determined randomly.
                 auto updateOrNot = getProgramInfo().getFuzzerConfig().getIsUpdateEntry();
                 if (updateOrNot) {
                     update->set_type(p4::v1::Update_Type::Update_Type_MODIFY);
