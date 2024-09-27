@@ -28,9 +28,6 @@ void FuzzerConfig::setMaxTables(const int numTables) {
 }
 
 void FuzzerConfig::setThresholdForDeletion(const uint64_t threshold) {
-    if (threshold < 0) {
-        error("P4RuntimeSmith: The threshold must be a non-negative integer.");
-    }
     thresholdForDeletion = threshold;
 }
 
@@ -38,12 +35,7 @@ void FuzzerConfig::setTablesToSkip(const std::vector<std::string> &tables) {
     tablesToSkip = tables;
 }
 
-void FuzzerConfig::setMaxUpdateCount(const size_t count) {
-    if (count < 0) {
-        error("P4RuntimeSmith: The number of updates must be a non-negative integer.");
-    }
-    maxUpdateCount = count;
-}
+void FuzzerConfig::setMaxUpdateCount(const size_t count) { maxUpdateCount = count; }
 
 void FuzzerConfig::setMaxUpdateTimeInMicroseconds(const uint64_t micros) {
     if (micros <= 0) {
