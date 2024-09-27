@@ -30,7 +30,7 @@ class FlayCheckerOptions : public RtSmithOptions {
             [this](const char *arg) {
                 file = arg;
                 if (!std::filesystem::exists(file)) {
-                    ::P4::error("The input P4 program '%s' does not exist.", file.c_str());
+                    error("The input P4 program '%s' does not exist.", file.c_str());
                     return false;
                 }
                 return true;
@@ -65,12 +65,12 @@ class FlayCheckerOptions : public RtSmithOptions {
         }
         if (unprocessedOptions != nullptr && !unprocessedOptions->empty()) {
             for (const auto &option : *unprocessedOptions) {
-                ::P4::error("Unprocessed input: %s", option);
+                error("Unprocessed input: %s", option);
             }
             return EXIT_FAILURE;
         }
         if (file.empty()) {
-            ::P4::error("No input file specified.");
+            error("No input file specified.");
             return EXIT_FAILURE;
         }
         if (_outputDir.empty()) {
@@ -157,5 +157,5 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     P4::P4Tools::printPerformanceReport();
-    return ::P4::errorCount() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return P4::errorCount() == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
