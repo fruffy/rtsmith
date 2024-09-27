@@ -5,46 +5,57 @@
 namespace P4::P4Tools::RTSmith {
 
 void FuzzerConfig::setMaxEntryGenCnt(const int numEntries) {
-    if (numEntries <= 0) {
-        ::P4::error(
-            "P4RuntimeSmith: The maximum number of entries to generate must be a positive "
+    if (numEntries < 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of entries to generate must be a non-negative "
             "integer.");
     }
     maxEntryGenCnt = numEntries;
 }
 
-void FuzzerConfig::setAttempts(const int numAttempts) {
+void FuzzerConfig::setMaxAttempts(const int numAttempts) {
     if (numAttempts <= 0) {
-        ::P4::error("P4RuntimeSmith: The number of attempts must be a positive integer.");
+        error("P4RuntimeSmith: The number of attempts must be a positive integer.");
     }
-    attempts = numAttempts;
+    maxAttempts = numAttempts;
 }
 
 void FuzzerConfig::setMaxTables(const int numTables) {
-    if (numTables <= 0) {
-        ::P4::error("P4RuntimeSmith: The maximum number of tables must be a positive integer.");
+    if (numTables < 0) {
+        error("P4RuntimeSmith: The maximum number of tables must be a non-negative integer.");
     }
     maxTables = numTables;
+}
+
+void FuzzerConfig::setThresholdForDeletion(const uint64_t threshold) {
+    if (threshold < 0) {
+        error("P4RuntimeSmith: The threshold must be a non-negative integer.");
+    }
+    thresholdForDeletion = threshold;
 }
 
 void FuzzerConfig::setTablesToSkip(const std::vector<std::string> &tables) {
     tablesToSkip = tables;
 }
 
-void FuzzerConfig::setIsUpdateEntry(const bool updateEntry) { isUpdateEntry = updateEntry; }
-
-void FuzzerConfig::setUpdateCount(const size_t count) {
-    if (count <= 0) {
-        ::P4::error("P4RuntimeSmith: The number of updates must be a positive integer.");
+void FuzzerConfig::setMaxUpdateCount(const size_t count) {
+    if (count < 0) {
+        error("P4RuntimeSmith: The number of updates must be a non-negative integer.");
     }
-    updateCount = count;
+    maxUpdateCount = count;
 }
 
-void FuzzerConfig::setMicroseconds(const uint64_t micros) {
+void FuzzerConfig::setMaxUpdateTimeInMicroseconds(const uint64_t micros) {
     if (micros <= 0) {
-        ::P4::error("P4RuntimeSmith: The number of microseconds must be a positive integer.");
+        error("P4RuntimeSmith: The maximum wait time must be a positive integer.");
     }
-    microseconds = micros;
+    maxUpdateTimeInMicroseconds = micros;
+}
+void FuzzerConfig::setMinUpdateTimeInMicroseconds(const uint64_t micros) {
+    if (micros <= 0) {
+        error("P4RuntimeSmith: The minimum wait time must be a positive integer.");
+    }
+    minUpdateTimeInMicroseconds = micros;
 }
 
 }  // namespace P4::P4Tools::RTSmith
