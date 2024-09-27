@@ -1,8 +1,8 @@
-[tables]
-max_entry_generation_count = 10
-max_attempts = 5
-max_tables = 100
-tables_to_skip = ["table1", "table2"]
-is_update_entry = true
-update_count = 10
-microseconds = 500
+maxEntryGenCnt = 10
+maxAttempts = 200
+maxTables = 10
+tablesToSkip = ["table1", "table2"]
+thresholdForDeletion = 50
+maxUpdateCount = 20
+# maxUpdateTimeInMicroseconds = 10000000
+# minUpdateTimeInMicroseconds = 1000000

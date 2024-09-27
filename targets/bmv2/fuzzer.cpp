@@ -20,9 +20,9 @@ InitialConfig Bmv2V1ModelFuzzer::produceInitialConfig() {
 
 UpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() {
     UpdateSeries updateSeries;
-    size_t updateCount = rtSmithOptions.getFuzzerConfig().getUpdateCount();
+    size_t updateCount = rtSmithOptions.getFuzzerConfig().getRandomUpdateCount();
     for (size_t idx = 0; idx < updateCount; ++idx) {
-        auto microseconds = rtSmithOptions.getFuzzerConfig().getMicroseconds();
+        auto microseconds = rtSmithOptions.getFuzzerConfig().getRandomUpdateTimeInMicroseconds();
         updateSeries.emplace_back(microseconds, produceWriteRequest(false));
     }
 

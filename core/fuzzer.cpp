@@ -159,15 +159,15 @@ std::unique_ptr<p4::v1::WriteRequest> P4RuntimeFuzzer::produceWriteRequest(bool 
             Utils::getRandInt(0, 4) == 0) {
             continue;
         }
+
         auto maxEntryGenCnt = rtSmithOptions.getFuzzerConfig().getMaxEntryGenCnt();
-        // The maximum attempts we are trying to generate an entry.
-        int attempts = rtSmithOptions.getFuzzerConfig().getAttempts();
+        int attempts = 0;
         // Try to keep track of the entries we have generated so far.
         int count = 0;
         // Retrieve the current table configuration.
         auto &currentTableConfiguration = currentState[table.preamble().name()];
         while (count < maxEntryGenCnt) {
-            if (attempts > 100) {
+            if (attempts > rtSmithOptions.getFuzzerConfig().getMaxAttempts()) {
                 warning("Failed to generate %d entries for table %s", maxEntryGenCnt,
                         table.preamble().name());
                 break;

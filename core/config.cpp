@@ -3,45 +3,49 @@
 namespace P4::P4Tools::RTSmith {
 
 void FuzzerConfig::setMaxEntryGenCnt(const int numEntries) {
-    if (numEntries <= 0) {
-        ::P4::error(
-            "P4RuntimeSmith: The maximum number of entries per table must be a positive integer.");
+    if (numEntries < 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of entries to generate must be a non-negative "
+            "integer.");
     }
     maxEntryGenCnt = numEntries;
 }
 
-void FuzzerConfig::setAttempts(const int numAttempts) {
+void FuzzerConfig::setMaxAttempts(const int numAttempts) {
     if (numAttempts <= 0) {
-        ::P4::error("P4RuntimeSmith: The number of attempts must be a positive integer.");
+        error("P4RuntimeSmith: The number of attempts must be a positive integer.");
     }
-    attempts = numAttempts;
+    maxAttempts = numAttempts;
 }
 
 void FuzzerConfig::setMaxTables(const int numTables) {
-    if (numTables <= 0) {
-        ::P4::error("P4RuntimeSmith: The maximum number of tables must be a positive integer.");
+    if (numTables < 0) {
+        error("P4RuntimeSmith: The maximum number of tables must be a non-negative integer.");
     }
     maxTables = numTables;
+}
+
+void FuzzerConfig::setThresholdForDeletion(const uint64_t threshold) {
+    thresholdForDeletion = threshold;
 }
 
 void FuzzerConfig::setTablesToSkip(const std::vector<std::string> &tables) {
     tablesToSkip = tables;
 }
 
-void FuzzerConfig::setIsUpdateEntry(const bool updateEntry) { isUpdateEntry = updateEntry; }
+void FuzzerConfig::setMaxUpdateCount(const size_t count) { maxUpdateCount = count; }
 
-void FuzzerConfig::setUpdateCount(const size_t count) {
-    if (count <= 0) {
-        ::P4::error("P4RuntimeSmith: The number of updates must be a positive integer.");
-    }
-    updateCount = count;
-}
-
-void FuzzerConfig::setMicroseconds(const uint64_t micros) {
+void FuzzerConfig::setMaxUpdateTimeInMicroseconds(const uint64_t micros) {
     if (micros <= 0) {
-        ::P4::error("P4RuntimeSmith: The number of microseconds must be a positive integer.");
+        error("P4RuntimeSmith: The maximum wait time must be a positive integer.");
     }
-    microseconds = micros;
+    maxUpdateTimeInMicroseconds = micros;
+}
+void FuzzerConfig::setMinUpdateTimeInMicroseconds(const uint64_t micros) {
+    if (micros <= 0) {
+        error("P4RuntimeSmith: The minimum wait time must be a positive integer.");
+    }
+    minUpdateTimeInMicroseconds = micros;
 }
 
 void FuzzerConfig::override_fuzzer_configs(const char *path) {
@@ -54,61 +58,48 @@ void FuzzerConfig::override_fuzzer_configs(const char *path) {
         ::P4::error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
     }
 
-    // Retrieve the configurations from the TOML file and override the default configurations.
-    try {
-        const int maxEntryGenCnt = tomlConfig["tables"]["max_entry_generation_count"].value_or(5);
-        setMaxEntryGenCnt(maxEntryGenCnt);
-    } catch (const std::runtime_error &e) {
-        /* Ignore. */
-    }
+    // Retrieve the configurations from the TOML file and override the default configurations if
+    // they comply with the constraints.
+    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(maxEntryGenCnt);
+    setMaxEntryGenCnt(maxEntryGenCntConfig);
 
-    try {
-        const int attempts = tomlConfig["tables"]["max_attempts"].value_or(50);
-        setAttempts(attempts);
-    } catch (const std::runtime_error &e) {
-        /* Ignore. */
-    }
+    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(maxAttempts);
+    setMaxAttempts(maxAttemptsConfig);
 
-    try {
-        const int maxTables = tomlConfig["tables"]["max_tables"].value_or(5);
-        setMaxTables(maxTables);
-    } catch (const std::runtime_error &e) {
-        /* Ignore. */
-    }
+    int maxTablesConfig = tomlConfig["maxTables"].value_or(maxTables);
+    setMaxTables(maxTablesConfig);
 
-    try {
-        std::vector<std::string> tablesToSkip;
-        if (const auto *stringRepresentations = tomlConfig["tables"]["tables_to_skip"].as_array()) {
-            for (const auto &element : *stringRepresentations) {
-                if (const auto *str = element.as_string()) {
-                    tablesToSkip.push_back(str->get());
-                }
+    std::vector<std::string> tablesToSkipConfig;
+    if (const auto *stringRepresentations = tomlConfig["tablesToSkip"].as_array()) {
+        for (const auto &stringRepresentation : *stringRepresentations) {
+            if (const auto *str = stringRepresentation.as_string()) {
+                tablesToSkipConfig.push_back(str->get());
             }
         }
-        setTablesToSkip(tablesToSkip);
-    } catch (const std::runtime_error &e) {
-        /* Ignore. */
+        setTablesToSkip(tablesToSkipConfig);
     }
 
-    try {
-        const bool isUpdateEntry = tomlConfig["tables"]["is_update_entry"].value_or(false);
-        setIsUpdateEntry(isUpdateEntry);
-    } catch (const std::runtime_error &e) {
-        /* Ignore. */
-    }
+    uint64_t thresholdForDeletionConfig =
+        tomlConfig["thresholdForDeletion"].value_or(thresholdForDeletion);
+    setThresholdForDeletion(thresholdForDeletionConfig);
 
-    try {
-        const size_t updateCount = tomlConfig["tables"]["update_count"].value_or(10);
-        setUpdateCount(updateCount);
-    } catch (const std::runtime_error &e) {
-        /* Ignore. */
-    }
+    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(maxUpdateCount);
+    setMaxUpdateCount(maxUpdateCountConfig);
 
-    try {
-        const uint64_t microseconds = tomlConfig["tables"]["microseconds"].value_or(1000);
-        setMicroseconds(microseconds);
-    } catch (const std::runtime_error &e) {
-        /* Ignore. */
+    // `uint64_t` is not natively supported by TOML, so using
+    // `.value_or(maxUpdateTimeInMicroseconds)` and `.value_or(minUpdateTimeInMicroseconds)` would
+    // trigger compilation errors. Thus, we need to use a workaround to retrieve the values.
+    // TODO(zzmic): Verify whether this workaround is permissible since this limits the range of the
+    // values configured by the user.
+    int64_t maxUpdateTimeInMicrosecondsConfig =
+        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(-1);
+    if (maxUpdateTimeInMicrosecondsConfig != -1) {
+        setMaxUpdateTimeInMicroseconds(static_cast<uint64_t>(maxUpdateTimeInMicrosecondsConfig));
+    }
+    int64_t minUpdateTimeInMicrosecondsConfig =
+        tomlConfig["minUpdateTimeInMicroseconds"].value_or(-1);
+    if (minUpdateTimeInMicrosecondsConfig != -1) {
+        setMinUpdateTimeInMicroseconds(static_cast<uint64_t>(minUpdateTimeInMicrosecondsConfig));
     }
 }
 
