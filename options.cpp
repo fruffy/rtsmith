@@ -46,8 +46,8 @@ RtSmithOptions::RtSmithOptions()
         [this](const char *arg) {
             _userP4Info = arg;
             if (!std::filesystem::exists(_userP4Info.value())) {
-                ::P4::error("%1% does not exist. Please provide a valid file path.",
-                            _userP4Info.value().c_str());
+                error("%1% does not exist. Please provide a valid file path.",
+                      _userP4Info.value().c_str());
                 return false;
             }
             return true;
@@ -58,7 +58,7 @@ RtSmithOptions::RtSmithOptions()
         [this](const char *arg) {
             _p4InfoFilePath = arg;
             if (_p4InfoFilePath.value().extension() != ".txtpb") {
-                ::P4::error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
+                error("%1% must have a .txtpb extension.", _p4InfoFilePath.value().c_str());
                 return false;
             }
             return true;
@@ -72,7 +72,7 @@ RtSmithOptions::RtSmithOptions()
                       ::toupper);
             if (K_SUPPORTED_CONTROL_PLANES.find(_controlPlaneApi) ==
                 K_SUPPORTED_CONTROL_PLANES.end()) {
-                ::P4::error(
+                error(
                     "Test back end %1% not implemented for this target. Supported back ends are "
                     "%2%.",
                     _controlPlaneApi, Utils::containerToString(K_SUPPORTED_CONTROL_PLANES));
@@ -102,8 +102,7 @@ std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }
 
 bool RtSmithOptions::validateOptions() const {
     if (_userP4Info.has_value() && _p4InfoFilePath.has_value()) {
-        ::P4::error(
-            "Both --user-p4info and --generate-p4info are specified. Please specify only one.");
+        error("Both --user-p4info and --generate-p4info are specified. Please specify only one.");
         return false;
     }
     if (!seed.has_value()) {
