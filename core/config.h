@@ -50,23 +50,13 @@ class FuzzerConfig {
     [[nodiscard]] int getMaxAttempts() const { return maxAttempts; }
     [[nodiscard]] int getMaxTables() const { return maxTables; }
     [[nodiscard]] const std::vector<std::string> &getTablesToSkip() const { return tablesToSkip; }
-    /// Get a random decision to update or delete an entry.
-    [[nodiscard]] bool getIsUpdateEntry() const {
-        return Utils::getRandInt(100) >= thresholdForDeletion;
-    }
     [[nodiscard]] uint64_t getThresholdForDeletion() const { return thresholdForDeletion; }
     [[nodiscard]] size_t getMaxUpdateCount() const { return maxUpdateCount; }
-    /// Get a random update count.
-    [[nodiscard]] size_t getRandomUpdateCount() const { return Utils::getRandInt(maxUpdateCount); }
     [[nodiscard]] uint64_t getMaxUpdateTimeInMicroseconds() const {
         return maxUpdateTimeInMicroseconds;
     }
     [[nodiscard]] uint64_t getMinUpdateTimeInMicroseconds() const {
         return minUpdateTimeInMicroseconds;
-    }
-    /// Get a random update time in microseconds.
-    [[nodiscard]] uint64_t getRandomUpdateTimeInMicroseconds() const {
-        return Utils::getRandInt(minUpdateTimeInMicroseconds, maxUpdateTimeInMicroseconds);
     }
 };
 
