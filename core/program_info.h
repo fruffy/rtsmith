@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
+#include "backends/p4tools/modules/p4rtsmith/core/config.h"
 #include "control-plane/p4RuntimeSerializer.h"
 #include "ir/ir.h"
 #include "lib/castable.h"
@@ -20,6 +21,10 @@ class ProgramInfo : public ICastable {
 
  protected:
     explicit ProgramInfo(const CompilerResult &compilerResult, P4::P4RuntimeAPI p4runtimeApi);
+
+    /// The FuzzerConfig object that stores the configurations of the fuzzer.
+    /// Default values are provided in the FuzzerConfig class.
+    P4::P4Tools::RTSmith::FuzzerConfig _fuzzerConfig = FuzzerConfig();
 
  public:
     ProgramInfo(const ProgramInfo &) = default;
@@ -40,6 +45,9 @@ class ProgramInfo : public ICastable {
 
     /// @returns the P4Info associated with this program.
     [[nodiscard]] const ::p4::config::v1::P4Info *getP4Info() const;
+
+    /// @returns the FuzzerConfig associated with this program.
+    [[nodiscard]] const FuzzerConfig &getFuzzerConfig() const;
 };
 
 }  // namespace P4::P4Tools::RTSmith
