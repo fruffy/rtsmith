@@ -91,8 +91,6 @@ void FuzzerConfig::override_fuzzer_configs(const char *path) {
     // `uint64_t` is not natively supported by TOML, so using
     // `.value_or(maxUpdateTimeInMicroseconds)` and `.value_or(minUpdateTimeInMicroseconds)` would
     // trigger compilation errors. Thus, we need to use a workaround to retrieve the values.
-    // TODO(zzmic): Verify whether this workaround is permissible since this limits the range of the
-    // values configured by the user.
     int64_t maxUpdateTimeInMicrosecondsConfig =
         tomlConfig["maxUpdateTimeInMicroseconds"].value_or(-1);
     if (maxUpdateTimeInMicrosecondsConfig != -1) {

@@ -2,11 +2,11 @@
 #define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_CONFIG_H_
 
 #include <stdexcept>
-#include <toml++/toml.hpp>
 #include <vector>
 
+#include <toml++/toml.hpp>
+
 #include "backends/p4tools/common/lib/util.h"
-#include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
 
 namespace P4::P4Tools::RTSmith {
 
