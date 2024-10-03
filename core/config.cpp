@@ -57,7 +57,7 @@ void FuzzerConfig::override_fuzzer_configs(const char *path) {
         // converted to) type `std::string_view`.
         tomlConfig = toml::parse_file(path);
     } catch (const toml::parse_error &e) {
-        ::P4::error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
+        error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
     }
 
     // Retrieve the configurations from the TOML file and override the default configurations if

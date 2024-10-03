@@ -101,7 +101,7 @@ RtSmithOptions::RtSmithOptions()
         [this](const char *arg) {
             _fuzzerConfigPath = arg;
             if (_fuzzerConfigPath.value().extension() != ".toml") {
-                ::P4::error("%1% must have a .toml extension.", _fuzzerConfigPath.value().c_str());
+                error("%1% must have a .toml extension.", _fuzzerConfigPath.value().c_str());
                 return false;
             }
             // Override the default fuzzer configurations with the configurations from the TOML
