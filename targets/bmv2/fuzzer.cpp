@@ -22,6 +22,7 @@ UpdateSeries Bmv2V1ModelFuzzer::produceUpdateTimeSeries() {
     UpdateSeries updateSeries;
     size_t maxUpdateCount = rtSmithOptions.getFuzzerConfig().getMaxUpdateCount();
     size_t updateCount = Utils::getRandInt(maxUpdateCount);
+
     for (size_t idx = 0; idx < updateCount; ++idx) {
         auto minUpdateTimeInMicroseconds =
             rtSmithOptions.getFuzzerConfig().getMinUpdateTimeInMicroseconds();

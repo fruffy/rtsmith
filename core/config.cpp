@@ -1,5 +1,7 @@
 #include "backends/p4tools/modules/p4rtsmith/core/config.h"
 
+#include "lib/error.h"
+
 namespace P4::P4Tools::RTSmith {
 
 void FuzzerConfig::setMaxEntryGenCnt(const int numEntries) {
