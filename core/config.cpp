@@ -88,19 +88,12 @@ void FuzzerConfig::override_fuzzer_configs(const char *path) {
     size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(maxUpdateCount);
     setMaxUpdateCount(maxUpdateCountConfig);
 
-    // `uint64_t` is not natively supported by TOML, so using
-    // `.value_or(maxUpdateTimeInMicroseconds)` and `.value_or(minUpdateTimeInMicroseconds)` would
-    // trigger compilation errors. Thus, we need to use a workaround to retrieve the values.
-    int64_t maxUpdateTimeInMicrosecondsConfig =
-        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(-1);
-    if (maxUpdateTimeInMicrosecondsConfig != -1) {
-        setMaxUpdateTimeInMicroseconds(static_cast<uint64_t>(maxUpdateTimeInMicrosecondsConfig));
-    }
-    int64_t minUpdateTimeInMicrosecondsConfig =
-        tomlConfig["minUpdateTimeInMicroseconds"].value_or(-1);
-    if (minUpdateTimeInMicrosecondsConfig != -1) {
-        setMinUpdateTimeInMicroseconds(static_cast<uint64_t>(minUpdateTimeInMicrosecondsConfig));
-    }
+    uint64_t maxUpdateTimeInMicrosecondsConfig =
+        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(maxUpdateTimeInMicroseconds);
+    uint64_t minUpdateTimeInMicrosecondsConfig =
+        tomlConfig["minUpdateTimeInMicroseconds"].value_or(minUpdateTimeInMicroseconds);
+    setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicrosecondsConfig);
+    setMinUpdateTimeInMicroseconds(minUpdateTimeInMicrosecondsConfig);
 }
 
 }  // namespace P4::P4Tools::RTSmith
