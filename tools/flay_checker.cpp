@@ -22,6 +22,8 @@ namespace {
 class FlayCheckerOptions : public RtSmithOptions {
     /// Write a performance report.
     bool _writePerformanceReport = false;
+    /// Skip parser processing in Flay.
+    bool _skipParsers = false;
 
  public:
     FlayCheckerOptions() {
@@ -52,6 +54,13 @@ class FlayCheckerOptions : public RtSmithOptions {
             },
             "Write a performance report for the file. The report will be written to either the "
             "location of the reference file or the location of the folder.");
+        registerOption(
+            "--skip-parsers", nullptr,
+            [this](const char *) {
+                _skipParsers = true;
+                return true;
+            },
+            "Skip parser processing in Flay.");
     }
 
     ~FlayCheckerOptions() override = default;
@@ -90,6 +99,8 @@ class FlayCheckerOptions : public RtSmithOptions {
     [[nodiscard]] const RtSmithOptions &toRtSmithOptions() const { return *this; }
 
     [[nodiscard]] bool writePerformanceReport() const { return _writePerformanceReport; }
+
+    [[nodiscard]] bool skipParsers() const { return _skipParsers; }
 };
 
 }  // namespace
@@ -109,6 +120,9 @@ int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions)
         flayOptions.target = options.target;
         flayOptions.arch = options.arch;
         flayOptions.file = options.file;
+        if (options.skipParsers()) {
+            flayOptions.setSkipParsers();
+        }
         flayOptions.setConfigurationUpdatePattern(rtSmithOptions.outputDir() / "*update_*.txtpb");
         ASSIGN_OR_RETURN(auto flayServiceStatistics, Flay::Flay::optimizeProgram(flayOptions),
                          EXIT_FAILURE);
