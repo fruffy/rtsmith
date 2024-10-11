@@ -36,10 +36,7 @@ const ProgramInfo *RtSmithTarget::produceProgramInfoImpl(
     BUG_CHECK(mainDecl, "%1%: Program's main declaration is a %2%, not a Declaration_Instance",
               mainNode, mainNode->node_type_name());
 
-    auto *programInfo = produceProgramInfoImpl(compilerResult, mainDecl);
-    programInfo->attmptToOverrideFuzzerConfigs(rtSmithOptions.fuzzerConfigPath().value().c_str());
-
-    return programInfo;
+    return produceProgramInfoImpl(compilerResult, rtSmithOptions, mainDecl);
 }
 
 RuntimeFuzzer &RtSmithTarget::getFuzzer(const ProgramInfo &programInfo) {

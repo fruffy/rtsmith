@@ -32,7 +32,7 @@ class RtSmithTarget : public CompilerTarget {
         const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions) const;
 
     /// @see @produceProgramInfo.
-    virtual ProgramInfo *produceProgramInfoImpl(const CompilerResult &compilerResult,
+    virtual const ProgramInfo *produceProgramInfoImpl(const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions,
                                                 const IR::Declaration_Instance *mainDecl) const = 0;
 
     /// @see @getStepper.

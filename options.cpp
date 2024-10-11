@@ -102,6 +102,7 @@ RtSmithOptions::RtSmithOptions()
             _fuzzerConfigPath = arg;
             if (_fuzzerConfigPath.value().extension() != ".toml") {
                 error("%1% must have a .toml extension.", _fuzzerConfigPath.value().c_str());
+                _fuzzerConfigPath = std::nullopt;
                 return false;
             }
             return true;

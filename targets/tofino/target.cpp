@@ -36,8 +36,8 @@ MidEnd TofinoTnaRtSmithTarget::mkMidEnd(const CompilerOptions &options) const {
     return midEnd;
 }
 
-ProgramInfo *TofinoTnaRtSmithTarget::produceProgramInfoImpl(
-    const CompilerResult &compilerResult, const IR::Declaration_Instance * /*mainDecl*/) const {
+const ProgramInfo *TofinoTnaRtSmithTarget::produceProgramInfoImpl(
+    const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions, const IR::Declaration_Instance * /*mainDecl*/) const {
     std::optional<P4::P4RuntimeAPI> p4runtimeApi;
     auto p4UserInfo = RtSmithOptions::get().userP4Info();
     if (p4UserInfo.has_value()) {
@@ -54,7 +54,10 @@ ProgramInfo *TofinoTnaRtSmithTarget::produceProgramInfoImpl(
             return nullptr;
         }
     }
-    return new TofinoTnaProgramInfo(compilerResult, p4runtimeApi.value());
+    auto tofinoTnaProgramInfo = new TofinoTnaProgramInfo(compilerResult, p4runtimeApi.value());
+    if (rtSmithOptions.fuzzerConfigPath().has_value())
+        tofinoTnaProgramInfo->attmptToOverrideFuzzerConfigs(rtSmithOptions.fuzzerConfigPath().value().c_str());
+    return tofinoTnaProgramInfo;
 }
 
 TofinoTnaFuzzer &TofinoTnaRtSmithTarget::getFuzzerImpl(const ProgramInfo &programInfo) const {
