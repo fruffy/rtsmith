@@ -2,7 +2,6 @@
 #define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_FUZZER_H_
 
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
-#include "backends/p4tools/modules/p4rtsmith/options.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -29,12 +28,8 @@ class RuntimeFuzzer {
     /// A map of control plane objects and their current state.
     std::map<std::string, std::set<std::string>> currentState;
 
-    // A reference to the singleton instance of `RtSmithOptions`.
-    RtSmithOptions &rtSmithOptions;
-
  public:
-    explicit RuntimeFuzzer(const ProgramInfo &programInfo)
-        : programInfo(programInfo), rtSmithOptions(RtSmithOptions::get()) {}
+    explicit RuntimeFuzzer(const ProgramInfo &programInfo) : programInfo(programInfo) {}
 
     /// @brief Produce an `InitialConfig`, which is a vector of updates.
     /// @return A InitialConfig

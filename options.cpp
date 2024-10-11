@@ -104,9 +104,6 @@ RtSmithOptions::RtSmithOptions()
                 error("%1% must have a .toml extension.", _fuzzerConfigPath.value().c_str());
                 return false;
             }
-            // Override the default fuzzer configurations with the configurations from the TOML
-            // file.
-            _fuzzerConfig.override_fuzzer_configs(_fuzzerConfigPath.value().c_str());
             return true;
         },
         "Set the fuzzer configurations using the TOML file specified by the file path");
@@ -140,7 +137,5 @@ std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneA
 std::optional<std::filesystem::path> RtSmithOptions::fuzzerConfigPath() const {
     return _fuzzerConfigPath;
 }
-
-const FuzzerConfig &RtSmithOptions::getFuzzerConfig() const { return _fuzzerConfig; }
 
 }  // namespace P4::P4Tools::RTSmith

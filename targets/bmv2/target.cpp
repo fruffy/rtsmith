@@ -26,7 +26,7 @@ MidEnd Bmv2V1ModelRtSmithTarget::mkMidEnd(const CompilerOptions &options) const 
     return midEnd;
 }
 
-const ProgramInfo *Bmv2V1ModelRtSmithTarget::produceProgramInfoImpl(
+ProgramInfo *Bmv2V1ModelRtSmithTarget::produceProgramInfoImpl(
     const CompilerResult &compilerResult, const IR::Declaration_Instance * /*mainDecl*/) const {
     return new Bmv2V1ModelProgramInfo(compilerResult);
 }

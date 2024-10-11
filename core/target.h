@@ -6,6 +6,7 @@
 #include "backends/p4tools/common/compiler/compiler_target.h"
 #include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
 #include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
+#include "backends/p4tools/modules/p4rtsmith/options.h"
 #include "ir/ir.h"
 
 namespace P4::P4Tools::RTSmith {
@@ -18,7 +19,8 @@ class RtSmithTarget : public CompilerTarget {
     /// Produces a @ProgramInfo for the given P4 program.
     ///
     /// @returns nullptr if the program is not supported by this target.
-    static const ProgramInfo *produceProgramInfo(const CompilerResult &compilerResult);
+    static const ProgramInfo *produceProgramInfo(const CompilerResult &compilerResult,
+                                                 const RtSmithOptions &rtSmithOptions);
 
     /// @returns the fuzzer that will produce an initial configuration and a series of random write
     /// requests..
@@ -27,11 +29,11 @@ class RtSmithTarget : public CompilerTarget {
  protected:
     /// @see @produceProgramInfo.
     [[nodiscard]] virtual const ProgramInfo *produceProgramInfoImpl(
-        const CompilerResult &compilerResult) const;
+        const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions) const;
 
     /// @see @produceProgramInfo.
-    virtual const ProgramInfo *produceProgramInfoImpl(
-        const CompilerResult &compilerResult, const IR::Declaration_Instance *mainDecl) const = 0;
+    virtual ProgramInfo *produceProgramInfoImpl(const CompilerResult &compilerResult,
+                                                const IR::Declaration_Instance *mainDecl) const = 0;
 
     /// @see @getStepper.
     [[nodiscard]] virtual RuntimeFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const = 0;

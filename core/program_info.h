@@ -22,8 +22,8 @@ class ProgramInfo : public ICastable {
  protected:
     explicit ProgramInfo(const CompilerResult &compilerResult, P4::P4RuntimeAPI p4runtimeApi);
 
-    /// The FuzzerConfig object that stores the configurations of the fuzzer.
-    /// Default values are provided in the FuzzerConfig class.
+    /// The `FuzzerConfig` object that stores the configurations of the fuzzer.
+    /// Default values are provided in the `FuzzerConfig` class.
     P4::P4Tools::RTSmith::FuzzerConfig _fuzzerConfig = FuzzerConfig();
 
  public:
@@ -48,6 +48,8 @@ class ProgramInfo : public ICastable {
 
     /// @returns the FuzzerConfig associated with this program.
     [[nodiscard]] const FuzzerConfig &getFuzzerConfig() const;
+
+    void attmptToOverrideFuzzerConfigs(const char *path);
 };
 
 }  // namespace P4::P4Tools::RTSmith

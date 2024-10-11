@@ -36,7 +36,7 @@ MidEnd TofinoTnaRtSmithTarget::mkMidEnd(const CompilerOptions &options) const {
     return midEnd;
 }
 
-const ProgramInfo *TofinoTnaRtSmithTarget::produceProgramInfoImpl(
+ProgramInfo *TofinoTnaRtSmithTarget::produceProgramInfoImpl(
     const CompilerResult &compilerResult, const IR::Declaration_Instance * /*mainDecl*/) const {
     std::optional<P4::P4RuntimeAPI> p4runtimeApi;
     auto p4UserInfo = RtSmithOptions::get().userP4Info();

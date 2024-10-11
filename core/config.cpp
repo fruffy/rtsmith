@@ -50,7 +50,7 @@ void FuzzerConfig::setMinUpdateTimeInMicroseconds(const uint64_t micros) {
     minUpdateTimeInMicroseconds = micros;
 }
 
-void FuzzerConfig::override_fuzzer_configs(const char *path) {
+void FuzzerConfig::overrideFuzzerConfigs(const char *path) {
     toml::parse_result tomlConfig;
     try {
         // Note that the parameter fed into the `parse_file` function should be of (or could be

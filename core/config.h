@@ -49,7 +49,7 @@ class FuzzerConfig {
 
     /// @brief Override the default fuzzer configurations through the TOML file.
     /// @param path The path to the TOML file.
-    void override_fuzzer_configs(const char *path);
+    void overrideFuzzerConfigs(const char *path);
 
     /// Getters to access the fuzzer configurations.
     [[nodiscard]] int getMaxEntryGenCnt() const { return maxEntryGenCnt; }
