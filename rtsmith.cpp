@@ -29,7 +29,7 @@ namespace {
 
 std::optional<RtSmithResult> runRtSmith(const CompilerResult &rtSmithResult,
                                         const RtSmithOptions &rtSmithOptions) {
-    auto *programInfo = RtSmithTarget::produceProgramInfo(rtSmithResult, rtSmithOptions);
+    const auto *programInfo = RtSmithTarget::produceProgramInfo(rtSmithResult, rtSmithOptions);
     if (programInfo == nullptr) {
         error("Program not supported by target device and architecture.");
         return std::nullopt;

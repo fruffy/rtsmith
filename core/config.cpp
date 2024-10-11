@@ -60,8 +60,8 @@ void FuzzerConfig::overrideFuzzerConfigs(const char *path) {
         error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
     }
 
-    // Retrieve the configurations from the TOML file and override the default configurations if
-    // they comply with the constraints.
+    // For the following blocks, retrieve the configurations from the TOML file and override the
+    // default configurations if they comply with the constraints.
     int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(maxEntryGenCnt);
     setMaxEntryGenCnt(maxEntryGenCntConfig);
 

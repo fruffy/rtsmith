@@ -49,6 +49,8 @@ class ProgramInfo : public ICastable {
     /// @returns the FuzzerConfig associated with this program.
     [[nodiscard]] const FuzzerConfig &getFuzzerConfig() const;
 
+    /// Attempts to override the fuzzer configurations if a TOML file is provided (checked in either
+    /// `Bmv2V1ModelRtSmithTarget` or `TofinoTnaRtSmithTarget`).
     void attmptToOverrideFuzzerConfigs(const char *path);
 };
 
