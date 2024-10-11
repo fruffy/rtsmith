@@ -19,7 +19,7 @@ const ::p4::config::v1::P4Info *ProgramInfo::getP4Info() const { return p4runtim
 
 const FuzzerConfig &ProgramInfo::getFuzzerConfig() const { return _fuzzerConfig; }
 
-void ProgramInfo::attmptToOverrideFuzzerConfigs(const char *path) {
+void ProgramInfo::proceedToOverrideFuzzerConfigs(const char *path) {
     _fuzzerConfig.overrideFuzzerConfigs(path);
 }
 

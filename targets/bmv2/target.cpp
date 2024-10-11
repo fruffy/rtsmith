@@ -32,7 +32,7 @@ const ProgramInfo *Bmv2V1ModelRtSmithTarget::produceProgramInfoImpl(
     auto bmv2V1ModelProgramInfo = new Bmv2V1ModelProgramInfo(compilerResult);
     // Override the fuzzer configurations if a TOML file is provided.
     if (rtSmithOptions.fuzzerConfigPath().has_value())
-        bmv2V1ModelProgramInfo->attmptToOverrideFuzzerConfigs(
+        bmv2V1ModelProgramInfo->proceedToOverrideFuzzerConfigs(
             rtSmithOptions.fuzzerConfigPath().value().c_str());
     return bmv2V1ModelProgramInfo;
 }
