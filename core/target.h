@@ -32,8 +32,9 @@ class RtSmithTarget : public CompilerTarget {
         const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions) const;
 
     /// @see @produceProgramInfo.
-    virtual const ProgramInfo *produceProgramInfoImpl(const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions,
-                                                const IR::Declaration_Instance *mainDecl) const = 0;
+    virtual const ProgramInfo *produceProgramInfoImpl(
+        const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions,
+        const IR::Declaration_Instance *mainDecl) const = 0;
 
     /// @see @getStepper.
     [[nodiscard]] virtual RuntimeFuzzer &getFuzzerImpl(const ProgramInfo &programInfo) const = 0;

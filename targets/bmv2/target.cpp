@@ -27,10 +27,12 @@ MidEnd Bmv2V1ModelRtSmithTarget::mkMidEnd(const CompilerOptions &options) const 
 }
 
 const ProgramInfo *Bmv2V1ModelRtSmithTarget::produceProgramInfoImpl(
-    const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions, const IR::Declaration_Instance * /*mainDecl*/) const {
+    const CompilerResult &compilerResult, const RtSmithOptions &rtSmithOptions,
+    const IR::Declaration_Instance * /*mainDecl*/) const {
     auto bmv2V1ModelProgramInfo = new Bmv2V1ModelProgramInfo(compilerResult);
     if (rtSmithOptions.fuzzerConfigPath().has_value())
-        bmv2V1ModelProgramInfo->attmptToOverrideFuzzerConfigs(rtSmithOptions.fuzzerConfigPath().value().c_str());
+        bmv2V1ModelProgramInfo->attmptToOverrideFuzzerConfigs(
+            rtSmithOptions.fuzzerConfigPath().value().c_str());
     return bmv2V1ModelProgramInfo;
 }
 
