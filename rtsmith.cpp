@@ -204,4 +204,35 @@ std::optional<RtSmithResult> RtSmith::generateConfig(const RtSmithOptions &rtSmi
     return std::nullopt;
 }
 
+std::optional<const P4::P4Tools::CompilerResult> RtSmith::generateCompilerResult(
+    std::optional<std::reference_wrapper<const std::string>> program,
+    const RtSmithOptions &rtSmithOptions) {
+    // Register supported P4RTSmith targets.
+    registerRtSmithTargets();
+
+    P4Tools::Target::init(rtSmithOptions.target.c_str(), rtSmithOptions.arch.c_str());
+
+    CompilerResultOrError compilerResult;
+    if (program.has_value()) {
+        // Run the compiler to get an IR and invoke the tool.
+        ASSIGN_OR_RETURN(
+            compilerResult,
+            P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME, program->get()),
+            std::nullopt);
+    } else {
+        RETURN_IF_FALSE_WITH_MESSAGE(!rtSmithOptions.file.empty(), std::nullopt,
+                                     error("Expected a file input."));
+        // Run the compiler to get an IR and invoke the tool.
+        ASSIGN_OR_RETURN(compilerResult,
+                         P4Tools::CompilerTarget::runCompiler(rtSmithOptions, TOOL_NAME),
+                         std::nullopt);
+    }
+
+    if (compilerResult.has_value()) {
+        return compilerResult.value();
+    } else {
+        return std::nullopt;
+    }
+}
+
 }  // namespace P4::P4Tools::RTSmith
