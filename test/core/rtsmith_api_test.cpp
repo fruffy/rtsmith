@@ -139,7 +139,7 @@ TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApiWithFuzzerConfig) {
     rtSmithOptions.setFuzzerConfigPath("configuration.toml");
     // Check if the fuzzer configuration path is set (and is set correctly).
     ASSERT_TRUE(rtSmithOptions.fuzzerConfigPath().has_value());
-    ASSERT_EQ(rtSmithOptions.fuzzerConfigPath().value().c_str(), "configuration.toml");
+    ASSERT_EQ(rtSmithOptions.fuzzerConfigPath().value(), "configuration.toml");
     auto rtSmithResultOpt = P4::P4Tools::RTSmith::RtSmith::generateConfig(source, rtSmithOptions);
     // Check if the `RtSmithResult` object is generated successfully.
     ASSERT_TRUE(rtSmithResultOpt.has_value());
