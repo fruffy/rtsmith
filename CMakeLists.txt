@@ -82,6 +82,18 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tomlplusplus)
 target_link_libraries(rtsmith tomlplusplus::tomlplusplus)
 
+# Define the path to the configuration file.
+set(CONFIG_TOML_PATH ${CMAKE_CURRENT_SOURCE_DIR}/configuration.toml)
+
+# Copy the file to the binary directory.
+add_custom_command(
+  TARGET p4rtsmith POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          ${CONFIG_TOML_PATH}
+          $<TARGET_FILE_DIR:p4rtsmith>/configuration.toml
+  COMMENT "Copying configuration.toml to the build directory."
+)
+
 # Add some convenience links for invoking p4rtsmith.
 add_custom_target(
   linkrtsmith
