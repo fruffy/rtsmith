@@ -4,9 +4,7 @@
 
 #include <toml++/toml.hpp>
 
-#include "backends/p4tools/modules/p4rtsmith/core/target.h"
 #include "backends/p4tools/modules/p4rtsmith/register.h"
-#include "backends/p4tools/modules/p4rtsmith/register.h.in"
 #include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
 #include "test/gtest/helpers.h"
