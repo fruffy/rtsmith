@@ -1,5 +1,5 @@
-#ifndef RTSMITH_TEST_HELPER_H
-#define RTSMITH_TEST_HELPER_H
+#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TEST_CORE_RTSMITH_TEST_H_
+#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TEST_CORE_RTSMITH_TEST_H_
 
 #include <gtest/gtest.h>
 
@@ -77,4 +77,4 @@ V1Switch(parse(), verifyChecksum(), ingress(), egress(), computeChecksum(), depa
 
 }  // namespace P4::P4Tools::Test
 
-#endif  // RTSMITH_TEST_HELPER_H
+#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TEST_CORE_RTSMITH_TEST_H_ */

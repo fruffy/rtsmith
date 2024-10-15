@@ -92,7 +92,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
           ${CONFIG_TOML_PATH}
           $<TARGET_FILE_DIR:p4rtsmith>/test/configuration.toml
-  COMMENT "Copying configuration.toml to the build directory."
+  COMMENT "Copying test/configuration.toml to the build directory."
 )
 
 # Add some convenience links for invoking p4rtsmith.
