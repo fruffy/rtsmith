@@ -51,7 +51,12 @@ class ProgramInfo : public ICastable {
 
     /// Proceeds to override the fuzzer configurations if a TOML file is provided (checked in either
     /// `Bmv2V1ModelRtSmithTarget` or `TofinoTnaRtSmithTarget`).
-    void proceedToOverrideFuzzerConfigs(const char *path);
+    void proceedToOverrideFuzzerConfigsViaFile(const char *path);
+
+    /// Proceeds to override the fuzzer configurations if a string representation of the
+    /// configurations of format TOML is provided (check in either `Bmv2V1ModelRtSmithTarget` or
+    /// `TofinoTnaRtSmithTarget`).
+    void proceedToOverrideFuzzerConfigsViaString(const char *configInString);
 };
 
 }  // namespace P4::P4Tools::RTSmith

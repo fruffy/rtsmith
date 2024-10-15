@@ -42,7 +42,13 @@ class RtSmithOptions : public AbstractP4cToolOptions {
     /// @returns the path to the TOML file that would be used to set the fuzzer configurations.
     [[nodiscard]] std::optional<std::filesystem::path> fuzzerConfigPath() const;
 
-    void setFuzzerConfigPath(const char *arg) { _fuzzerConfigPath = arg; }
+    /// @returns the fuzzer configurations set in the string representation of configurations of
+    /// format TOML.
+    [[nodiscard]] std::optional<std::string> fuzzerConfigString() const;
+
+    void setFuzzerConfigPath(const char *arg);
+
+    void setFuzzerConfigString(const char *arg);
 
  protected:
     // Write the generated config to the specified file.
@@ -65,6 +71,8 @@ class RtSmithOptions : public AbstractP4cToolOptions {
 
     // The path to the TOML file that would be used to set the fuzzer configurations.
     std::optional<std::filesystem::path> _fuzzerConfigPath = std::nullopt;
+
+    std::optional<std::string> _fuzzerConfigString = std::nullopt;
 };
 
 }  // namespace P4::P4Tools::RTSmith

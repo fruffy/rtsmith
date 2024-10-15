@@ -2,8 +2,6 @@
 
 #include <sstream>
 
-#include <toml++/toml.hpp>
-
 #include "backends/p4tools/modules/p4rtsmith/register.h"
 #include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
 #include "backends/p4tools/modules/p4rtsmith/toolname.h"
@@ -104,93 +102,6 @@ TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApi) {
     rtSmithOptions.arch = "v1model"_cs;
     auto rtSmithResultOpt = P4::P4Tools::RTSmith::RtSmith::generateConfig(source, rtSmithOptions);
     ASSERT_TRUE(rtSmithResultOpt.has_value());
-}
-
-// Tests for the optimization of various expressions with user-specified fuzzer configurations (by
-// ingesting a TOML file).
-TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApiWithFuzzerConfig) {
-    auto source = generateTestProgram(R"(
-    // Drop the packet.
-    action acl_drop() {
-        mark_to_drop(sm);
-    }
-
-    table drop_table {
-        key = {
-            hdr.eth_hdr.dst_addr : ternary @name("dst_eth");
-        }
-        actions = {
-            acl_drop();
-            @defaultonly NoAction();
-        }
-    }
-
-    apply {
-        if (hdr.eth_hdr.isValid()) {
-            drop_table.apply();
-        }
-    })");
-    auto autoContext = SetUp("bmv2", "v1model");
-    auto &rtSmithOptions = RTSmith::RtSmithOptions::get();
-    rtSmithOptions.target = "bmv2"_cs;
-    rtSmithOptions.arch = "v1model"_cs;
-    const char *configFilePath = "configuration.toml";
-    rtSmithOptions.setFuzzerConfigPath(configFilePath);
-    // Check if the fuzzer configuration path is set (and is set correctly).
-    ASSERT_TRUE(rtSmithOptions.fuzzerConfigPath().has_value());
-    ASSERT_EQ(rtSmithOptions.fuzzerConfigPath().value(), configFilePath);
-    auto rtSmithResultOpt = P4::P4Tools::RTSmith::RtSmith::generateConfig(source, rtSmithOptions);
-    // Check if the `RtSmithResult` object is generated successfully.
-    ASSERT_TRUE(rtSmithResultOpt.has_value());
-
-    auto compilerResult =
-        P4::P4Tools::RTSmith::RtSmith::generateCompilerResult(source, rtSmithOptions);
-    // Check if the `compilerResult` object is generated successfully.
-    ASSERT_TRUE(compilerResult.has_value());
-
-    const auto *programInfo = P4::P4Tools::RTSmith::RtSmithTarget::produceProgramInfo(
-        compilerResult.value(), rtSmithOptions);
-    // Check if the `programInfo` object is generated successfully.
-    ASSERT_TRUE(programInfo != nullptr);
-
-    // Parse the fuzzer configurations from the TOML file.
-    toml::parse_result tomlConfig;
-    try {
-        tomlConfig = toml::parse_file("configuration.toml");
-    } catch (const toml::parse_error &e) {
-        error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
-    }
-    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(0);
-    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(0);
-    int maxTablesConfig = tomlConfig["maxTables"].value_or(0);
-    std::vector<std::string> tablesToSkipConfig;
-    if (const auto *stringRepresentations = tomlConfig["tablesToSkip"].as_array()) {
-        for (const auto &stringRepresentation : *stringRepresentations) {
-            if (const auto *str = stringRepresentation.as_string()) {
-                tablesToSkipConfig.push_back(str->get());
-            }
-        }
-    }
-    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(0);
-    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(0);
-    uint64_t maxUpdateTimeInMicrosecondsConfig =
-        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(0);
-    uint64_t minUpdateTimeInMicrosecondsConfig =
-        tomlConfig["minUpdateTimeInMicroseconds"].value_or(0);
-
-    // Check if the fuzzer configurations are overridden correctly.
-    ASSERT_EQ(programInfo->getFuzzerConfig().getMaxEntryGenCnt(), maxEntryGenCntConfig);
-    ASSERT_EQ(programInfo->getFuzzerConfig().getMaxAttempts(), maxAttemptsConfig);
-    ASSERT_EQ(programInfo->getFuzzerConfig().getMaxTables(), maxTablesConfig);
-    for (size_t i = 0; i < tablesToSkipConfig.size(); i++) {
-        ASSERT_EQ(programInfo->getFuzzerConfig().getTablesToSkip()[i], tablesToSkipConfig[i]);
-    }
-    ASSERT_EQ(programInfo->getFuzzerConfig().getThresholdForDeletion(), thresholdForDeletionConfig);
-    ASSERT_EQ(programInfo->getFuzzerConfig().getMaxUpdateCount(), maxUpdateCountConfig);
-    ASSERT_EQ(programInfo->getFuzzerConfig().getMaxUpdateTimeInMicroseconds(),
-              maxUpdateTimeInMicrosecondsConfig);
-    ASSERT_EQ(programInfo->getFuzzerConfig().getMinUpdateTimeInMicroseconds(),
-              minUpdateTimeInMicrosecondsConfig);
 }
 
 }  // anonymous namespace

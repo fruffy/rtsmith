@@ -108,6 +108,14 @@ RtSmithOptions::RtSmithOptions()
             return true;
         },
         "Set the fuzzer configurations using the TOML file specified by the file path");
+    registerOption(
+        "--toml-string", "configString",
+        [this](const char *arg) {
+            _fuzzerConfigString = arg;
+            return true;
+        },
+        "Set the fuzzer configurations using the string representation of the configurations of "
+        "format TOML");
 }
 
 std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }
@@ -138,5 +146,13 @@ std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneA
 std::optional<std::filesystem::path> RtSmithOptions::fuzzerConfigPath() const {
     return _fuzzerConfigPath;
 }
+
+std::optional<std::string> RtSmithOptions::fuzzerConfigString() const {
+    return _fuzzerConfigString;
+}
+
+void RtSmithOptions::setFuzzerConfigPath(const char *arg) { _fuzzerConfigPath = arg; }
+
+void RtSmithOptions::setFuzzerConfigString(const char *arg) { _fuzzerConfigString = arg; }
 
 }  // namespace P4::P4Tools::RTSmith

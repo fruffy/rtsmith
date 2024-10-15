@@ -28,6 +28,7 @@ set(RTSMITH_GTEST_SOURCES
   ${P4C_SOURCE_DIR}/test/gtest/helpers.cpp
   ${P4C_SOURCE_DIR}/test/gtest/gtestp4c.cpp
   test/core/rtsmith_api_test.cpp
+  test/core/rtsmith_toml_test.cpp
 )
 
 # RTSmith libraries.
@@ -83,14 +84,14 @@ FetchContent_MakeAvailable(tomlplusplus)
 target_link_libraries(rtsmith tomlplusplus::tomlplusplus)
 
 # Define the path to the configuration file.
-set(CONFIG_TOML_PATH ${CMAKE_CURRENT_SOURCE_DIR}/configuration.toml)
+set(CONFIG_TOML_PATH ${CMAKE_CURRENT_SOURCE_DIR}/test/configuration.toml)
 
 # Copy the file to the binary directory.
 add_custom_command(
   TARGET p4rtsmith POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
           ${CONFIG_TOML_PATH}
-          $<TARGET_FILE_DIR:p4rtsmith>/configuration.toml
+          $<TARGET_FILE_DIR:p4rtsmith>/test/configuration.toml
   COMMENT "Copying configuration.toml to the build directory."
 )
 

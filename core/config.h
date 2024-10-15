@@ -7,7 +7,6 @@
 #include <toml++/toml.hpp>
 
 #include "backends/p4tools/common/lib/util.h"
-
 namespace P4::P4Tools::RTSmith {
 
 class FuzzerConfig {
@@ -49,7 +48,12 @@ class FuzzerConfig {
 
     /// @brief Override the default fuzzer configurations through the TOML file.
     /// @param path The path to the TOML file.
-    void overrideFuzzerConfigs(const char *path);
+    void overrideFuzzerConfigsViaFile(const char *path);
+
+    /// @brief Override the default fuzzer configurations through the string representation of the
+    /// configurations of format TOML.
+    /// @param configInString The string representation of the configurations.
+    void overrideFuzzerConfigsViaString(const char *configInString);
 
     /// Getters to access the fuzzer configurations.
     [[nodiscard]] int getMaxEntryGenCnt() const { return maxEntryGenCnt; }
