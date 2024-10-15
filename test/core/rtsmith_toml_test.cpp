@@ -1,6 +1,6 @@
 #include <toml++/toml.hpp>
 
-#include "backends/p4tools/modules/p4rtsmith/test/core/rtsmith_api_test.cpp"
+#include "backends/p4tools/modules/p4rtsmith/test/core/rtsmith_test.h"
 
 namespace P4::P4Tools::Test {
 
