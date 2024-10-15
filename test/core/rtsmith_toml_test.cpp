@@ -59,18 +59,18 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLFile) {
     ASSERT_TRUE(programInfo != nullptr);
 
     // Parse the fuzzer configurations from the TOML file.
+    // Note: The configuration overridings would fail (during the `generateCompilerResult` function
+    // call) if any of the configurations are missing or the provided value is less than or equal to
+    // 0 (for `int`, `size_t`, and `uint64_t` types).
     toml::parse_result tomlConfig;
     try {
-        tomlConfig = toml::parse_file("configuration.toml");
+        tomlConfig = toml::parse_file(configFilePath);
     } catch (const toml::parse_error &e) {
         error("P4RuntimeSmith: Failed to parse fuzzer configuration file: %1%", e.what());
     }
-    int maxEntryGenCntConfig =
-        tomlConfig["maxEntryGenCnt"].value_or(programInfo->getFuzzerConfig().getMaxEntryGenCnt());
-    int maxAttemptsConfig =
-        tomlConfig["maxAttempts"].value_or(programInfo->getFuzzerConfig().getMaxAttempts());
-    int maxTablesConfig =
-        tomlConfig["maxTables"].value_or(programInfo->getFuzzerConfig().getMaxTables());
+    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(0);
+    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(0);
+    int maxTablesConfig = tomlConfig["maxTables"].value_or(0);
     std::vector<std::string> tablesToSkipConfig;
     if (const auto *stringRepresentations = tomlConfig["tablesToSkip"].as_array()) {
         for (const auto &stringRepresentation : *stringRepresentations) {
@@ -79,14 +79,12 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLFile) {
             }
         }
     }
-    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(
-        programInfo->getFuzzerConfig().getThresholdForDeletion());
-    size_t maxUpdateCountConfig =
-        tomlConfig["maxUpdateCount"].value_or(programInfo->getFuzzerConfig().getMaxUpdateCount());
-    uint64_t maxUpdateTimeInMicrosecondsConfig = tomlConfig["maxUpdateTimeInMicroseconds"].value_or(
-        programInfo->getFuzzerConfig().getMaxUpdateTimeInMicroseconds());
-    uint64_t minUpdateTimeInMicrosecondsConfig = tomlConfig["minUpdateTimeInMicroseconds"].value_or(
-        programInfo->getFuzzerConfig().getMinUpdateTimeInMicroseconds());
+    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(0);
+    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(0);
+    uint64_t maxUpdateTimeInMicrosecondsConfig =
+        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(0);
+    uint64_t minUpdateTimeInMicrosecondsConfig =
+        tomlConfig["minUpdateTimeInMicroseconds"].value_or(0);
 
     // Check if the fuzzer configurations are overridden correctly.
     ASSERT_EQ(programInfo->getFuzzerConfig().getMaxEntryGenCnt(), maxEntryGenCntConfig);
@@ -162,18 +160,18 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLString) {
     ASSERT_TRUE(programInfo != nullptr);
 
     // Parse the fuzzer configurations from the string.
+    // Note: The configuration overridings would fail (during the `generateCompilerResult` function
+    // call) if any of the configurations are missing or the provided value is less than or equal to
+    // 0 (for `int`, `size_t`, and `uint64_t` types).
     toml::parse_result tomlConfig;
     try {
         tomlConfig = toml::parse(configInString);
     } catch (const toml::parse_error &e) {
         error("P4RuntimeSmith: Failed to parse fuzzer configuration string: %1%", e.what());
     }
-    int maxEntryGenCntConfig =
-        tomlConfig["maxEntryGenCnt"].value_or(programInfo->getFuzzerConfig().getMaxEntryGenCnt());
-    int maxAttemptsConfig =
-        tomlConfig["maxAttempts"].value_or(programInfo->getFuzzerConfig().getMaxAttempts());
-    int maxTablesConfig =
-        tomlConfig["maxTables"].value_or(programInfo->getFuzzerConfig().getMaxTables());
+    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(0);
+    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(0);
+    int maxTablesConfig = tomlConfig["maxTables"].value_or(0);
     std::vector<std::string> tablesToSkipConfig;
     if (const auto *stringRepresentations = tomlConfig["tablesToSkip"].as_array()) {
         for (const auto &stringRepresentation : *stringRepresentations) {
@@ -182,14 +180,12 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLString) {
             }
         }
     }
-    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(
-        programInfo->getFuzzerConfig().getThresholdForDeletion());
-    size_t maxUpdateCountConfig =
-        tomlConfig["maxUpdateCount"].value_or(programInfo->getFuzzerConfig().getMaxUpdateCount());
-    uint64_t maxUpdateTimeInMicrosecondsConfig = tomlConfig["maxUpdateTimeInMicroseconds"].value_or(
-        programInfo->getFuzzerConfig().getMaxUpdateTimeInMicroseconds());
-    uint64_t minUpdateTimeInMicrosecondsConfig = tomlConfig["minUpdateTimeInMicroseconds"].value_or(
-        programInfo->getFuzzerConfig().getMinUpdateTimeInMicroseconds());
+    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(0);
+    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(0);
+    uint64_t maxUpdateTimeInMicrosecondsConfig =
+        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(0);
+    uint64_t minUpdateTimeInMicrosecondsConfig =
+        tomlConfig["minUpdateTimeInMicroseconds"].value_or(0);
 
     // Check if the fuzzer configurations are overridden correctly.
     ASSERT_EQ(programInfo->getFuzzerConfig().getMaxEntryGenCnt(), maxEntryGenCntConfig);

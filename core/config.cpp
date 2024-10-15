@@ -62,14 +62,32 @@ void FuzzerConfig::overrideFuzzerConfigsViaFile(const char *path) {
 
     // For the following blocks, retrieve the configurations from the TOML file and override the
     // default configurations if they comply with the constraints.
-    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(maxEntryGenCnt);
-    setMaxEntryGenCnt(maxEntryGenCntConfig);
+    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(0);
+    if (maxEntryGenCntConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of entries to generate must be provided and must "
+            "be a non-negative integer.");
+    } else {
+        setMaxEntryGenCnt(maxEntryGenCntConfig);
+    }
 
-    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(maxAttempts);
-    setMaxAttempts(maxAttemptsConfig);
+    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(0);
+    if (maxEntryGenCntConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of entries to generate must be a non-negative "
+            "integer.");
+    } else {
+        setMaxAttempts(maxAttemptsConfig);
+    }
 
-    int maxTablesConfig = tomlConfig["maxTables"].value_or(maxTables);
-    setMaxTables(maxTablesConfig);
+    int maxTablesConfig = tomlConfig["maxTables"].value_or(0);
+    if (maxTablesConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of tables must be provided and must be a "
+            "non-negative integer.");
+    } else {
+        setMaxTables(maxTablesConfig);
+    }
 
     std::vector<std::string> tablesToSkipConfig;
     if (const auto *stringRepresentations = tomlConfig["tablesToSkip"].as_array()) {
@@ -79,21 +97,46 @@ void FuzzerConfig::overrideFuzzerConfigsViaFile(const char *path) {
             }
         }
         setTablesToSkip(tablesToSkipConfig);
+    } else {
+        error("P4RuntimeSmith: The tables to skip must be provided.");
     }
 
-    uint64_t thresholdForDeletionConfig =
-        tomlConfig["thresholdForDeletion"].value_or(thresholdForDeletion);
-    setThresholdForDeletion(thresholdForDeletionConfig);
+    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(0);
+    if (thresholdForDeletionConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The threshold for deletion must be provided and must be a positive "
+            "integer.");
+    } else {
+        setThresholdForDeletion(thresholdForDeletionConfig);
+    }
 
-    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(maxUpdateCount);
-    setMaxUpdateCount(maxUpdateCountConfig);
+    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(0);
+    if (maxUpdateCountConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of updates must be provided and must be a positive "
+            "integer.");
+    } else {
+        setMaxUpdateCount(maxUpdateCountConfig);
+    }
 
     uint64_t maxUpdateTimeInMicrosecondsConfig =
-        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(maxUpdateTimeInMicroseconds);
+        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(0);
     uint64_t minUpdateTimeInMicrosecondsConfig =
-        tomlConfig["minUpdateTimeInMicroseconds"].value_or(minUpdateTimeInMicroseconds);
-    setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicrosecondsConfig);
-    setMinUpdateTimeInMicroseconds(minUpdateTimeInMicrosecondsConfig);
+        tomlConfig["minUpdateTimeInMicroseconds"].value_or(0);
+    if (maxUpdateTimeInMicrosecondsConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum wait time must be provided and must be a positive "
+            "integer.");
+    } else {
+        setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicrosecondsConfig);
+    }
+    if (minUpdateTimeInMicrosecondsConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The minimum wait time must be provided and must be a positive "
+            "integer.");
+    } else {
+        setMinUpdateTimeInMicroseconds(minUpdateTimeInMicrosecondsConfig);
+    }
 }
 
 void FuzzerConfig::overrideFuzzerConfigsViaString(const char *configInString) {
@@ -108,14 +151,32 @@ void FuzzerConfig::overrideFuzzerConfigsViaString(const char *configInString) {
 
     // For the following blocks, retrieve the configurations from the string and override the
     // default configurations if they comply with the constraints.
-    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(maxEntryGenCnt);
-    setMaxEntryGenCnt(maxEntryGenCntConfig);
+    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(0);
+    if (maxEntryGenCntConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of entries to generate must be provided and must "
+            "be a non-negative integer.");
+    } else {
+        setMaxEntryGenCnt(maxEntryGenCntConfig);
+    }
 
-    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(maxAttempts);
-    setMaxAttempts(maxAttemptsConfig);
+    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(0);
+    if (maxEntryGenCntConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of entries to generate must be a non-negative "
+            "integer.");
+    } else {
+        setMaxAttempts(maxAttemptsConfig);
+    }
 
-    int maxTablesConfig = tomlConfig["maxTables"].value_or(maxTables);
-    setMaxTables(maxTablesConfig);
+    int maxTablesConfig = tomlConfig["maxTables"].value_or(0);
+    if (maxTablesConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of tables must be provided and must be a "
+            "non-negative integer.");
+    } else {
+        setMaxTables(maxTablesConfig);
+    }
 
     std::vector<std::string> tablesToSkipConfig;
     if (const auto *stringRepresentations = tomlConfig["tablesToSkip"].as_array()) {
@@ -125,21 +186,46 @@ void FuzzerConfig::overrideFuzzerConfigsViaString(const char *configInString) {
             }
         }
         setTablesToSkip(tablesToSkipConfig);
+    } else {
+        error("P4RuntimeSmith: The tables to skip must be provided.");
     }
 
-    uint64_t thresholdForDeletionConfig =
-        tomlConfig["thresholdForDeletion"].value_or(thresholdForDeletion);
-    setThresholdForDeletion(thresholdForDeletionConfig);
+    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(0);
+    if (thresholdForDeletionConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The threshold for deletion must be provided and must be a positive "
+            "integer.");
+    } else {
+        setThresholdForDeletion(thresholdForDeletionConfig);
+    }
 
-    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(maxUpdateCount);
-    setMaxUpdateCount(maxUpdateCountConfig);
+    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(0);
+    if (maxUpdateCountConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum number of updates must be provided and must be a positive "
+            "integer.");
+    } else {
+        setMaxUpdateCount(maxUpdateCountConfig);
+    }
 
     uint64_t maxUpdateTimeInMicrosecondsConfig =
-        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(maxUpdateTimeInMicroseconds);
+        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(0);
     uint64_t minUpdateTimeInMicrosecondsConfig =
-        tomlConfig["minUpdateTimeInMicroseconds"].value_or(minUpdateTimeInMicroseconds);
-    setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicrosecondsConfig);
-    setMinUpdateTimeInMicroseconds(minUpdateTimeInMicrosecondsConfig);
+        tomlConfig["minUpdateTimeInMicroseconds"].value_or(0);
+    if (maxUpdateTimeInMicrosecondsConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The maximum wait time must be provided and must be a positive "
+            "integer.");
+    } else {
+        setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicrosecondsConfig);
+    }
+    if (minUpdateTimeInMicrosecondsConfig <= 0) {
+        error(
+            "P4RuntimeSmith: The minimum wait time must be provided and must be a positive "
+            "integer.");
+    } else {
+        setMinUpdateTimeInMicroseconds(minUpdateTimeInMicrosecondsConfig);
+    }
 }
 
 }  // namespace P4::P4Tools::RTSmith
