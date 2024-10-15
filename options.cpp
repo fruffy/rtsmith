@@ -108,14 +108,6 @@ RtSmithOptions::RtSmithOptions()
             return true;
         },
         "Set the fuzzer configurations using the TOML file specified by the file path");
-    registerOption(
-        "--toml-string", "configString",
-        [this](const char *arg) {
-            _fuzzerConfigString = arg;
-            return true;
-        },
-        "Set the fuzzer configurations using the string representation of the configurations of "
-        "format TOML");
 }
 
 std::filesystem::path RtSmithOptions::outputDir() const { return _outputDir; }
