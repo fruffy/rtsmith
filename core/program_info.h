@@ -24,7 +24,7 @@ class ProgramInfo : public ICastable {
 
     /// The `FuzzerConfig` object that stores the configurations of the fuzzer.
     /// Default values are provided in the `FuzzerConfig` class.
-    P4::P4Tools::RTSmith::FuzzerConfig _fuzzerConfig = FuzzerConfig();
+    P4::P4Tools::RtSmith::FuzzerConfig _fuzzerConfig = FuzzerConfig();
 
  public:
     ProgramInfo(const ProgramInfo &) = default;
