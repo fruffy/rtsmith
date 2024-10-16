@@ -34,7 +34,7 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLFile) {
         }
     })");
     auto autoContext = SetUp("bmv2", "v1model");
-    auto &rtSmithOptions = RTSmith::RtSmithOptions::get();
+    auto &rtSmithOptions = RtSmith::RtSmithOptions::get();
     rtSmithOptions.target = "bmv2"_cs;
     rtSmithOptions.arch = "v1model"_cs;
 
@@ -44,16 +44,16 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLFile) {
     ASSERT_TRUE(rtSmithOptions.fuzzerConfigPath().has_value());
     ASSERT_EQ(rtSmithOptions.fuzzerConfigPath().value(), configFilePath);
 
-    auto rtSmithResultOpt = P4::P4Tools::RTSmith::RtSmith::generateConfig(source, rtSmithOptions);
+    auto rtSmithResultOpt = P4::P4Tools::RtSmith::RtSmith::generateConfig(source, rtSmithOptions);
     // Check if the `RtSmithResult` object is generated successfully.
     ASSERT_TRUE(rtSmithResultOpt.has_value());
 
     auto compilerResult =
-        P4::P4Tools::RTSmith::RtSmith::generateCompilerResult(source, rtSmithOptions);
+        P4::P4Tools::RtSmith::RtSmith::generateCompilerResult(source, rtSmithOptions);
     // Check if the `compilerResult` object is generated successfully.
     ASSERT_TRUE(compilerResult.has_value());
 
-    const auto *programInfo = P4::P4Tools::RTSmith::RtSmithTarget::produceProgramInfo(
+    const auto *programInfo = P4::P4Tools::RtSmith::RtSmithTarget::produceProgramInfo(
         compilerResult.value(), rtSmithOptions);
     // Check if the `programInfo` object is generated successfully.
     ASSERT_TRUE(programInfo != nullptr);
@@ -208,7 +208,7 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLString) {
         }
     })");
     auto autoContext = SetUp("bmv2", "v1model");
-    auto &rtSmithOptions = RTSmith::RtSmithOptions::get();
+    auto &rtSmithOptions = RtSmith::RtSmithOptions::get();
     rtSmithOptions.target = "bmv2"_cs;
     rtSmithOptions.arch = "v1model"_cs;
 
@@ -227,16 +227,16 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLString) {
     ASSERT_TRUE(rtSmithOptions.fuzzerConfigString().has_value());
     ASSERT_EQ(rtSmithOptions.fuzzerConfigString().value(), configInString);
 
-    auto rtSmithResultOpt = P4::P4Tools::RTSmith::RtSmith::generateConfig(source, rtSmithOptions);
+    auto rtSmithResultOpt = P4::P4Tools::RtSmith::RtSmith::generateConfig(source, rtSmithOptions);
     // Check if the `RtSmithResult` object is generated successfully.
     ASSERT_TRUE(rtSmithResultOpt.has_value());
 
     auto compilerResult =
-        P4::P4Tools::RTSmith::RtSmith::generateCompilerResult(source, rtSmithOptions);
+        P4::P4Tools::RtSmith::RtSmith::generateCompilerResult(source, rtSmithOptions);
     // Check if the `compilerResult` object is generated successfully.
     ASSERT_TRUE(compilerResult.has_value());
 
-    const auto *programInfo = P4::P4Tools::RTSmith::RtSmithTarget::produceProgramInfo(
+    const auto *programInfo = P4::P4Tools::RtSmith::RtSmithTarget::produceProgramInfo(
         compilerResult.value(), rtSmithOptions);
     // Check if the `programInfo` object is generated successfully.
     ASSERT_TRUE(programInfo != nullptr);

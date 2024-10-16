@@ -20,11 +20,11 @@ class RtSmithTest : public testing::Test {
  public:
     [[nodiscard]] static std::optional<std::unique_ptr<AutoCompileContext>> SetUp(
         std::string_view target, std::string_view archName) {
-        P4::P4Tools::RTSmith::registerRtSmithTargets();
+        P4::P4Tools::RtSmith::registerRtSmithTargets();
         /// Set up the appropriate compile context for RtSmith tests.
         /// TODO: Remove this once options are not initialized statically anymore.
-        auto ctxOpt = P4::P4Tools::RTSmith::RtSmithTarget::initializeTarget(
-            P4::P4Tools::RTSmith::TOOL_NAME, target, archName);
+        auto ctxOpt = P4::P4Tools::RtSmith::RtSmithTarget::initializeTarget(
+            P4::P4Tools::RtSmith::TOOL_NAME, target, archName);
 
         if (!ctxOpt.has_value()) {
             return std::nullopt;
