@@ -1,14 +1,14 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_TARGET_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_TARGET_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_TARGET_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_TARGET_H_
 
 #include <string>
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
-#include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
-#include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
+#include "backends/p4tools/modules/rtsmith/core/fuzzer.h"
+#include "backends/p4tools/modules/rtsmith/core/program_info.h"
 #include "ir/ir.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 class RtSmithTarget : public CompilerTarget {
  public:
@@ -43,6 +43,6 @@ class RtSmithTarget : public CompilerTarget {
  private:
 };
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_TARGET_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_TARGET_H_ */

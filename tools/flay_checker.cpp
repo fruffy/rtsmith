@@ -6,16 +6,16 @@
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/modules/flay/flay.h"
 #include "backends/p4tools/modules/flay/register.h"
-#include "backends/p4tools/modules/p4rtsmith/core/util.h"
-#include "backends/p4tools/modules/p4rtsmith/options.h"
-#include "backends/p4tools/modules/p4rtsmith/register.h"
-#include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
+#include "backends/p4tools/modules/rtsmith/core/util.h"
+#include "backends/p4tools/modules/rtsmith/options.h"
+#include "backends/p4tools/modules/rtsmith/register.h"
+#include "backends/p4tools/modules/rtsmith/rtsmith.h"
 #include "frontends/common/parser_options.h"
 #include "lib/compile_context.h"
 #include "lib/error.h"
 #include "lib/options.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 namespace {
 
@@ -107,7 +107,7 @@ class FlayCheckerOptions : public RtSmithOptions {
 
 int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions) {
     printInfo("Generating RtSmith configuration for program...");
-    if (!RTSmith::RtSmith::generateConfig(rtSmithOptions)) {
+    if (!RtSmith::generateConfig(rtSmithOptions)) {
         return EXIT_FAILURE;
     }
 
@@ -136,23 +136,23 @@ int run(const FlayCheckerOptions &options, const RtSmithOptions &rtSmithOptions)
     return EXIT_SUCCESS;
 }
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
 
 int main(int argc, char *argv[]) {
     P4::P4Tools::Flay::registerFlayTargets();
-    P4::P4Tools::RTSmith::registerRtSmithTargets();
+    P4::P4Tools::RtSmith::registerRtSmithTargets();
 
     // Set up the options.
     auto *compileContext =
-        new P4::P4Tools::CompileContext<P4::P4Tools::RTSmith::FlayCheckerOptions>();
+        new P4::P4Tools::CompileContext<P4::P4Tools::RtSmith::FlayCheckerOptions>();
     P4::AutoCompileContext autoContext(
-        new P4::P4CContextWithOptions<P4::P4Tools::RTSmith::FlayCheckerOptions>());
+        new P4::P4CContextWithOptions<P4::P4Tools::RtSmith::FlayCheckerOptions>());
     // Process command-line options.
     if (compileContext->options().processOptions(argc, argv) != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
     auto *rtSmithContext =
-        new P4::P4Tools::CompileContext<P4::P4Tools::RTSmith::RtSmithOptions>(*compileContext);
+        new P4::P4Tools::CompileContext<P4::P4Tools::RtSmith::RtSmithOptions>(*compileContext);
     P4::AutoCompileContext autoContext2(rtSmithContext);
     // Run the reference checker.
     auto rtSmithOptions = rtSmithContext->options();
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
         P4::P4Tools::Utils::setRandomSeed(*rtSmithOptions.seed);
     }
 
-    auto result = P4::P4Tools::RTSmith::run(compileContext->options(), rtSmithContext->options());
+    auto result = P4::P4Tools::RtSmith::run(compileContext->options(), rtSmithContext->options());
     if (result == EXIT_FAILURE) {
         return EXIT_FAILURE;
     }

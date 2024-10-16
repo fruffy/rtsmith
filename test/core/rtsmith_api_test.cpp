@@ -2,9 +2,9 @@
 
 #include <sstream>
 
-#include "backends/p4tools/modules/p4rtsmith/register.h"
-#include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
-#include "backends/p4tools/modules/p4rtsmith/toolname.h"
+#include "backends/p4tools/modules/rtsmith/register.h"
+#include "backends/p4tools/modules/rtsmith/rtsmith.h"
+#include "backends/p4tools/modules/rtsmith/toolname.h"
 #include "test/gtest/helpers.h"
 
 namespace P4::P4Tools::Test {
@@ -17,11 +17,11 @@ class RtSmithTest : public testing::Test {
  public:
     [[nodiscard]] static std::optional<std::unique_ptr<AutoCompileContext>> SetUp(
         std::string_view target, std::string_view archName) {
-        P4::P4Tools::RTSmith::registerRtSmithTargets();
+        P4::P4Tools::RtSmith::registerRtSmithTargets();
         /// Set up the appropriate compile context for RtSmith tests.
         /// TODO: Remove this once options are not initialized statically anymore.
-        auto ctxOpt = P4::P4Tools::RTSmith::RtSmithTarget::initializeTarget(
-            P4::P4Tools::RTSmith::TOOL_NAME, target, archName);
+        auto ctxOpt = P4::P4Tools::RtSmith::RtSmithTarget::initializeTarget(
+            P4::P4Tools::RtSmith::TOOL_NAME, target, archName);
 
         if (!ctxOpt.has_value()) {
             return std::nullopt;
@@ -97,10 +97,10 @@ TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApi) {
         }
     })");
     auto autoContext = SetUp("bmv2", "v1model");
-    auto &rtSmithOptions = RTSmith::RtSmithOptions::get();
+    auto &rtSmithOptions = RtSmith::RtSmithOptions::get();
     rtSmithOptions.target = "bmv2"_cs;
     rtSmithOptions.arch = "v1model"_cs;
-    auto rtSmithResultOpt = P4::P4Tools::RTSmith::RtSmith::generateConfig(source, rtSmithOptions);
+    auto rtSmithResultOpt = P4::P4Tools::RtSmith::RtSmith::generateConfig(source, rtSmithOptions);
     ASSERT_TRUE(rtSmithResultOpt.has_value());
 }
 

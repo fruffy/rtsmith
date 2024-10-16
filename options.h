@@ -1,12 +1,12 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_OPTIONS_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_OPTIONS_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_OPTIONS_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_OPTIONS_H_
 
 #include <filesystem>
 #include <optional>
 
 #include "backends/p4tools/common/options.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 /// Encapsulates and processes command-line options for P4RtSmith.
 class RtSmithOptions : public AbstractP4cToolOptions {
@@ -59,6 +59,6 @@ class RtSmithOptions : public AbstractP4cToolOptions {
     std::string _controlPlaneApi = "P4RUNTIME";
 };
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_OPTIONS_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_OPTIONS_H_ */

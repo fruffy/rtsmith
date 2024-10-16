@@ -1,12 +1,12 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_PROGRAM_INFO_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_PROGRAM_INFO_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_TOFINO_PROGRAM_INFO_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_TOFINO_PROGRAM_INFO_H_
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
-#include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
+#include "backends/p4tools/modules/rtsmith/core/program_info.h"
 #include "ir/ir.h"
 #include "ir/node.h"
 
-namespace P4::P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RtSmith::Tna {
 
 class TofinoTnaProgramInfo : public ProgramInfo {
  public:
@@ -16,6 +16,6 @@ class TofinoTnaProgramInfo : public ProgramInfo {
     DECLARE_TYPEINFO(TofinoTnaProgramInfo);
 };
 
-}  // namespace P4::P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RtSmith::Tna
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_PROGRAM_INFO_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_TOFINO_PROGRAM_INFO_H_ */

@@ -1,4 +1,4 @@
-#include "backends/p4tools/modules/p4rtsmith/options.h"
+#include "backends/p4tools/modules/rtsmith/options.h"
 
 #include <random>
 
@@ -6,10 +6,10 @@
 #include "backends/p4tools/common/lib/logging.h"
 #include "backends/p4tools/common/lib/util.h"
 #include "backends/p4tools/common/options.h"
-#include "backends/p4tools/modules/p4rtsmith/toolname.h"
+#include "backends/p4tools/modules/rtsmith/toolname.h"
 #include "lib/error.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 RtSmithOptions &RtSmithOptions::get() {
     return P4Tools::CompileContext<RtSmithOptions>::get().options();
@@ -18,7 +18,7 @@ RtSmithOptions &RtSmithOptions::get() {
 const std::set<std::string> K_SUPPORTED_CONTROL_PLANES = {"P4RUNTIME", "BFRUNTIME"};
 
 RtSmithOptions::RtSmithOptions()
-    : AbstractP4cToolOptions(RTSmith::TOOL_NAME,
+    : AbstractP4cToolOptions(RtSmith::TOOL_NAME,
                              "Remove control-plane dead code from a P4 program.") {
     registerOption(
         "--print-to-stdout", nullptr,
@@ -123,4 +123,4 @@ std::optional<std::filesystem::path> RtSmithOptions::p4InfoFilePath() const {
 
 std::string_view RtSmithOptions::controlPlaneApi() const { return _controlPlaneApi; }
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
