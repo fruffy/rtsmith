@@ -1,4 +1,4 @@
-#include "backends/p4tools/modules/p4rtsmith/test/core/rtsmith_test.h"
+#include "backends/p4tools/modules/rtsmith/test/core/rtsmith_test.h"
 
 namespace P4::P4Tools::Test {
 

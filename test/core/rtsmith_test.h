@@ -5,9 +5,9 @@
 
 #include <sstream>
 
-#include "backends/p4tools/modules/p4rtsmith/register.h"
-#include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
-#include "backends/p4tools/modules/p4rtsmith/toolname.h"
+#include "backends/p4tools/modules/rtsmith/register.h"
+#include "backends/p4tools/modules/rtsmith/rtsmith.h"
+#include "backends/p4tools/modules/rtsmith/toolname.h"
 #include "test/gtest/helpers.h"
 
 namespace P4::P4Tools::Test {
