@@ -33,10 +33,10 @@ TEST_F(P4RuntimeApiTest, GeneratesATestViaTheApi) {
         }
     })");
     auto autoContext = SetUp("bmv2", "v1model");
-    auto &rtSmithOptions = RTSmith::RtSmithOptions::get();
+    auto &rtSmithOptions = RtSmith::RtSmithOptions::get();
     rtSmithOptions.target = "bmv2"_cs;
     rtSmithOptions.arch = "v1model"_cs;
-    auto rtSmithResultOpt = P4::P4Tools::RTSmith::RtSmith::generateConfig(source, rtSmithOptions);
+    auto rtSmithResultOpt = P4::P4Tools::RtSmith::RtSmith::generateConfig(source, rtSmithOptions);
     ASSERT_TRUE(rtSmithResultOpt.has_value());
 }
 

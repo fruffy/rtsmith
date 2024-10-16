@@ -1,11 +1,11 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_RTSMITH_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_RTSMITH_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_RTSMITH_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_RTSMITH_H_
 
 #include "backends/p4tools/common/p4ctool.h"
-#include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
-#include "backends/p4tools/modules/p4rtsmith/options.h"
+#include "backends/p4tools/modules/rtsmith/core/fuzzer.h"
+#include "backends/p4tools/modules/rtsmith/options.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 struct RtSmithResult {
     InitialConfig config;
@@ -37,6 +37,6 @@ class RtSmith : public AbstractP4cTool<RtSmithOptions> {
         const RtSmithOptions &rtSmithOptions);
 };
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_RTSMITH_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_RTSMITH_H_ */

@@ -1,20 +1,20 @@
-#include "backends/p4tools/modules/p4rtsmith/core/target.h"
+#include "backends/p4tools/modules/rtsmith/core/target.h"
 
 #include <string>
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
 #include "backends/p4tools/common/compiler/context.h"
 #include "backends/p4tools/common/core/target.h"
-#include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
-#include "backends/p4tools/modules/p4rtsmith/options.h"
-#include "backends/p4tools/modules/p4rtsmith/toolname.h"
+#include "backends/p4tools/modules/rtsmith/core/program_info.h"
+#include "backends/p4tools/modules/rtsmith/options.h"
+#include "backends/p4tools/modules/rtsmith/toolname.h"
 #include "ir/declaration.h"
 #include "ir/ir.h"
 #include "ir/node.h"
 #include "lib/enumerator.h"
 #include "lib/exceptions.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 RtSmithTarget::RtSmithTarget(const std::string &deviceName, const std::string &archName)
     : CompilerTarget(TOOL_NAME, deviceName, archName) {}
@@ -53,4 +53,4 @@ const ProgramInfo *RtSmithTarget::produceProgramInfo(const CompilerResult &compi
 ICompileContext *RtSmithTarget::makeContext() const {
     return new P4Tools::CompileContext<RtSmithOptions>();
 }
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith

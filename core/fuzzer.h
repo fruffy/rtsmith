@@ -1,7 +1,7 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_FUZZER_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_FUZZER_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_FUZZER_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_FUZZER_H_
 
-#include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
+#include "backends/p4tools/modules/rtsmith/core/program_info.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -10,7 +10,7 @@
 #include "p4/v1/p4runtime.pb.h"
 #pragma GCC diagnostic pop
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 using ProtobufMessagePtr = std::unique_ptr<google::protobuf::Message>;
 using InitialConfig = std::vector<ProtobufMessagePtr>;
@@ -137,6 +137,6 @@ class P4RuntimeFuzzer : public RuntimeFuzzer {
     std::unique_ptr<p4::v1::WriteRequest> produceWriteRequest(bool isInitialConfig);
 };
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_FUZZER_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_FUZZER_H_ */

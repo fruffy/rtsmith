@@ -1,10 +1,10 @@
-#include "backends/p4tools/modules/p4rtsmith/targets/tofino/target.h"
+#include "backends/p4tools/modules/rtsmith/targets/tofino/target.h"
 
-#include "backends/p4tools/modules/p4rtsmith/core/control_plane/protobuf_utils.h"
-#include "backends/p4tools/modules/p4rtsmith/core/util.h"
-#include "backends/p4tools/modules/p4rtsmith/options.h"
-#include "backends/p4tools/modules/p4rtsmith/targets/tofino/fuzzer.h"
-#include "backends/p4tools/modules/p4rtsmith/targets/tofino/program_info.h"
+#include "backends/p4tools/modules/rtsmith/core/control_plane/protobuf_utils.h"
+#include "backends/p4tools/modules/rtsmith/core/util.h"
+#include "backends/p4tools/modules/rtsmith/options.h"
+#include "backends/p4tools/modules/rtsmith/targets/tofino/fuzzer.h"
+#include "backends/p4tools/modules/rtsmith/targets/tofino/program_info.h"
 #include "ir/ir.h"
 #include "lib/cstring.h"
 
@@ -14,7 +14,7 @@
 #include "p4/config/v1/p4info.pb.h"
 #pragma GCC diagnostic pop
 
-namespace P4::P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RtSmith::Tna {
 
 /* =============================================================================================
  *  TofinoTnaRtSmithTarget implementation
@@ -73,4 +73,4 @@ TofinoTnaFuzzer &TofinoTnaRtSmithTarget::getFuzzerImpl(const ProgramInfo &progra
     return *new TofinoTnaFuzzer(*programInfo.checkedTo<TofinoTnaProgramInfo>());
 }
 
-}  // namespace P4::P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RtSmith::Tna

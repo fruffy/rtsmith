@@ -1,8 +1,8 @@
-#include "backends/p4tools/modules/p4rtsmith/core/program_info.h"
+#include "backends/p4tools/modules/rtsmith/core/program_info.h"
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 ProgramInfo::ProgramInfo(const CompilerResult &compilerResult, P4::P4RuntimeAPI p4runtimeApi)
     : compilerResult(compilerResult), p4runtimeApi(p4runtimeApi) {}
@@ -27,4 +27,4 @@ void ProgramInfo::proceedToOverrideFuzzerConfigsViaString(const char *configInSt
     _fuzzerConfig.overrideFuzzerConfigsViaString(configInString);
 }
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
