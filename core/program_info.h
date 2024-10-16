@@ -22,8 +22,8 @@ class ProgramInfo : public ICastable {
  protected:
     explicit ProgramInfo(const CompilerResult &compilerResult, P4::P4RuntimeAPI p4runtimeApi);
 
-    /// The FuzzerConfig object that stores the configurations of the fuzzer.
-    /// Default values are provided in the FuzzerConfig class.
+    /// The `FuzzerConfig` object that stores the configurations of the fuzzer.
+    /// Default values are provided in the `FuzzerConfig` class.
     P4::P4Tools::RtSmith::FuzzerConfig _fuzzerConfig = FuzzerConfig();
 
  public:
@@ -48,6 +48,15 @@ class ProgramInfo : public ICastable {
 
     /// @returns the FuzzerConfig associated with this program.
     [[nodiscard]] const FuzzerConfig &getFuzzerConfig() const;
+
+    /// Proceeds to override the fuzzer configurations if a TOML file is provided (checked in either
+    /// `Bmv2V1ModelRtSmithTarget` or `TofinoTnaRtSmithTarget`).
+    void proceedToOverrideFuzzerConfigsViaFile(const char *path);
+
+    /// Proceeds to override the fuzzer configurations if a string representation of the
+    /// configurations of format TOML is provided (check in either `Bmv2V1ModelRtSmithTarget` or
+    /// `TofinoTnaRtSmithTarget`).
+    void proceedToOverrideFuzzerConfigsViaString(const char *configInString);
 };
 
 }  // namespace P4::P4Tools::RtSmith
