@@ -1,10 +1,10 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_UTIL_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_UTIL_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_UTIL_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_UTIL_H_
 
 #include <map>
 #include <optional>
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 /// If @param inputFunction evaluates to false, returns @param ret.
 // NOLINTNEXTLINE
@@ -66,6 +66,6 @@ inline std::optional<V> safeAt(const std::map<K, V, Comp, Alloc> &m, T key) {
     return std::nullopt;
 }
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_UTIL_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_UTIL_H_ */

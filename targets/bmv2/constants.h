@@ -1,9 +1,9 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_BMV2_CONSTANTS_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_BMV2_CONSTANTS_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_BMV2_CONSTANTS_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_BMV2_CONSTANTS_H_
 
 #include <cstdint>
 
-namespace P4::P4Tools::RTSmith::V1Model {
+namespace P4::P4Tools::RtSmith::V1Model {
 
 enum Vbmv2_gress_t { BMV2_INGRESS, BMV2_EGRESS };
 
@@ -42,6 +42,6 @@ class V1ModelConstants {
     static constexpr int DROP_PORT = 511;
 };
 
-}  // namespace P4::P4Tools::RTSmith::V1Model
+}  // namespace P4::P4Tools::RtSmith::V1Model
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_BMV2_CONSTANTS_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_BMV2_CONSTANTS_H_ */

@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "backends/p4tools/common/lib/logging.h"
-#include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
-#include "backends/p4tools/modules/p4rtsmith/toolname.h"
+#include "backends/p4tools/modules/rtsmith/rtsmith.h"
+#include "backends/p4tools/modules/rtsmith/toolname.h"
 #include "lib/crash.h"
 #include "lib/exceptions.h"
 
@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     int result = EXIT_SUCCESS;
     try {
         P4::Util::ScopedTimer timer("P4RuntimeSmith Main");
-        result = P4::P4Tools::RTSmith::RtSmith().main(P4::P4Tools::RTSmith::TOOL_NAME, args);
+        result = P4::P4Tools::RtSmith::RtSmith().main(P4::P4Tools::RtSmith::TOOL_NAME, args);
     } catch (const P4::Util::CompilerBug &e) {
         std::cerr << "Internal error: " << e.what() << '\n';
         std::cerr << "Please submit a bug report with your code." << '\n';

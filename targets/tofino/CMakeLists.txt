@@ -1,4 +1,4 @@
-# Source files for the main P4RtSmith.
+# Source files for the main RtSmith.
 set(RTSMITH_SOURCES
     ${RTSMITH_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp

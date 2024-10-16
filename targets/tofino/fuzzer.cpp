@@ -1,12 +1,12 @@
-#include "backends/p4tools/modules/p4rtsmith/targets/tofino/fuzzer.h"
+#include "backends/p4tools/modules/rtsmith/targets/tofino/fuzzer.h"
 
 #include <algorithm>
 
 #include "backends/p4tools/common/lib/util.h"
-#include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
+#include "backends/p4tools/modules/rtsmith/core/fuzzer.h"
 #include "control-plane/p4infoApi.h"
 
-namespace P4::P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RtSmith::Tna {
 
 TofinoTnaFuzzer::TofinoTnaFuzzer(const TofinoTnaProgramInfo &programInfo)
     : RuntimeFuzzer(programInfo) {}
@@ -174,4 +174,4 @@ InitialConfig TofinoTnaFuzzer::produceInitialConfig() {
 
 UpdateSeries TofinoTnaFuzzer::produceUpdateTimeSeries() { return {}; }
 
-}  // namespace P4::P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RtSmith::Tna

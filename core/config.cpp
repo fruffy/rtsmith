@@ -1,8 +1,8 @@
-#include "backends/p4tools/modules/p4rtsmith/core/config.h"
+#include "backends/p4tools/modules/rtsmith/core/config.h"
 
 #include "lib/error.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 void FuzzerConfig::setMaxEntryGenCnt(const int numEntries) {
     if (numEntries < 0) {
@@ -50,4 +50,4 @@ void FuzzerConfig::setMinUpdateTimeInMicroseconds(const uint64_t micros) {
     minUpdateTimeInMicroseconds = micros;
 }
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith

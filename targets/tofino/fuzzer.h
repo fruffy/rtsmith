@@ -1,10 +1,10 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_FUZZER_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_FUZZER_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_TOFINO_FUZZER_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_TOFINO_FUZZER_H_
 
-#include "backends/p4tools/modules/p4rtsmith/core/fuzzer.h"
-#include "backends/p4tools/modules/p4rtsmith/targets/tofino/program_info.h"
+#include "backends/p4tools/modules/rtsmith/core/fuzzer.h"
+#include "backends/p4tools/modules/rtsmith/targets/tofino/program_info.h"
 
-namespace P4::P4Tools::RTSmith::Tna {
+namespace P4::P4Tools::RtSmith::Tna {
 
 class TofinoTnaFuzzer : public RuntimeFuzzer {
  private:
@@ -70,6 +70,6 @@ class TofinoTnaFuzzer : public RuntimeFuzzer {
     UpdateSeries produceUpdateTimeSeries() override;
 };
 
-}  // namespace P4::P4Tools::RTSmith::Tna
+}  // namespace P4::P4Tools::RtSmith::Tna
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TARGETS_TOFINO_FUZZER_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_TARGETS_TOFINO_FUZZER_H_ */

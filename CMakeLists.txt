@@ -1,11 +1,11 @@
-# CMake file for P4RuntimeSmith.
+# CMake file for ControlPlaneSmith.
 project(rtsmith)
 
 # Add cmake directory to our module path. Also add cmake directory from P4C
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 
-# Declare common P4RuntimeSmith variables.
+# Declare common ControlPlaneSmith variables.
 set(RTSMITH_DIR ${P4C_BINARY_DIR}/rtsmith)
 set(RTSMITH_DRIVER "${CMAKE_CURRENT_BINARY_DIR}/p4rtsmith")
 if (TARGET flay)
@@ -22,7 +22,7 @@ set(RTSMITH_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/core/config.cpp
 )
 
-# GTest source files for P4RuntimeSmith.
+# GTest source files for ControlPlaneSmith.
 set(RTSMITH_GTEST_SOURCES
    # # XXX These should be in a library.
   ${P4C_SOURCE_DIR}/test/gtest/helpers.cpp
@@ -50,7 +50,7 @@ foreach(ext ${rtsmith_targets})
       message("-- Enabling target ${ext}")
       add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/targets/${ext})
       set(include_statements_var
-          "${include_statements_var}#include \"backends/p4tools/modules/p4rtsmith/targets/${ext}/register.h\"\n"
+          "${include_statements_var}#include \"backends/p4tools/modules/rtsmith/targets/${ext}/register.h\"\n"
       )
       set(rtsmith_targets_var "${rtsmith_targets_var}    ${ext}_registerRtSmithTarget();\n")
     endif()
@@ -72,7 +72,7 @@ add_p4tools_executable(p4rtsmith main.cpp)
 
 target_link_libraries(p4rtsmith rtsmith ${RTSMITH_LIBS})
 
-# Add some convenience links for invoking p4rtsmith.
+# Add some convenience links for invoking rtsmith.
 add_custom_target(
   linkrtsmith
   COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/p4rtsmith
@@ -82,7 +82,7 @@ add_custom_target(
   DEPENDS update_includes
 )
 
-add_dependencies(p4rtsmith linkrtsmith)
+add_dependencies(rtsmith linkrtsmith)
 
 add_subdirectory(tools)
 

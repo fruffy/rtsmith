@@ -1,12 +1,12 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TOOLNAME_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TOOLNAME_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_TOOLNAME_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_TOOLNAME_H_
 
 #include <string_view>
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
-static inline constexpr std::string_view TOOL_NAME = "P4RtSmith";
+static inline constexpr std::string_view TOOL_NAME = "rtsmith";
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_TOOLNAME_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_TOOLNAME_H_ */

@@ -1,4 +1,4 @@
-#include "backends/p4tools/modules/p4rtsmith/rtsmith.h"
+#include "backends/p4tools/modules/rtsmith/rtsmith.h"
 
 #include <google/protobuf/text_format.h>
 
@@ -9,15 +9,15 @@
 #include "backends/p4tools/common/compiler/compiler_result.h"
 #include "backends/p4tools/common/lib/logging.h"
 #include "backends/p4tools/common/lib/util.h"
-#include "backends/p4tools/modules/p4rtsmith/core/target.h"
-#include "backends/p4tools/modules/p4rtsmith/core/util.h"
-#include "backends/p4tools/modules/p4rtsmith/register.h"
-#include "backends/p4tools/modules/p4rtsmith/toolname.h"
+#include "backends/p4tools/modules/rtsmith/core/target.h"
+#include "backends/p4tools/modules/rtsmith/core/util.h"
+#include "backends/p4tools/modules/rtsmith/register.h"
+#include "backends/p4tools/modules/rtsmith/toolname.h"
 #include "control-plane/p4RuntimeSerializer.h"
 #include "lib/error.h"
 #include "lib/nullstream.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 void RtSmith::registerTarget() {
     // Register all available compiler targets.
@@ -204,4 +204,4 @@ std::optional<RtSmithResult> RtSmith::generateConfig(const RtSmithOptions &rtSmi
     return std::nullopt;
 }
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith

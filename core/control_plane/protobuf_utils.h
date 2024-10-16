@@ -1,5 +1,5 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_CONTROL_PLANE_PROTOBUF_UTILS_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_CONTROL_PLANE_PROTOBUF_UTILS_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_CONTROL_PLANE_PROTOBUF_UTILS_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_CONTROL_PLANE_PROTOBUF_UTILS_H_
 
 #include <fcntl.h>
 
@@ -9,11 +9,11 @@
 #include <filesystem>
 
 #include "backends/p4tools/common/lib/logging.h"
-#include "backends/p4tools/modules/p4rtsmith/core/util.h"
+#include "backends/p4tools/modules/rtsmith/core/util.h"
 #include "lib/big_int.h"
 #include "lib/error.h"
 
-namespace P4::P4Tools::RTSmith::Protobuf {
+namespace P4::P4Tools::RtSmith::Protobuf {
 
 /// Helper function, which converts a Protobuf byte string into a big integer
 /// (boost cpp_int).
@@ -50,6 +50,6 @@ template <class T>
     return protoObject;
 }
 
-}  // namespace P4::P4Tools::RTSmith::Protobuf
+}  // namespace P4::P4Tools::RtSmith::Protobuf
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_CONTROL_PLANE_PROTOBUF_UTILS_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_CONTROL_PLANE_PROTOBUF_UTILS_H_ */

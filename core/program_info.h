@@ -1,15 +1,15 @@
-#ifndef BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_PROGRAM_INFO_H_
-#define BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_PROGRAM_INFO_H_
+#ifndef BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_PROGRAM_INFO_H_
+#define BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_PROGRAM_INFO_H_
 
 #include <functional>
 
 #include "backends/p4tools/common/compiler/compiler_target.h"
-#include "backends/p4tools/modules/p4rtsmith/core/config.h"
+#include "backends/p4tools/modules/rtsmith/core/config.h"
 #include "control-plane/p4RuntimeSerializer.h"
 #include "ir/ir.h"
 #include "lib/castable.h"
 
-namespace P4::P4Tools::RTSmith {
+namespace P4::P4Tools::RtSmith {
 
 /// Stores target-specific information about a P4 program.
 class ProgramInfo : public ICastable {
@@ -24,7 +24,7 @@ class ProgramInfo : public ICastable {
 
     /// The FuzzerConfig object that stores the configurations of the fuzzer.
     /// Default values are provided in the FuzzerConfig class.
-    P4::P4Tools::RTSmith::FuzzerConfig _fuzzerConfig = FuzzerConfig();
+    P4::P4Tools::RtSmith::FuzzerConfig _fuzzerConfig = FuzzerConfig();
 
  public:
     ProgramInfo(const ProgramInfo &) = default;
@@ -50,6 +50,6 @@ class ProgramInfo : public ICastable {
     [[nodiscard]] const FuzzerConfig &getFuzzerConfig() const;
 };
 
-}  // namespace P4::P4Tools::RTSmith
+}  // namespace P4::P4Tools::RtSmith
 
-#endif /* BACKENDS_P4TOOLS_MODULES_P4RTSMITH_CORE_PROGRAM_INFO_H_ */
+#endif /* BACKENDS_P4TOOLS_MODULES_RTSMITH_CORE_PROGRAM_INFO_H_ */
