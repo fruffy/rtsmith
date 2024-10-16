@@ -62,80 +62,112 @@ void FuzzerConfig::overrideFuzzerConfigsViaFile(const char *path) {
 
     // For the following blocks, retrieve the configurations from the TOML file and override the
     // default configurations if they comply with the constraints.
-    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(0);
-    if (maxEntryGenCntConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum number of entries to generate must be provided and must "
-            "be a non-negative integer.");
-    } else {
-        setMaxEntryGenCnt(maxEntryGenCntConfig);
-    }
-
-    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(0);
-    if (maxEntryGenCntConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum number of entries to generate must be a non-negative "
-            "integer.");
-    } else {
-        setMaxAttempts(maxAttemptsConfig);
-    }
-
-    int maxTablesConfig = tomlConfig["maxTables"].value_or(0);
-    if (maxTablesConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum number of tables must be provided and must be a "
-            "non-negative integer.");
-    } else {
-        setMaxTables(maxTablesConfig);
-    }
-
-    std::vector<std::string> tablesToSkipConfig;
-    if (const auto *stringRepresentations = tomlConfig["tablesToSkip"].as_array()) {
-        for (const auto &stringRepresentation : *stringRepresentations) {
-            if (const auto *str = stringRepresentation.as_string()) {
-                tablesToSkipConfig.push_back(str->get());
-            }
+    auto maxEntryGenCntNode = tomlConfig["maxEntryGenCnt"];
+    // Check if the node exists.
+    if (!!maxEntryGenCntNode) {
+        // Check if the node represents an integer.
+        if (maxEntryGenCntNode.type() == toml::node_type::integer) {
+            int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value<int>().value();
+            setMaxEntryGenCnt(maxEntryGenCntConfig);
+        } else {
+            error("P4RuntimeSmith: The maximum number of entries to generate must be an integer.");
         }
-        setTablesToSkip(tablesToSkipConfig);
+    } else {
+        error("P4RuntimeSmith: The maximum number of entries to generate must be provided.");
+    }
+
+    auto maxAttemptsNode = tomlConfig["maxAttempts"];
+    if (!!maxAttemptsNode) {
+        if (maxAttemptsNode.type() == toml::node_type::integer) {
+            int maxAttemptsConfig = maxAttemptsNode.value<int>().value();
+            setMaxAttempts(maxAttemptsConfig);
+        } else {
+            error("P4RuntimeSmith: The maximum number of attempts must be an integer.");
+        }
+    } else {
+        error("P4RuntimeSmith: The maximum number of attempts must be provided.");
+    }
+
+    auto maxTablesNode = tomlConfig["maxTables"];
+    if (!!maxTablesNode) {
+        if (maxTablesNode.type() == toml::node_type::integer) {
+            int maxTablesConfig = maxTablesNode.value<int>().value();
+            setMaxTables(maxTablesConfig);
+        } else {
+            error("P4RuntimeSmith: The maximum number of tables must be an integer.");
+        }
+    } else {
+        error("P4RuntimeSmith: The maximum number of tables must be provided.");
+    }
+
+    auto tablesToSkipNode = tomlConfig["tablesToSkip"];
+    if (!!tablesToSkipNode) {
+        if (tablesToSkipNode.type() == toml::node_type::array) {
+            std::vector<std::string> tablesToSkipConfig;
+            const auto *expectedStringRepresentations = tomlConfig["tablesToSkip"].as_array();
+            for (const auto &expectedStringRepresentation : *expectedStringRepresentations) {
+                if (const auto *str = expectedStringRepresentation.as_string()) {
+                    tablesToSkipConfig.push_back(str->get());
+                } else {
+                    error("P4RuntimeSmith: The tables to skip must be strings.");
+                }
+            }
+            setTablesToSkip(tablesToSkipConfig);
+        } else {
+            error("P4RuntimeSmith: The tables to skip must be an array.");
+        }
     } else {
         error("P4RuntimeSmith: The tables to skip must be provided.");
     }
 
-    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(0);
-    if (thresholdForDeletionConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The threshold for deletion must be provided and must be a positive "
-            "integer.");
+    auto thresholdForDeletionNode = tomlConfig["thresholdForDeletion"];
+    if (!!thresholdForDeletionNode) {
+        if (thresholdForDeletionNode.type() == toml::node_type::integer) {
+            uint64_t thresholdForDeletionConfig =
+                thresholdForDeletionNode.value<uint64_t>().value();
+            setThresholdForDeletion(thresholdForDeletionConfig);
+        } else {
+            error("P4RuntimeSmith: The threshold for deletion must be an integer.");
+        }
     } else {
-        setThresholdForDeletion(thresholdForDeletionConfig);
+        error("P4RuntimeSmith: The threshold for deletion must be provided.");
     }
 
-    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(0);
-    if (maxUpdateCountConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum number of updates must be provided and must be a positive "
-            "integer.");
+    auto maxUpdateCountNode = tomlConfig["maxUpdateCount"];
+    if (!!maxUpdateCountNode) {
+        if (maxUpdateCountNode.type() == toml::node_type::integer) {
+            size_t maxUpdateCountConfig = maxUpdateCountNode.value<size_t>().value();
+            setMaxUpdateCount(maxUpdateCountConfig);
+        } else {
+            error("P4RuntimeSmith: The maximum number of updates must be an integer.");
+        }
     } else {
-        setMaxUpdateCount(maxUpdateCountConfig);
+        error("P4RuntimeSmith: The maximum number of updates must be provided.");
     }
 
-    uint64_t maxUpdateTimeInMicrosecondsConfig =
-        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(0);
-    uint64_t minUpdateTimeInMicrosecondsConfig =
-        tomlConfig["minUpdateTimeInMicroseconds"].value_or(0);
-    if (maxUpdateTimeInMicrosecondsConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum wait time must be provided and must be a positive "
-            "integer.");
+    auto maxUpdateTimeInMicrosecondsNode = tomlConfig["maxUpdateTimeInMicroseconds"];
+    auto minUpdateTimeInMicrosecondsNode = tomlConfig["minUpdateTimeInMicroseconds"];
+    if (!!maxUpdateTimeInMicrosecondsNode) {
+        if (maxUpdateTimeInMicrosecondsNode.type() == toml::node_type::integer) {
+            uint64_t maxUpdateTimeInMicrosecondsConfig =
+                maxUpdateTimeInMicrosecondsNode.value<uint64_t>().value();
+            setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicrosecondsConfig);
+        } else {
+            error("P4RuntimeSmith: The maximum wait time must be an integer.");
+        }
     } else {
-        setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicrosecondsConfig);
+        error("P4RuntimeSmith: The maximum wait time must be provided.");
     }
-    if (minUpdateTimeInMicrosecondsConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The minimum wait time must be provided and must be a positive "
-            "integer.");
+    if (!!minUpdateTimeInMicrosecondsNode) {
+        if (minUpdateTimeInMicrosecondsNode.type() == toml::node_type::integer) {
+            uint64_t minUpdateTimeInMicrosecondsConfig =
+                minUpdateTimeInMicrosecondsNode.value<uint64_t>().value();
+            setMinUpdateTimeInMicroseconds(minUpdateTimeInMicrosecondsConfig);
+        } else {
+            error("P4RuntimeSmith: The minimum wait time must be an integer.");
+        }
     } else {
-        setMinUpdateTimeInMicroseconds(minUpdateTimeInMicrosecondsConfig);
+        error("P4RuntimeSmith: The minimum wait time must be provided.");
     }
 }
 
@@ -151,80 +183,111 @@ void FuzzerConfig::overrideFuzzerConfigsViaString(const char *configInString) {
 
     // For the following blocks, retrieve the configurations from the string and override the
     // default configurations if they comply with the constraints.
-    int maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value_or(0);
-    if (maxEntryGenCntConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum number of entries to generate must be provided and must "
-            "be a non-negative integer.");
-    } else {
-        setMaxEntryGenCnt(maxEntryGenCntConfig);
-    }
-
-    int maxAttemptsConfig = tomlConfig["maxAttempts"].value_or(0);
-    if (maxEntryGenCntConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum number of entries to generate must be a non-negative "
-            "integer.");
-    } else {
-        setMaxAttempts(maxAttemptsConfig);
-    }
-
-    int maxTablesConfig = tomlConfig["maxTables"].value_or(0);
-    if (maxTablesConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum number of tables must be provided and must be a "
-            "non-negative integer.");
-    } else {
-        setMaxTables(maxTablesConfig);
-    }
-
-    std::vector<std::string> tablesToSkipConfig;
-    if (const auto *stringRepresentations = tomlConfig["tablesToSkip"].as_array()) {
-        for (const auto &stringRepresentation : *stringRepresentations) {
-            if (const auto *str = stringRepresentation.as_string()) {
-                tablesToSkipConfig.push_back(str->get());
-            }
+    auto maxEntryGenCntNode = tomlConfig["maxEntryGenCnt"];
+    // Check if the node exists.
+    if (!!maxEntryGenCntNode) {
+        // Check if the node represents an integer.
+        if (maxEntryGenCntNode.type() == toml::node_type::integer) {
+            int maxEntryGenCnt = tomlConfig["maxEntryGenCnt"].value<int>().value();
+            setMaxEntryGenCnt(maxEntryGenCnt);
+        } else {
+            error("P4RuntimeSmith: The maximum number of entries to generate must be an integer.");
         }
-        setTablesToSkip(tablesToSkipConfig);
+    } else {
+        error("P4RuntimeSmith: The maximum number of entries to generate must be provided.");
+    }
+
+    auto maxAttemptsNode = tomlConfig["maxAttempts"];
+    if (!!maxAttemptsNode) {
+        if (maxAttemptsNode.type() == toml::node_type::integer) {
+            int maxAttempts = maxAttemptsNode.value<int>().value();
+            setMaxAttempts(maxAttempts);
+        } else {
+            error("P4RuntimeSmith: The maximum number of attempts must be an integer.");
+        }
+    } else {
+        error("P4RuntimeSmith: The maximum number of attempts must be provided.");
+    }
+
+    auto maxTablesNode = tomlConfig["maxTables"];
+    if (!!maxTablesNode) {
+        if (maxTablesNode.type() == toml::node_type::integer) {
+            int maxTables = maxTablesNode.value<int>().value();
+            setMaxTables(maxTables);
+        } else {
+            error("P4RuntimeSmith: The maximum number of tables must be an integer.");
+        }
+    } else {
+        error("P4RuntimeSmith: The maximum number of tables must be provided.");
+    }
+
+    auto tablesToSkipNode = tomlConfig["tablesToSkip"];
+    if (!!tablesToSkipNode) {
+        if (tablesToSkipNode.type() == toml::node_type::array) {
+            std::vector<std::string> tablesToSkipConfig;
+            const auto *expectedStringRepresentations = tomlConfig["tablesToSkip"].as_array();
+            for (const auto &expectedStringRepresentation : *expectedStringRepresentations) {
+                if (const auto *str = expectedStringRepresentation.as_string()) {
+                    tablesToSkipConfig.push_back(str->get());
+                } else {
+                    error("P4RuntimeSmith: The tables to skip must be strings.");
+                }
+            }
+            setTablesToSkip(tablesToSkipConfig);
+        } else {
+            error("P4RuntimeSmith: The tables to skip must be an array.");
+        }
     } else {
         error("P4RuntimeSmith: The tables to skip must be provided.");
     }
 
-    uint64_t thresholdForDeletionConfig = tomlConfig["thresholdForDeletion"].value_or(0);
-    if (thresholdForDeletionConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The threshold for deletion must be provided and must be a positive "
-            "integer.");
+    auto thresholdForDeletionNode = tomlConfig["thresholdForDeletion"];
+    if (!!thresholdForDeletionNode) {
+        if (thresholdForDeletionNode.type() == toml::node_type::integer) {
+            uint64_t thresholdForDeletion = thresholdForDeletionNode.value<uint64_t>().value();
+            setThresholdForDeletion(thresholdForDeletion);
+        } else {
+            error("P4RuntimeSmith: The threshold for deletion must be an integer.");
+        }
     } else {
-        setThresholdForDeletion(thresholdForDeletionConfig);
+        error("P4RuntimeSmith: The threshold for deletion must be provided.");
     }
 
-    size_t maxUpdateCountConfig = tomlConfig["maxUpdateCount"].value_or(0);
-    if (maxUpdateCountConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum number of updates must be provided and must be a positive "
-            "integer.");
+    auto maxUpdateCountNode = tomlConfig["maxUpdateCount"];
+    if (!!maxUpdateCountNode) {
+        if (maxUpdateCountNode.type() == toml::node_type::integer) {
+            size_t maxUpdateCount = maxUpdateCountNode.value<size_t>().value();
+            setMaxUpdateCount(maxUpdateCount);
+        } else {
+            error("P4RuntimeSmith: The maximum number of updates must be an integer.");
+        }
     } else {
-        setMaxUpdateCount(maxUpdateCountConfig);
+        error("P4RuntimeSmith: The maximum number of updates must be provided.");
     }
 
-    uint64_t maxUpdateTimeInMicrosecondsConfig =
-        tomlConfig["maxUpdateTimeInMicroseconds"].value_or(0);
-    uint64_t minUpdateTimeInMicrosecondsConfig =
-        tomlConfig["minUpdateTimeInMicroseconds"].value_or(0);
-    if (maxUpdateTimeInMicrosecondsConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The maximum wait time must be provided and must be a positive "
-            "integer.");
+    auto maxUpdateTimeInMicrosecondsNode = tomlConfig["maxUpdateTimeInMicroseconds"];
+    auto minUpdateTimeInMicrosecondsNode = tomlConfig["minUpdateTimeInMicroseconds"];
+    if (!!maxUpdateTimeInMicrosecondsNode) {
+        if (maxUpdateTimeInMicrosecondsNode.type() == toml::node_type::integer) {
+            uint64_t maxUpdateTimeInMicroseconds =
+                maxUpdateTimeInMicrosecondsNode.value<uint64_t>().value();
+            setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicroseconds);
+        } else {
+            error("P4RuntimeSmith: The maximum wait time must be an integer.");
+        }
     } else {
-        setMaxUpdateTimeInMicroseconds(maxUpdateTimeInMicrosecondsConfig);
+        error("P4RuntimeSmith: The maximum wait time must be provided.");
     }
-    if (minUpdateTimeInMicrosecondsConfig <= 0) {
-        error(
-            "P4RuntimeSmith: The minimum wait time must be provided and must be a positive "
-            "integer.");
+    if (!!minUpdateTimeInMicrosecondsNode) {
+        if (minUpdateTimeInMicrosecondsNode.type() == toml::node_type::integer) {
+            uint64_t minUpdateTimeInMicroseconds =
+                minUpdateTimeInMicrosecondsNode.value<uint64_t>().value();
+            setMinUpdateTimeInMicroseconds(minUpdateTimeInMicroseconds);
+        } else {
+            error("P4RuntimeSmith: The minimum wait time must be an integer.");
+        }
     } else {
-        setMinUpdateTimeInMicroseconds(minUpdateTimeInMicrosecondsConfig);
+        error("P4RuntimeSmith: The minimum wait time must be provided.");
     }
 }
 
