@@ -76,12 +76,16 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLFile) {
     auto maxEntryGenCntNode = tomlConfig["maxEntryGenCnt"];
     // Check if the node exists.
     if (!!maxEntryGenCntNode) {
+        // Check if the node represents an integer, meaning whether the configuration provided is
+        // valid.
         if (maxEntryGenCntNode.type() == toml::node_type::integer) {
-            maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value<int>().value();
+            maxEntryGenCntConfig = maxEntryGenCntNode.value<int>().value();
         } else {
             error("P4RuntimeSmith: The maximum number of entries to generate must be an integer.");
         }
     } else {
+        // If the node does not exist, throw an error that indicates the configuration must be
+        // provided.
         error("P4RuntimeSmith: The maximum number of entries to generate must be provided.");
     }
     auto maxAttemptsNode = tomlConfig["maxAttempts"];
@@ -107,7 +111,7 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLFile) {
     auto tablesToSkipNode = tomlConfig["tablesToSkip"];
     if (!!tablesToSkipNode) {
         if (tablesToSkipNode.type() == toml::node_type::array) {
-            const auto *expectedStringRepresentations = tomlConfig["tablesToSkip"].as_array();
+            const auto *expectedStringRepresentations = tablesToSkipNode.as_array();
             for (const auto &expectedStringRepresentation : *expectedStringRepresentations) {
                 if (const auto *str = expectedStringRepresentation.as_string()) {
                     tablesToSkipConfig.push_back(str->get());
@@ -258,12 +262,16 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLString) {
     auto maxEntryGenCntNode = tomlConfig["maxEntryGenCnt"];
     // Check if the node exists.
     if (!!maxEntryGenCntNode) {
+        // Check if the node represents an integer, meaning whether the configuration provided is
+        // valid.
         if (maxEntryGenCntNode.type() == toml::node_type::integer) {
-            maxEntryGenCntConfig = tomlConfig["maxEntryGenCnt"].value<int>().value();
+            maxEntryGenCntConfig = maxEntryGenCntNode.value<int>().value();
         } else {
             error("P4RuntimeSmith: The maximum number of entries to generate must be an integer.");
         }
     } else {
+        // If the node does not exist, throw an error that indicates the configuration must be
+        // provided.
         error("P4RuntimeSmith: The maximum number of entries to generate must be provided.");
     }
     auto maxAttemptsNode = tomlConfig["maxAttempts"];
@@ -289,7 +297,7 @@ TEST_F(TOMLFuzzerConfigurationTest, OverrideFuzzerConfigurationsViaTOMLString) {
     auto tablesToSkipNode = tomlConfig["tablesToSkip"];
     if (!!tablesToSkipNode) {
         if (tablesToSkipNode.type() == toml::node_type::array) {
-            const auto *expectedStringRepresentations = tomlConfig["tablesToSkip"].as_array();
+            const auto *expectedStringRepresentations = tablesToSkipNode.as_array();
             for (const auto &expectedStringRepresentation : *expectedStringRepresentations) {
                 if (const auto *str = expectedStringRepresentation.as_string()) {
                     tablesToSkipConfig.push_back(str->get());
